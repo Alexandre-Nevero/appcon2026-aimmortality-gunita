@@ -7,7 +7,7 @@
 > value sets are owned by `packages/core/src/enums.ts` (docs/implementation-plan.md §0.1 frozen
 > contract) and imported into the schema — never redefine a value set in both places.
 > **Not yet run against a live database.** `pnpm --filter web db:generate` produced
-> `apps/web/drizzle/0000_fresh_northstar.sql` and it was hand-reviewed (see §7), but
+> `apps/web/drizzle/0000_slimy_smasher.sql` and it was hand-reviewed (see §7), but
 > `pnpm --filter web db:migrate` needs a real Neon `DATABASE_URL_UNPOOLED` (TASK-022) to execute.
 
 ## 0. How to read this doc

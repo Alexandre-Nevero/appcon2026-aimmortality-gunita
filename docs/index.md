@@ -17,13 +17,14 @@ disagree, the canonical owner wins until the other is reconciled.
 | Screens · IA · routes · access (`S-###`), **ux-maps** static half | [Sitemap](sitemap.md) | |
 | Journeys across screens (`UF-###`, edge cases `EV-###`), **ux-maps** dynamic half | [User Flow](user-flow.md) | requires sitemap |
 | How it's built: architecture, components, integrations, security posture, stack currency | [System Design](system-design.md) | no separate security doc for this build |
+| Tables, columns, enums | [Data Model](data-model.md) | Shi (TASK-002) |
 | Every computed number and threshold (`EQ-###`, `DS-###`) | [Methods](methods.md) | glass-box ledger |
 | Tests · cases · commands (`TC-###`) | [QA Test Plan](qa-test-plan.md) | |
 | Deploy, config/secrets names, incidents, backup | [Ops](ops.md) | lean, demo-focused |
 | Build crew (agent roster) | [SAD](sad.md) | materialized to `.claude/agents/*.md` |
 | Living execution (`TASK-###`), owners, cut line | [Implementation Plan](implementation-plan.md) | Abu = Keeper; no cross-task Depends-on |
 
-**Not generated yet:** `idea.md` (seed brief), pitch kit (Gian TASK-023), data model (Shi TASK-002).
+**Not generated yet:** `idea.md` (seed brief), pitch kit (Gian TASK-023).
 
 ## 1. Document suite
 
@@ -36,6 +37,7 @@ disagree, the canonical owner wins until the other is reconciled.
 | System Design | [system-design.md](system-design.md) | Draft v0.2 | 2026-09-23 |
 | Methods | [methods.md](methods.md) | Draft v0.2 | 2026-09-23 |
 | QA Test Plan | [qa-test-plan.md](qa-test-plan.md) | Draft v0.2 | 2026-09-23 |
+| Data Model | [data-model.md](data-model.md) | Draft v0.1 | 2026-09-23 |
 | Ops | [ops.md](ops.md) | Draft v0.2 | 2026-09-23 |
 | SAD | [sad.md](sad.md) | Draft v0.2 | 2026-09-23 |
 | Implementation Plan | [implementation-plan.md](implementation-plan.md) | Living | 2026-09-23 |
@@ -54,5 +56,5 @@ disagree, the canonical owner wins until the other is reconciled.
 - [x] Displayed and decision-making numbers cite `EQ-###` (Methods).
 - [x] Platform is single web app (ADR-004); UI language locked (ADR-005).
 - [x] Implementation plan written (owners, `TASK-###`, cut line, no cross-person Depends-on).
-- [ ] Data model doc written (Shi TASK-002).
+- [x] Data model doc written (Shi TASK-002).
 - [ ] Pitch kit written (Gian TASK-023).

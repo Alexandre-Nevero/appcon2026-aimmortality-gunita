@@ -47,8 +47,9 @@ pnpm --filter web dev
 pnpm --filter web build
 ```
 
-At the moment, this repository contains the TASK-001 scaffold only: a pnpm workspace, a minimal
-Next.js 16 app in `apps/web`, and a stub `packages/core` reserved for later tasks.
+Current state (2026-09-23): the pnpm workspace, Drizzle schema + seed loader, `packages/core` rules,
+and the source upload + AI processing pipeline are merged. Auth, the recorder, memorial pages, and
+photo memories (ADR-007) are in progress. See [docs/implementation-plan.md](docs/implementation-plan.md).
 
 ## License
 

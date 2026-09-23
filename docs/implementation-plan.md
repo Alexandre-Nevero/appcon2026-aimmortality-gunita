@@ -7,9 +7,9 @@
 > **Markdown only** — no GitHub Issues projection required.
 
 **Plan steward / Build Keeper:** Abu (product manager)
-**Last checkpoint:** 2026-09-23T17:40:00+08:00 · plan created (greenfield)
+**Last checkpoint:** 2026-09-23T23:50:00+08:00 · TASK-001/002/003/008 merged; ADR-007 photo memories added
 **Deadline / demo cutoff:** 2026-09-24 ~18:00 (confirm on Team Portal)
-**Current stopping point:** docs + ADRs only — no runnable app yet
+**Current stopping point:** main at 710ab72 — scaffold, schema + seed loader, core rules, upload pipeline merged; no DB provisioned, no deploy; auth (PR #5) and recorder (PR #6) open
 
 ---
 
@@ -52,6 +52,8 @@ task. Coordination is by **write-scope ownership** + **frozen contracts**, not a
 | GET | `/api/spaces/:id/memorial/qr` | Kirby | Josh S-023 |
 | GET/POST | `/api/spaces/:id/contributions` (moderation) | Kirby | Josh S-024 |
 | GET | `/m/[token]` (RSC page) | Josh UI + Kirby loader data | visitors |
+| GET | `/m/[token]/memories` (RSC page) | Josh UI + Shi loader | visitors (S-033) |
+| POST | `/api/m/:token/tributes` | Shi | Josh S-033 |
 | POST | `/api/m/:token/contributions` | Kirby | Josh S-031 |
 | GET | `/api/health` | Kirby | Ops |
 
@@ -69,7 +71,7 @@ Replace fixture imports with real `fetch` when the matching API returns 200 — 
 
 ## 1. Planning inputs
 
-- **Current code state:** greenfield (docs only)
+- **Current code state:** scaffold + schema/seed loader + core rules + upload/AI pipeline merged (PRs #1–#4); no Neon DB or deploy yet; no Playwright or eval runner yet
 - **Team capacity (roles):**
 
 | Person | Role | Owns in this plan |
@@ -106,15 +108,15 @@ Allowed status: `ready | in_progress | blocked | in_review | done | cut`.
 
 | ID | Outcome / trace | Depends on | Owner | Write scope | Work ref | Status | Gate / evidence |
 |----|-----------------|------------|-------|-------------|----------|--------|-----------------|
-| TASK-001 | Runnable monorepo skeleton; Next 16 app + `packages/core` stub; env sample; infra | — | Kirby | `package.json`, `pnpm-workspace.yaml`, `apps/web/**` (scaffold only), `packages/core/package.json`, `.gitignore`, `README.md` (setup stub) | — | ready | infra · `pnpm install && pnpm --filter web build` |
-| TASK-002 | Drizzle schema + migrations + seed loader; write `docs/data-model.md`; F-001 entities | — | Shi | `apps/web/src/db/**`, `apps/web/drizzle/**`, `seed/**` (loader), `docs/data-model.md` | — | ready | infra · `pnpm --filter web db:migrate` |
-| TASK-003 | Core pure rules + Zod enums; visibility/review/citation/first-person; F-009,F-015,F-022 | — | Shi | `packages/core/src/**` | — | ready | TC-012,TC-020,TC-022,TC-030,TC-033 · `pnpm --filter core test` |
+| TASK-001 | Runnable monorepo skeleton; Next 16 app + `packages/core` stub; env sample; infra | — | Kirby | `package.json`, `pnpm-workspace.yaml`, `apps/web/**` (scaffold only), `packages/core/package.json`, `.gitignore`, `README.md` (setup stub) | https://github.com/Alexandre-Nevero/appcon2026-aimmortality-gunita/pull/2 | done | infra · `pnpm install && pnpm --filter web build` · result: PASS (build on 710ab72, 2026-09-23) |
+| TASK-002 | Drizzle schema + migrations + seed loader; write `docs/data-model.md`; F-001 entities | — | Shi | `apps/web/src/db/**`, `apps/web/drizzle/**`, `seed/**` (loader), `docs/data-model.md` | https://github.com/Alexandre-Nevero/appcon2026-aimmortality-gunita/pull/1 | blocked | infra · `pnpm --filter web db:migrate` · merged; migrate gate waits for Neon (TASK-022) |
+| TASK-003 | Core pure rules + Zod enums; visibility/review/citation/first-person; F-009,F-015,F-022 | — | Shi | `packages/core/src/**` | https://github.com/Alexandre-Nevero/appcon2026-aimmortality-gunita/pull/3 | done | TC-012,TC-020,TC-022,TC-030,TC-033 · `pnpm --filter core test` · result: PASS (710ab72) |
 | TASK-004 | fil/en copy pack + CSS tokens + badge visual spec; BR-014; docs | — | Gian | `content/i18n/**`, `content/design-tokens.css`, `docs/pitch/visual-direction.md` | — | ready | docs · `test -f content/i18n/fil.json && test -f content/i18n/en.json` |
 | TASK-005 | Demo script + fictional family narrative + eval question list; BR-040; docs | — | Abu | `docs/demo-script.md`, `eval/cases.json` (content), `seed/README.md` | — | ready | docs · `test -f docs/demo-script.md && test -f eval/cases.json` |
-| TASK-006 | Better Auth + space create + invite + consent APIs; F-001,F-002 | — | Kirby | `apps/web/src/auth/**`, `apps/web/app/api/auth/**`, `apps/web/app/api/spaces/**` (create/consent/invites only) | — | ready | TC-001–TC-005 · `pnpm --filter web test` |
+| TASK-006 | Better Auth + space create + invite + consent APIs; F-001,F-002 | — | Kirby | `apps/web/src/auth/**`, `apps/web/app/api/auth/**`, `apps/web/app/api/spaces/**` (create/consent/invites only) | https://github.com/Alexandre-Nevero/appcon2026-aimmortality-gunita/pull/5 | in_progress | TC-001–TC-005 · `pnpm --filter web test` · PR open; rebase on main (package.json drops type:module, db scripts, drizzle/ai deps) |
 | TASK-007 | App shell, tabs, auth/onboarding screens, i18n provider; S-001–S-005,S-018,S-019; F-001 | — | Josh | `apps/web/app/(auth)/**`, `apps/web/app/onboarding/**`, `apps/web/app/(app)/layout.tsx`, `apps/web/app/(app)/home/**`, `apps/web/app/(app)/family/**`, `apps/web/app/(app)/settings/**`, `apps/web/src/components/shell/**`, `apps/web/src/i18n/**` | — | ready | test · `pnpm --filter web typecheck` |
-| TASK-008 | Source upload API + Blob + processing pipeline (STT/vision/extract/hints); F-003–F-007,F-014 | — | Shi | `apps/web/src/ai/**`, `apps/web/src/media/**`, `apps/web/app/api/spaces/[id]/sources/**`, `apps/web/app/api/sources/**` | — | ready | TC-010,TC-011,TC-016 · `pnpm --filter web test` |
-| TASK-009 | MediaRecorder helper (MIME fallback, 4 MB, tap-play); F-003 | — | Kirby | `apps/web/src/recording/**` | — | ready | TC-081 · `pnpm --filter web test` |
+| TASK-008 | Source upload API + Blob + processing pipeline (STT/vision/extract/hints); F-003–F-007,F-014 | — | Shi | `apps/web/src/ai/**`, `apps/web/src/media/**`, `apps/web/app/api/spaces/[id]/sources/**`, `apps/web/app/api/sources/**` | https://github.com/Alexandre-Nevero/appcon2026-aimmortality-gunita/pull/4 | done | TC-010,TC-011,TC-016 · `pnpm --filter web test` · result: PASS (710ab72) |
+| TASK-009 | MediaRecorder helper (MIME fallback, 4 MB, tap-play); F-003 | — | Kirby | `apps/web/src/recording/**` | https://github.com/Alexandre-Nevero/appcon2026-aimmortality-gunita/pull/6 | in_progress | TC-081 · `pnpm --filter web test` · PR open; also carries TASK-006 files — rebase after #5 merges |
 | TASK-010 | Capture / interview / artifact / source-detail UI; S-006–S-010,S-017; F-003,F-004 | — | Josh | `apps/web/app/(app)/capture/**`, `apps/web/src/components/capture/**` | — | ready | TC-018 · `pnpm --filter web typecheck` |
 | TASK-011 | Review + visibility + embed-on-confirm APIs; F-008,F-009,F-021 | — | Shi | `apps/web/src/access/**`, `apps/web/app/api/items/**`, `apps/web/app/api/spaces/[id]/items/**` | — | ready | TC-020,TC-022,TC-023,TC-055 · `pnpm --filter web test` |
 | TASK-012 | Review queue + archive + item/person detail UI; S-011–S-014; F-008,F-010 | — | Josh | `apps/web/app/(app)/archive/**`, `apps/web/app/(app)/review/**`, `apps/web/src/components/archive/**`, `apps/web/src/components/badges/**` | — | ready | TC-021,TC-024 · `pnpm --filter web typecheck` |
@@ -122,10 +124,10 @@ Allowed status: `ready | in_progress | blocked | in_review | done | cut`.
 | TASK-014 | Ask UI + evidence sheet; S-016,S-104; F-012,F-013 | — | Josh | `apps/web/app/(app)/ask/**`, `apps/web/src/components/ask/**` | — | ready | test · `pnpm --filter web typecheck` |
 | TASK-015 | Search + question-queue APIs; F-011,F-014 | — | Shi | `apps/web/app/api/spaces/[id]/search/**`, `apps/web/app/api/spaces/[id]/questions/**` | — | ready | TC-019,TC-026 · `pnpm --filter web test` |
 | TASK-016 | Search results + question queue UI; S-008,S-015; F-011,F-014 | — | Josh | `apps/web/app/(app)/questions/**`, `apps/web/app/(app)/search/**` | — | ready | test · `pnpm --filter web typecheck` |
-| TASK-017 | Memorial server: activate, select, publish snapshot, QR, contribute, moderate; F-016–F-020 | — | Kirby | `apps/web/src/memorial/**`, `apps/web/app/api/spaces/[id]/memorial/**`, `apps/web/app/api/m/**` | — | ready | TC-040–TC-045,TC-050–TC-054 · `pnpm --filter web test` |
+| TASK-017 | Memorial server: activate, select, publish snapshot, QR, contribute, moderate; F-016–F-020; stores full Blob URL in contribution.photoBlobPathname; reuse core isMemorialPublic | — | Kirby | `apps/web/src/memorial/**`, `apps/web/app/api/spaces/[id]/memorial/**`, `apps/web/app/api/m/**` (except apps/web/app/api/m/[token]/tributes/** → TASK-029) | — | ready | TC-040–TC-045,TC-050–TC-054 · `pnpm --filter web test` |
 | TASK-018 | Steward memorial UI; S-020–S-024,S-101; F-016,F-017 | — | Josh | `apps/web/app/(app)/memorial/**`, `apps/web/src/components/memorial/**` | — | ready | test · `pnpm --filter web typecheck` |
-| TASK-019 | Public memorial pages; S-030–S-034,S-031 voice; F-017–F-019 | — | Josh | `apps/web/app/m/**`, `apps/web/src/components/public-memorial/**` | — | ready | TC-045,TC-050 · `pnpm test:e2e` |
-| TASK-020 | Seed data filled (media + reviewed items + published recap option); BR-040; infra | — | Shi | `seed/data/**`, `seed/media/**` | — | ready | infra · `pnpm --filter web db:seed` |
+| TASK-019 | Public memorial pages; S-030–S-034,S-031 voice; F-017–F-019; S-030 renders MemoriesEntryLink (S-033); S-034 at apps/web/app/m/[token]/not-found.tsx | — | Josh | `apps/web/app/m/**`, `apps/web/src/components/public-memorial/**` (except apps/web/app/m/[token]/memories/** → TASK-030) | — | ready | TC-045,TC-050 · `pnpm test:e2e` |
+| TASK-020 | Seed data filled (media + reviewed items + published recap option); BR-040; infra; publishMemorial: true + ≥3 approved visitor photo contributions for S-033 | — | Shi | `seed/data/**`, `seed/media/**` | — | ready | infra · `pnpm --filter web db:seed` |
 | TASK-021 | Eval runner + guardrail script; F-022; EQ-012 | — | Kirby | `eval/run.ts`, `apps/web/scripts/check-guardrails.ts` | — | ready | TC-060 · `pnpm eval` |
 | TASK-022 | Vercel prod + Neon + Blob + secrets + health; infra | — | Kirby | `vercel.ts`, `apps/web/app/api/health/**`, `docs/ops.md` | — | ready | infra · `curl -sf "$PUBLIC_WEB_URL/api/health"` |
 | TASK-023 | Pitch deck 5–10 slides + memorial storyboard; docs | — | Gian | `docs/pitch/**` | — | ready | docs · `test -d docs/pitch && ls docs/pitch/*` |
@@ -134,6 +136,8 @@ Allowed status: `ready | in_progress | blocked | in_review | done | cut`.
 | TASK-026 | Phone mic + visitor voice notes on real devices; TC-081,TC-082; test | — | Kirby | `docs/phone-check-log.md` | — | ready | TC-081,TC-082 · `grep -q 'TC-081' docs/phone-check-log.md` |
 | TASK-027 | UI polish: empty states, elder type scale, motion budget; F-010 | — | Josh | `apps/web/src/styles/**` | — | ready | test · `pnpm --filter web typecheck` |
 | TASK-028 | τ calibration ADR + Methods update; EQ-001/EQ-002; docs | — | Abu | `docs/adr/ADR-006-ask-tau.md`, `docs/methods.md` | — | ready | docs · `test -f docs/adr/ADR-006-ask-tau.md` |
+| TASK-029 | Photo memories server: tribute table + migration, isMemorialPublic, memories queries, POST tributes, seed memorial + contributions; F-023 | — | Shi | `packages/core/src/memorial.ts`, `packages/core/src/memorial.test.ts`, `packages/core/src/index.ts`, `apps/web/src/db/schema.ts` (tribute only), `apps/web/drizzle/0001_*`, `apps/web/drizzle/meta/**`, `apps/web/src/memories/**`, `apps/web/app/api/m/[token]/tributes/**`, `apps/web/src/db/seed-fixture.ts`, `apps/web/src/db/seed.ts`, `apps/web/test/memories-*.test.ts`, `apps/web/test/seed-fixture.test.ts` | — | ready | TC-057,TC-058 · `pnpm typecheck && pnpm test` |
+| TASK-030 | Photo memories UI S-033 (vertical scroll, tribute heart, fil/en, entry link); F-023 | — | Josh | `apps/web/app/m/[token]/memories/**`, `apps/web/src/components/memories/**`, `apps/web/test/memories-copy.test.ts` | — | ready | TC-059 · `pnpm --filter web typecheck && pnpm --filter web build` |
 
 ## 4. Run evidence and closure
 
@@ -155,7 +159,7 @@ python3 tools/check-implementation-plan.py docs/implementation-plan.md
 
 ## 5. Current execution view
 
-- **Ready now:** TASK-001 … TASK-028 (all `Depends on: —`)
+- **Ready now:** TASK-004, 005, 007, 010–030 (all Depends on: —)
 - **Safe parallel set (start immediately):**
   - Kirby → TASK-001 (first), then TASK-006 / TASK-009 in any order
   - Shi → TASK-002 + TASK-003 (branch; rebase after TASK-001 folder exists)
@@ -165,11 +169,11 @@ python3 tools/check-implementation-plan.py docs/implementation-plan.md
 - **Blocked:** none by task dependency. Only soft wait: empty repo until Kirby pushes TASK-001 (~1 h).
 - **Integration order (Abu merge preference, not blockers):**
   1. TASK-001 → 002 → 003 → 006 → 020
-  2. 008 → 011 → 013 → 015 → 017
-  3. 007 → 010 → 012 → 014 → 018 → 019
+  2. 008 → 011 → 013 → 015 → 017 → 029
+  3. 007 → 010 → 012 → 014 → 018 → 019 → 030
   4. 021 → 022 → 024 → 026 → 025
   5. 004/023 anytime; 027 last / cut; 028 after first eval
-- **Cut line (drop first if time shrinks):** TASK-027 polish → TASK-016 search UI niceties → live capture perfection (keep seed path) → TASK-023 visual extras beyond required slides. **Never cut:** §13 golden path, Ask abstention, memorial QR, TC-080, submission (TASK-025).
+- **Cut line (drop first if time shrinks):** TASK-027 polish → TASK-016 search UI niceties → live capture perfection (keep seed path) → TASK-023 visual extras beyond required slides. **Never cut:** §13 golden path, Ask abstention, memorial QR, TC-080, submission (TASK-025), S-033 photo memories (demo-critical, ADR-007).
 
 ---
 
@@ -222,3 +226,5 @@ Hours 22-25  Abu: 025 submit · Kirby: 026 phones · cut 027 if needed · 028 τ
 | Timestamp / event | Tasks changed | Why / evidence | Canonical docs reconciled |
 |-------------------|---------------|----------------|---------------------------|
 | 2026-09-23T17:40:00+08:00 · kickoff | TASK-001…TASK-028 created | Parallel no-DAG plan for AppCon; roles Kirby/Josh/Shi/Gian/Abu | PRD §13 · system design · QA · ADR-004/005 |
+| 2026-09-23T23:50:00+08:00 · checkpoint | TASK-001/003/008 done, TASK-002 blocked (no DB), TASK-006/009 in_progress (rebase) | PRs #1–#6 on GitHub; gates run on 710ab72 | implementation-plan · data-model · README · AGENTS |
+| 2026-09-23T23:50:00+08:00 · pivot | TASK-029, TASK-030 added; TASK-017/019/020 notes | ADR-007 photo memories (demo-critical) | PRD v0.4 · sitemap · user-flow · system design · methods · QA · ops |
