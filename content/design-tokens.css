@@ -1,0 +1,279 @@
+/*
+ * Himmel design tokens — TASK-004 (Gian / product design)
+ * Visual direction: Himmel — quiet journey under an open sky (campfire warmth + celestial blue).
+ * Mobile-first ~375px (+ safe-area). Consume via CSS custom properties.
+ * Josh wires these in TASK-007 / TASK-027. Prefer prefers-reduced-motion for non-essential animation.
+ *
+ * Notes for implementers:
+ * - Body floor is 18px (--font-size-body) for elder readability (F-010).
+ * - Prefer --font-size-md (16) only for dense secondary chrome; never below for body sentences.
+ * - Focus: always use --shadow-focus on interactive controls.
+ * - Safe-area: pad fixed chrome with --safe-area-* (notches / home indicator on 375 phones).
+ * - Sky View home: use --color-sky-morning / --color-sky-sunset / --color-sky-night for time-of-day.
+ */
+
+:root {
+  /* -------------------------------------------------------------------------
+   * Color — Himmel: parchment + celestial blue + sunset gold
+   * Mood: open sky, starlight, warm campfire — not cold SaaS indigo.
+   * ------------------------------------------------------------------------- */
+  --color-bg: #f7f1e8;              /* warm parchment (primary family UI) */
+  --color-bg-alt: #f7fafc;          /* cooler off-white parchment option */
+  --color-bg-dark: #1a202c;         /* deep indigo night (Sky View night / dark moments) */
+  --color-bg-elevated: #fffaf3;     /* soft cream cards / sheets */
+  --color-bg-muted: #efe6d8;        /* secondary surfaces */
+  --color-bg-inverse: #2a4365;      /* memorial cover w/ photo — deep celestial */
+  --color-bg-cover-fallback-from: #ebf8ff; /* no-photo: soft celestial blue */
+  --color-bg-cover-fallback-mid: #f7f1e8;  /* no-photo: warm paper mid */
+  --color-bg-cover-fallback-to: #feebc8;   /* no-photo: soft sunset paper */
+
+  --color-fg: #2d3748;              /* high-legibility dark slate */
+  --color-fg-muted: #4a5568;        /* secondary text on light */
+  --color-fg-subtle: #718096;       /* hints, captions */
+  --color-fg-on-inverse: #e2e8f0;   /* soft light gray on dark / inverse */
+  --color-fg-on-dark: #e2e8f0;
+
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e0;
+
+  /* Focus ring — warm gold/brown, always visible */
+  --color-focus-ring: #d69e2e;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+  --shadow-focus: 0 0 0 var(--focus-ring-offset) var(--color-bg),
+    0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width))
+      rgba(214, 158, 46, 0.55);
+
+  /* Primary — Himmel celestial blue (sky / hair) */
+  --color-primary: #2a4365;
+  --color-primary-mid: #2b6cb0;
+  --color-primary-bright: #4299e1;
+  --color-primary-soft: #ebf8ff;
+  --color-primary-on: #f7fafc;
+
+  /* CTA / Accent — sunset gold (courage & warmth) */
+  --color-accent: #d69e2e;
+  --color-accent-hover: #b7791f;
+  --color-accent-bright: #ecc94b;
+  --color-accent-soft: #fefcbf;
+  --color-accent-on: #1a202c;
+
+  /* Sky View dashboard — time-of-day (Home) */
+  --color-sky-morning: #4299e1;
+  --color-sky-sunset: #d69e2e;
+  --color-sky-night: #1a202c;
+
+  /* Semantic */
+  --color-success: #276749;
+  --color-success-soft: #c6f6d5;
+  --color-warning: #975a16;
+  --color-warning-soft: #fefcbf;
+  --color-danger: #9b2c2c;
+  --color-danger-soft: #fed7d7;
+  --color-info: #2b6cb0;
+  --color-info-soft: #bee3f8;
+
+  /*
+   * Provenance / review badges (F-015) — each semantic must be visually distinct.
+   * Do not reuse the same bg across origin, review-state, and visibility chips.
+   */
+  --color-badge-from-them-bg: #c6f6d5;       /* soft green — their own words */
+  --color-badge-from-them-fg: #22543d;
+  --color-badge-about-them-bg: #e9d8fd;      /* soft violet — family/visitor about them */
+  --color-badge-about-them-fg: #44337a;
+  --color-badge-ai-bg: #bee3f8;              /* soft sky — AI suggestion */
+  --color-badge-ai-fg: #2a4365;
+  --color-badge-verified-bg: #b2f5ea;        /* soft teal — confirmed (≠ from-them green) */
+  --color-badge-verified-fg: #234e52;
+  --color-badge-corrected-bg: #fffaf3;       /* cream + green outline */
+  --color-badge-corrected-fg: #22543d;
+  --color-badge-corrected-border: #276749;
+  --color-badge-uncertain-bg: #fefcbf;       /* soft amber — uncertain */
+  --color-badge-uncertain-fg: #744210;
+  --color-badge-disputed-bg: #fed7d7;        /* soft rose — disputed */
+  --color-badge-disputed-fg: #742a2a;
+  --color-badge-rejected-bg: #f7fafc;        /* cool wash — rejected (≠ private slate) */
+  --color-badge-rejected-fg: #718096;
+  --color-badge-ai-written-bg: #ebf8ff;      /* lighter sky — AI prose marker */
+  --color-badge-ai-written-fg: #2c5282;
+  --color-badge-hindi-pa-alam-bg: #efe6d8;   /* muted paper — abstention, not error */
+  --color-badge-hindi-pa-alam-fg: #5c534a;
+
+  /* Recipe step chips (Pamana Measured / By judgement) — not F-015 provenance */
+  --color-badge-measured-bg: #e6fffa;
+  --color-badge-measured-fg: #234e52;
+  --color-badge-by-judgement-bg: #feebc8;
+  --color-badge-by-judgement-fg: #7b341e;
+
+  /* Visibility chips — separate palette from provenance/review */
+  --color-vis-private-bg: #e2e8f0;           /* slate — private (≠ rejected) */
+  --color-vis-private-fg: #2d3748;
+  --color-vis-family-bg: #c3dafe;            /* soft indigo — family circle (≠ from-them) */
+  --color-vis-family-fg: #2a4365;
+  --color-vis-memorial-bg: #faf5ff;          /* pale lilac — memorial publish (≠ about-them, ≠ warning) */
+  --color-vis-memorial-fg: #5b21b6;
+
+  /* -------------------------------------------------------------------------
+   * Typography — storybook serif + clear sans (F-010)
+   * Headers/quotes: Lora / Playfair stack. Body: Inter / Plus Jakarta stack.
+   * Floor: body sentences use --font-size-body (18px).
+   * ------------------------------------------------------------------------- */
+  --font-sans: "Inter", "Plus Jakarta Sans", "SF Pro Text", "Segoe UI", system-ui,
+    -apple-system, "Helvetica Neue", "Noto Sans", "Noto Sans Tagalog", sans-serif;
+  --font-serif: "Lora", "Playfair Display", "Iowan Old Style", "Palatino Linotype",
+    Palatino, "Book Antiqua", "Noto Serif", Georgia, serif;
+
+  --font-size-xs: 0.8125rem;  /* 13 */
+  --font-size-sm: 0.9375rem;  /* 15 */
+  --font-size-md: 1rem;       /* 16 — dense chrome minimum */
+  --font-size-lg: 1.125rem;   /* 18 */
+  --font-size-body: 1.125rem; /* default paragraph / form text */
+  --font-size-xl: 1.25rem;    /* 20 */
+  --font-size-2xl: 1.5rem;    /* 24 */
+  --font-size-3xl: 1.875rem;  /* 30 — interview question (S-007) */
+  --font-size-4xl: 2.25rem;   /* 36 — memorial cover name */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.02em;
+
+  /* -------------------------------------------------------------------------
+   * Spacing — 4px base, mobile-first @375
+   * ------------------------------------------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --space-page-x: 1rem;
+  --space-page-y: 1.25rem;
+  --space-tab-bar: 3.5rem;
+  --space-touch-min: 2.75rem;
+  --space-projector-max: 30rem; /* ~480px centered column for S-022 */
+
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+
+  /* -------------------------------------------------------------------------
+   * Radii & elevation
+   * ------------------------------------------------------------------------- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(26, 32, 44, 0.06);
+  --shadow-md: 0 4px 12px rgba(26, 32, 44, 0.08);
+  --shadow-lg: 0 12px 32px rgba(26, 32, 44, 0.12);
+
+  /* -------------------------------------------------------------------------
+   * Motion — Sky View transitions ok; no streaks / confetti / autoplay
+   * ------------------------------------------------------------------------- */
+  --duration-instant: 0ms;
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --duration-slow: 320ms;
+  --duration-sky: 800ms; /* soft time-of-day gradient shift */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  --motion-distance-sm: 4px;
+  --motion-distance-md: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-sky: 0ms;
+    --motion-distance-sm: 0px;
+    --motion-distance-md: 0px;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Optional dark memorial cover — when a selected cover photo is present */
+[data-theme="memorial-cover"] {
+  --color-bg: var(--color-bg-inverse);
+  --color-fg: var(--color-fg-on-inverse);
+  --color-fg-muted: #a0aec0;
+}
+
+/*
+ * No-photo memorial cover (S-030): soft celestial blue + warm paper gradient.
+ * Pair with memorialPublic.coverNoPhotoAlt.
+ */
+[data-theme="memorial-cover-fallback"] {
+  --color-bg: var(--color-bg-cover-fallback-from);
+  --color-fg: var(--color-fg);
+  --color-fg-muted: var(--color-fg-muted);
+  background-image: linear-gradient(
+    165deg,
+    var(--color-bg-cover-fallback-from) 0%,
+    var(--color-bg-cover-fallback-mid) 52%,
+    var(--color-bg-cover-fallback-to) 100%
+  );
+}
+
+/* Sky View home dashboard — apply one of these on the Home shell */
+[data-theme="sky-morning"] {
+  --color-sky-current: var(--color-sky-morning);
+  background-image: linear-gradient(
+    180deg,
+    var(--color-sky-morning) 0%,
+    var(--color-bg) 72%
+  );
+}
+
+[data-theme="sky-sunset"] {
+  --color-sky-current: var(--color-sky-sunset);
+  background-image: linear-gradient(
+    180deg,
+    var(--color-sky-sunset) 0%,
+    var(--color-bg) 72%
+  );
+}
+
+[data-theme="sky-night"] {
+  --color-sky-current: var(--color-sky-night);
+  --color-fg: var(--color-fg-on-dark);
+  --color-fg-muted: #a0aec0;
+  background-image: linear-gradient(
+    180deg,
+    var(--color-sky-night) 0%,
+    #2a4365 72%
+  );
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
