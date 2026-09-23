@@ -47,11 +47,12 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   }
 
   try {
-    const updated = await applyVisibilityChange(db, {
-      itemId,
-      nextVisibility: parsed.data.visibility,
-      withFeaturedPerson: parsed.data.withFeaturedPerson,
-    });
+    const updated = await applyVisibilityChange(
+      db,
+      target,
+      { nextVisibility: parsed.data.visibility, withFeaturedPerson: parsed.data.withFeaturedPerson },
+      { actingMembershipId: membership.membershipId },
+    );
     return NextResponse.json({ item: updated });
   } catch (error) {
     if (error instanceof ReviewError) {

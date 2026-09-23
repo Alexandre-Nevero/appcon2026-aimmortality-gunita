@@ -87,6 +87,7 @@ export const ACTIVITY_TYPE_VALUES = [
   "invite_sent",
   "source_deleted",
   "item_deleted",
+  "item_visibility_changed",
   "contribution_approved",
   "contribution_rejected",
   "memorial_activated",

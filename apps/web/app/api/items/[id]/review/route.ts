@@ -25,6 +25,8 @@ const REVIEW_ERROR_STATUS: Record<ReviewError["code"], number> = {
 };
 
 // PATCH /api/items/:id/review {action, note?, edits?, visibility?, withFeaturedPerson?}
+// Steward-only (System Design "Security & access": review is a steward-only action; BR-021 —
+// review always records the steward, with or without the featured person present).
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id: itemId } = await context.params;
 
@@ -34,6 +36,9 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   }
 
   const membership = await requireMembership(request, target.spaceId);
+  if (membership.role !== "steward") {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
 
   let body: unknown;
   try {
@@ -47,16 +52,18 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   }
 
   try {
-    const updated = await applyItemReview(db, {
-      itemId,
-      action: parsed.data.action,
-      note: parsed.data.note ?? undefined,
-      edits: parsed.data.edits,
-      visibility: parsed.data.visibility,
-      reviewerMembershipId: membership.membershipId,
-      withFeaturedPerson: parsed.data.withFeaturedPerson,
-      embedModel: models.embed,
-    });
+    const updated = await applyItemReview(
+      db,
+      target,
+      {
+        action: parsed.data.action,
+        note: parsed.data.note ?? undefined,
+        edits: parsed.data.edits,
+        visibility: parsed.data.visibility,
+        withFeaturedPerson: parsed.data.withFeaturedPerson,
+      },
+      { reviewerMembershipId: membership.membershipId, embedModel: models.embed },
+    );
     return NextResponse.json({ item: updated });
   } catch (error) {
     if (error instanceof ReviewError) {
