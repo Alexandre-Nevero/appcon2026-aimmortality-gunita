@@ -15,6 +15,13 @@
       "when": 1790184104380,
       "tag": "0001_majestic_omega_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790194193149,
+      "tag": "0002_gorgeous_paper_doll",
+      "breakpoints": true
     }
   ]
 }
