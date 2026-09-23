@@ -24,6 +24,13 @@ export interface VisibilityChangeRequest {
 // PRD BR-032 consent ceiling: once the featured person sets an item Private, the steward alone can
 // never raise it again — before or after Memorial Mode activation. The featured person themself
 // still can, recorded via `withFeaturedPerson` (BR-021's "with the person" flag).
+//
+// This is a pure function: it trusts `withFeaturedPerson` rather than verifying it. The caller
+// (TASK-011's review/access module) is responsible for only ever setting it true when the featured
+// person is actually present in the session — in practice this can only be true during a live
+// interview, since the featured person has no account and no way to act after death (PRD Personas).
+// If a future flow needs to *verify* presence rather than trust a flag, that check belongs in the
+// caller, not here.
 export function canChangeVisibility(request: VisibilityChangeRequest): boolean {
   const { currentVisibility, currentVisibilitySetBy, nextVisibility, withFeaturedPerson } = request;
   if (currentVisibility == null) return true;

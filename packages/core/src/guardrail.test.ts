@@ -15,6 +15,12 @@ describe("matchesRoleplayRequest", () => {
     expect(matchesRoleplayRequest("How did Lola make adobo?")).toBe(false);
     expect(matchesRoleplayRequest("Paano niya ginawa ang adobo?")).toBe(false);
   });
+
+  it("doesn't match 'what would ... think/say/feel' across an unrelated clause", () => {
+    expect(
+      matchesRoleplayRequest("What would happen if we all think about the plan differently?"),
+    ).toBe(false);
+  });
 });
 
 // TC-034 — First-person guard (PRD F-022)
@@ -34,5 +40,10 @@ describe("containsFirstPersonAsSubject", () => {
     expect(containsFirstPersonAsSubject("She made the adobo using her mother's recipe.")).toBe(
       false,
     );
+  });
+
+  it("doesn't flag ordinary words that happen to start with 'i' (ill, id)", () => {
+    expect(containsFirstPersonAsSubject("He was ill for a week before the wedding.")).toBe(false);
+    expect(containsFirstPersonAsSubject("Her ID was in the drawer.")).toBe(false);
   });
 });

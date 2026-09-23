@@ -27,4 +27,12 @@ describe("checkRecipeStepQuantity", () => {
     );
     expect(result).toEqual({ quantityVerbatim: null, flaggedForReview: false });
   });
+
+  it("flags a measured step that has no quantity at all as a review gap", () => {
+    const result = checkRecipeStepQuantity(
+      { kind: "measured", quantityVerbatim: null },
+      ["Maglagay ng suka."],
+    );
+    expect(result).toEqual({ quantityVerbatim: null, flaggedForReview: true });
+  });
 });
