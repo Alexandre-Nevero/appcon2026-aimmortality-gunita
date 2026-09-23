@@ -47,6 +47,7 @@ item *───* person   (via item_person)
 space 1───* question
 space 1───1 recap
 space 1───* contribution
+contribution 1───* tribute
 space 1───* activity
 space 1───* event
 space 1───* ai_call
@@ -197,6 +198,14 @@ F-019/F-020. `submittedIpHash` is `SHA-256(ip ‖ daily_salt)` (Methods EQ-010) 
 stored. The `contribution_has_content` `CHECK` constraint enforces BR-060 (at least one of text,
 photo, audio) at the DB level, not just in a form validator. `contribution_rate_limit_idx` is the
 exact `(spaceId, submittedIpHash, submittedAt)` shape EQ-010's rate-limit query needs.
+`photoBlobPathname` stores the **full Blob URL** (same convention as `source.blobPathname`, see `apps/web/src/media/blob.ts`); S-033 renders it directly.
+
+### `tribute`
+F-023/BR-081 (ADR-007). One soft tribute ("heart") per approved visitor photo per device.
+`visitorKeyHash` is `HMAC-SHA-256(IP_HASH_SECRET, gunita_visitor cookie)` — never the raw cookie,
+an IP, or a name. `tribute_contribution_visitor_unique` on `(contributionId, visitorKeyHash)`
+makes a repeat heart a no-op and serves the per-photo count (Methods EQ-013). Deleting a
+contribution cascades its tributes.
 
 ### `activity`
 Space/memorial-level audit trail: consent recorded/withdrawn, invites, source/item deletion,

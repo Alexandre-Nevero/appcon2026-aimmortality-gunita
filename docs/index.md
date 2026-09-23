@@ -29,7 +29,7 @@ disagree, the canonical owner wins until the other is reconciled.
 
 | Document | File | Status | Last updated |
 |---|---|---|---|
-| PRD | [prd.md](prd.md) | Approved v0.3 | 2026-09-23 |
+| PRD | [prd.md](prd.md) | Approved v0.4 | 2026-09-23 |
 | BRD | [brd.md](brd.md) | Draft v0.2 | 2026-09-23 |
 | Sitemap | [sitemap.md](sitemap.md) | Draft | 2026-09-23 |
 | User Flow | [user-flow.md](user-flow.md) | Draft | 2026-09-23 |
@@ -44,10 +44,12 @@ disagree, the canonical owner wins until the other is reconciled.
 | ADR-003 B2B2C Memorial package | [adr/ADR-003-b2b2c-memorial-package.md](adr/ADR-003-b2b2c-memorial-package.md) | Accepted | 2026-09-23 |
 | ADR-004 Single Next.js web app | [adr/ADR-004-single-web-app.md](adr/ADR-004-single-web-app.md) | Accepted | 2026-09-23 |
 | ADR-005 UI language fil / en | [adr/ADR-005-ui-language.md](adr/ADR-005-ui-language.md) | Accepted | 2026-09-23 |
+| ADR-007 Memorial photo memories | [adr/ADR-007-memorial-photo-memories.md](adr/ADR-007-memorial-photo-memories.md) | Accepted | 2026-09-23 |
+| Photo memories plan | [superpowers/plans/2026-09-23-photo-memories.md](superpowers/plans/2026-09-23-photo-memories.md) | Living | 2026-09-23 |
 
 ## 2. Light health check (advisory)
 
-- [x] Every PRD feature F-001–F-022 has QA cases or a manual plan.
+- [x] Every PRD feature F-001–F-023 has QA cases or a manual plan.
 - [x] Network-exposed surfaces declare auth/authz (System Design → Security & access).
 - [x] Displayed and decision-making numbers cite `EQ-###` (Methods).
 - [x] Platform is single web app (ADR-004); UI language locked (ADR-005).

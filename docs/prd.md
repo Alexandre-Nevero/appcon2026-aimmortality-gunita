@@ -1,10 +1,13 @@
 # PRD — GUNITA (Hackathon MVP)
 
 > **Purpose:** the WHAT, for the team. Primary build reference for AppCon 2026.
-> **Status:** Approved v0.3 · **Date:** 2026-09-23 · **Owner:** Alex
+> **Status:** Approved v0.4 · **Date:** 2026-09-23 · **Owner:** Alex
 > **Amended:** 2026-09-23 — single mobile-first web app ([ADR-004](adr/ADR-004-single-web-app.md);
 > supersedes ADR-001) and UI language Filipino (Taglish-friendly) or English
 > ([ADR-005](adr/ADR-005-ui-language.md)). No feature IDs cut.
+> **Amended:** 2026-09-23 — memorial photo memories with soft tributes
+> ([ADR-007](adr/ADR-007-memorial-photo-memories.md)); adds F-023, BR-081, UJ-009 and narrows the
+> social-features non-goal. Added after the finalized decision, by team decision.
 > **Traces back to:** `idea.md` (not yet written; this PRD defines the `F-###` IDs it should reuse).
 > **Traces forward to:** system design, data model, QA test plan, pitch deck.
 
@@ -252,6 +255,8 @@ Use cases:
   can remember them.
 - As a visitor, I want to share my memory with text, a photo, or a voice note without signing up,
   so I can contribute in a minute and go back to the gathering.
+- As a visitor, I want to scroll through the photos others shared and quietly leave a heart, so I
+  can remember together without typing a comment.
 
 ---
 
@@ -275,6 +280,8 @@ Use cases:
   confirmation and leaves.
 - **UJ-008 — Moderate:** the steward reviews pending visitor memories → approves or rejects →
   approved ones appear as About them.
+- **UJ-009 — Photo memories:** a visitor opens the recap → taps "See photo memories" → scrolls
+  approved visitor photos one at a time → leaves a heart on the ones they remember → goes back.
 
 ---
 
@@ -307,6 +314,7 @@ order is set by the golden path in §13.
 | F-020 | **Moderation:** the family approves visitor contributions before public display | P0 | Spam, hurtful, or wrong content on a memorial | Approve or reject |
 | F-021 | **Correction/deletion:** the family corrects or removes preserved material | P0 | Mistakes and regretted shares | Deletes cascade |
 | F-022 | **AI guardrail:** no deceased-person chatbot, first-person impersonation, synthetic voice, or invented memory | P0 | Grief-tech harms, hallucinated memories | Enforced in product design, prompts, and eval |
+| F-023 | **Photo memories:** approved visitor photos become a full-screen vertical scroll on the memorial, with a soft tribute heart | P0 (ADR-007) | Photos from the lamay stay buried in a long page; no quiet way to say "I remember this too" | No comments, no external share, no ranking |
 
 ### Hard cuts (not built for the hackathon)
 
@@ -472,6 +480,10 @@ These are product concepts, not a database schema. The data-model doc owns field
 
 - **BR-080** — No streaks, no gamification, and no notifications meant to bring grieving users
   back. The visitor confirmation screen ends the interaction. (From TALA's anti-engagement design.)
+- **BR-081** — On the memorial, a visitor may leave one tribute heart per approved visitor photo per
+  device and may remove it. The count shows only when it is at least one. Tributes never reorder,
+  rank, or filter photos, never trigger notifications, and are never logged as analytics events.
+  There are no comments and no share controls on photo memories (ADR-007).
 
 ---
 
@@ -602,6 +614,14 @@ These are product concepts, not a database schema. The data-model doc owns field
    family archive as About them.
 3. Reject: it is hidden from everyone except the steward's record.
 
+### Photo memories (F-023)
+1. From the recap, the visitor taps "See photo memories".
+2. Approved visitor photos show one per screen, oldest first, with the contributor's name,
+   relationship, words (unedited, BR-063), and the About them label.
+3. The visitor swipes up for the next photo and may tap the heart to remember it (tap again to
+   remove).
+4. Back returns to the recap. There is nothing else to do on this screen.
+
 ---
 
 ## Acceptance criteria
@@ -669,6 +689,11 @@ These are product concepts, not a database schema. The data-model doc owns field
 - **F-022:** there is no persona or chat-as-person mode anywhere; the AI evaluation set (§ AI
   quality bar) passes with zero first-person-as-the-person outputs and zero synthetic audio; no
   code path generates speech.
+- **F-023:** S-033 shows only contributions that are approved and have a photo, oldest first, with
+  the About them label; pending, rejected, text-only, and audio-only contributions never appear;
+  a heart can be added and removed and counts once per device; a count of zero shows no number;
+  there is no comment field, share control, or tribute-based ordering; S-032 has no link to S-033;
+  a disabled, unpublished, or unknown memorial shows S-034.
 
 ---
 
@@ -743,8 +768,8 @@ many were confirmed, corrected, or rejected, and report it honestly in the pitch
 5. Ask GUNITA "How did Lola make adobo?" → cited answer with her clip. Ask something not recorded →
    "Hindi pa alam" → add it as a question.
 6. Activate Memorial Mode → select content → publish recap → show the QR.
-7. Scan the QR on a phone → recap → share a memory → the steward approves → it appears labeled
-   About them.
+7. Scan the QR on a phone → recap → share a memory with a photo → the steward approves → it appears
+   labeled About them → open photo memories, swipe to it, and leave a heart.
 
 **Build order [interpretation]:** seed the fictional archive first so capture, Ask, and memorial
 work can proceed in parallel; then wire the golden path end to end on seed data; then replace seed
@@ -770,6 +795,7 @@ recordings, and text must be ones the team is allowed to publish.
 | Mistaken Memorial Mode activation | Distress; premature public exposure | Explicit confirmation, nothing public until publish, reversible |
 | Memorial not reachable from judges' phones | Demo & Delivery | Public HTTPS deployment tested from a mobile network |
 | Proprietary AI APIs vs. open-source rule | Submission compliance | Document each provider, how to substitute it, and how to run core flows |
+| Tribute counts read as a popularity contest | Hurtful at a wake | No ordering by hearts, zero shows nothing, no notifications (BR-081, ADR-007) |
 
 ---
 
@@ -782,8 +808,9 @@ recordings, and text must be ones the team is allowed to publish.
 - Family health history (Kalusugan) or any medical guidance.
 - Automatic death detection.
 - Face recognition or identifying people from photos by appearance.
-- Public social features: feeds, likes, followers, comments on visitor posts, streaks, engagement
-  notifications.
+- Public social features: feeds, followers, comments on visitor posts, streaks, engagement
+  notifications, and sharing memorial content to outside platforms. The only exception is the soft
+  tribute heart on approved visitor photos inside the memorial (F-023, BR-081, ADR-007).
 - Multiple featured people, multiple family spaces per steward, or multiple stewards.
 - Grief counseling or therapy claims.
 - Deciding which family account is objectively true. GUNITA labels disputes; it does not settle
@@ -889,4 +916,5 @@ the mechanics.
 | Moderation | F-020 | 14 |
 | Correction/deletion | F-021 | all |
 | AI guardrail | F-022 | all |
+| Photo memories (post-decision addition, ADR-007) | F-023 | 13 |
 | Hard cuts + Kalusugan cut | Non-goals | — |

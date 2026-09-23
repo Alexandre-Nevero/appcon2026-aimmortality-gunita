@@ -48,13 +48,13 @@ The featured loved one has no account. They take part on the steward's phone bro
 | **Processing pipeline** | Transcribe, extract items, read photos/documents, generate hints; state machine per source | Source status, items, hints | Groq, Gemini | F-004–F-007, F-014 |
 | **Retrieval module** | Embed reviewed items; vector search filtered by space, review state, and visibility | Embeddings | Gemini, pgvector | F-011, F-012 |
 | **Answer module** | Ask GUNITA: retrieve → abstain or generate → validate citations/quotes/pronouns → respond | Answer records | Groq (fallback Gemini), retrieval, core rules | F-012, F-013, F-022 |
-| **Memorial module** | Memorial Mode, selection, recap drafting, publish snapshot, QR, public page, contributions, moderation | Memorial token, recap snapshot, contributions | Groq (captions), Blob, `qrcode` | F-016–F-020 |
+| **Memorial module** | Memorial Mode, selection, recap drafting, publish snapshot, QR, public page, contributions, moderation, photo memories + tributes | Memorial token, recap snapshot, contributions, tributes | Groq (captions), Blob, `qrcode` | F-016–F-020, F-023 |
 | **i18n / copy** | `fil` and `en` string tables; space default + user override (ADR-005) | UI strings | core labels | BR-014 |
 | **Activity log** | Record Memorial Mode changes, deletions, reviews, moderation | Append-only log rows | Neon | BR-021, BR-051 |
 
 **Product entities** (column detail belongs to the data-model doc): `space`, `membership`,
 `consent`, `source`, `item` (+ `recipe_step`, `item_revision`), `person` (+ `item_person`),
-`question` (hint), `recap` (published snapshot), `contribution`, `activity`, `ai_call`, `event`.
+`question` (hint), `recap` (published snapshot), `contribution`, `tribute`, `activity`, `ai_call`, `event`.
 
 ---
 
@@ -130,6 +130,8 @@ QR = https://<web-domain>/m/<token>   (token: 128-bit random, base64url)
 
 Visitor: GET /m/:token  → server-rendered from snapshot + approved contributions (DB only, no AI)
          POST /api/m/:token/contributions (multipart ≤ 4 MB, rate-limited) → status = pending
+         GET /m/:token/memories → approved visitor photos, oldest first, + tribute counts (DB only, no AI)
+         POST /api/m/:token/tributes {contributionId, hearted} → one tribute per device cookie (ADR-007)
 Steward: approve / reject in moderation queue → approved appear under "Memories from others"
 Source/item deletion → cards referencing it are removed from the snapshot (BR-070)
 ```
@@ -182,9 +184,11 @@ content is logged there.
   before any query. Visibility is enforced in SQL through the access module (BR-033). Steward-only
   actions: consent, invites, review, visibility, deletion, Memorial Mode, curation, publish, QR,
   moderation.
-- **Public surface:** only `/m/:token` pages and `POST /api/m/:token/contributions`. They expose the
-  published snapshot and approved contributions only. A disabled QR or unpublished recap returns the
-  unavailable page. Pages send `noindex`.
+- **Public surface:** only `/m/:token` pages, `POST /api/m/:token/contributions`, and
+  `POST /api/m/:token/tributes`. They expose the published snapshot and approved contributions
+  only. A disabled QR, reversed Memorial Mode, or unpublished recap returns the unavailable page
+  (`isMemorialPublic` in `packages/core`). Pages send `noindex`. Tributes store only an HMAC of an
+  anonymous device cookie keyed by `IP_HASH_SECRET` (ADR-007).
 - **Uploads:** MIME sniffing plus allowlist (webm/mp4/m4a/mp3/wav, jpeg/png/heic→jpeg, pdf), 4 MB
   cap, random Blob pathnames, never executed.
 - **Abuse:** visitor submissions rate-limited per hashed IP per memorial (Methods EQ-010); pending
