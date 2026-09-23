@@ -13,6 +13,13 @@ const ALLOWED_MIME_BY_TYPE: Record<Exclude<SourceType, "text">, readonly string[
 
 const ALL_ALLOWED_MIME_TYPES = new Set(Object.values(ALLOWED_MIME_BY_TYPE).flat());
 
+// A real MediaRecorder output is typically codec-qualified (e.g. "audio/webm;codecs=opus"), not the
+// bare type this allowlist stores — strip parameters before comparing so a legitimate recording
+// isn't rejected just for stating which codec it used.
+function stripMimeParameters(mimeType: string): string {
+  return mimeType.split(";")[0]!.trim();
+}
+
 export interface UploadValidationError {
   code: "too_large" | "unsupported_type" | "mime_mismatch";
   message: string;
@@ -30,10 +37,11 @@ export function validateUpload(input: UploadValidationInput): UploadValidationEr
   if (input.byteSize > MAX_UPLOAD_BYTES) {
     return { code: "too_large", message: `File is ${input.byteSize} bytes; the cap is 4 MB.` };
   }
-  if (!ALL_ALLOWED_MIME_TYPES.has(input.mimeType)) {
+  const mimeType = stripMimeParameters(input.mimeType);
+  if (!ALL_ALLOWED_MIME_TYPES.has(mimeType)) {
     return { code: "unsupported_type", message: `MIME type "${input.mimeType}" isn't allowed.` };
   }
-  if (!ALLOWED_MIME_BY_TYPE[input.sourceType].includes(input.mimeType)) {
+  if (!ALLOWED_MIME_BY_TYPE[input.sourceType].includes(mimeType)) {
     return {
       code: "mime_mismatch",
       message: `MIME type "${input.mimeType}" doesn't match source type "${input.sourceType}".`,
@@ -43,11 +51,12 @@ export function validateUpload(input: UploadValidationInput): UploadValidationEr
 }
 
 export function sourceTypeFromMime(mimeType: string): Exclude<SourceType, "text"> | null {
+  const bareMimeType = stripMimeParameters(mimeType);
   const entries = Object.entries(ALLOWED_MIME_BY_TYPE) as Array<
     [Exclude<SourceType, "text">, readonly string[]]
   >;
   for (const [type, mimes] of entries) {
-    if (mimes.includes(mimeType)) return type;
+    if (mimes.includes(bareMimeType)) return type;
   }
   return null;
 }
