@@ -1,4 +1,4 @@
-# Visual direction — GUNITA
+# Visual direction — Himmel
 
 **Owner:** Gian (product design) · **Task:** TASK-004 · **Date:** 2026-09-23 (Asia/Manila)
 **Traces to:** ADR-005, BR-014, BR-080, F-010, F-015, F-017–F-019, F-022 · tokens `content/design-tokens.css` · copy `content/i18n/{fil,en}.json`
@@ -9,12 +9,12 @@
 
 ## 1. Mood
 
-**One sentence:** A quiet family table after dinner — paper, wood, candlelight — not a productivity app.
+**One sentence:** A quiet journey under a vast, open sky — memories, starlight, and the warm glow of a hero's campfire — not a productivity app.
 
 | Feel | Not |
 |---|---|
-| Warm paper, soft earth, terracotta accent | Cold slate / indigo SaaS |
-| Respectful, unhurried | Hype, streaks, “keep your streak!” |
+| Warm paper, soft celestial blue, sunset gold accent | Cold slate / indigo SaaS |
+| Respectful, unhurried, timeless | Hype, streaks, “keep your streak!” |
 | Elder-readable, large type | Dense dashboards |
 | Provenance always visible | Mystery AI prose without badges |
 | Memorial solemn but inviting | Horror, grief-porn, corporate funeral brochure |
@@ -29,13 +29,15 @@ Source of truth: `content/design-tokens.css`.
 
 | Role | Token | Notes |
 |---|---|---|
-| Page | `--color-bg` | Warm paper `#f7f1e8` |
-| Cards | `--color-bg-elevated` | Soft cream sheets |
-| Text | `--color-fg` / `--color-fg-muted` | Deep brown / secondary |
-| CTA | `--color-accent` | Terracotta only for primary actions |
-| Focus | `--shadow-focus` / `--color-focus-ring` | Warm brown, always visible |
+| Page (Light) | `--color-bg` | Off-white parchment (`#F7FAFC` / `#F7F1E8`) |
+| Page (Dark) | `--color-bg-dark` | Deep indigo night (`#1A202C`) |
+| Cards | `--color-bg-elevated` | Soft cream sheets / elevated surfaces |
+| Text | `--color-fg` / `--color-fg-muted` | High-legibility dark slates (`#2D3748`) / soft light grays (`#E2E8F0`) |
+| Primary (Celestial) | `--color-primary` | Himmel's signature sky/hair (`#2A4365` to `#4299E1`) |
+| CTA / Accent (Gold) | `--color-accent` | Sunset gold (`#D69E2E` to `#ECC94B`) for courage & warmth |
+| Focus | `--shadow-focus` / `--color-focus-ring` | Warm brown/gold, always visible |
 | Cover w/ photo | `--color-bg-inverse` + `[data-theme="memorial-cover"]` | Sparingly |
-| Cover w/o photo | `--color-bg-cover-fallback-*` + `[data-theme="memorial-cover-fallback"]` | Soft paper gradient |
+| Cover w/o photo | `--color-bg-cover-fallback-*` + `[data-theme="memorial-cover-fallback"]` | Soft celestial blue & paper gradient |
 
 **Badges:** soft green (`--color-badge-from-them-*`, verified), soft violet (about them), soft blue (AI / AI-written), soft amber (uncertain), soft rose (disputed). **Hindi pa alam** uses muted paper tokens — abstention, not error.
 
@@ -45,8 +47,8 @@ Do not invent neon greens or purple gradients. New semantic color → add a toke
 
 ## 3. Typography
 
-- **UI:** `--font-sans` (SF Pro / Segoe / Noto Sans + Tagalog).
-- **Memorial titles only:** `--font-serif` on S-030 cover name / closing line.
+- **Headers & Quotes:** `--font-serif` (Classic, elegant serif like Lora or Playfair Display) to evoke a storybook, timeless feel.
+- **Body & Data:** `--font-sans` (Clean, modern sans-serif like Inter or Plus Jakarta Sans for clarity and ease of reading).
 - **Elder floor:** body sentences use `--font-size-body` (18px). Dense chrome may use `--font-size-md` (16). Never shrink Filipino to fit.
 - **Interview (S-007):** `--font-size-3xl`, one question, generous padding.
 - **Line height:** `--line-height-relaxed` (1.65) for body.
@@ -109,13 +111,14 @@ Steward path (S-020–S-024): typed-name activation → select → recap editor 
 
 ---
 
-## 7. Motion budget
+## 7. Motion budget & The Sky View Dashboard
 
 Tokens: `--duration-*` (zeroed under `prefers-reduced-motion`).
 
-- **Allowed:** short fade/slide for sheets and toasts (≤ 200ms).
+- **Allowed:** short fade/slide for sheets and toasts (≤ 200ms). Dynamic background transitions matching time of day.
 - **Forbidden:** parallax, looping celebration, streaks, autoplaying carousels, grief “confetti”.
 - **Audio:** tap-to-play only.
+- **A. The Dashboard (The Sky View):** A minimalist home screen featuring a dynamic background gradient that shifts softly depending on the time of day (**Morning Blue** `#4299E1` -> **Sunset Amber** `#D69E2E` -> **Night Indigo** `#1A202C`).
 
 ---
 
@@ -129,7 +132,7 @@ Tokens: `--duration-*` (zeroed under `prefers-reduced-motion`).
 - Empty states gentle and actionable — never shaming.
 - Ship every user-visible string in both `fil` and `en` (BR-014).
 - Prefer po/opo in Filipino interview / consent prompts.
-- No-photo cover → soft paper gradient tokens (not blank white).
+- No-photo cover → soft celestial blue & paper gradient tokens (not blank white).
 
 ### Don’t
 
@@ -138,7 +141,7 @@ Tokens: `--duration-*` (zeroed under `prefers-reduced-motion`).
 - **No engagement nudges:** no streaks, gamification, or grief re-engagement pushes (BR-080). Thanks screen ends the visitor flow.
 - Don’t put AI paraphrase in quotation marks.
 - Don’t let visitor memories appear under “In their own words” / From them (BR-062).
-- Don’t use cold SaaS indigo, dark-mode-by-default family UI, or “AI purple glow”.
+- Don’t use cold SaaS indigo, dark-mode-by-default family UI, or harsh glowing highlights.
 - Don’t translate primary tab labels into Filipino — keep product names.
 
 ---
@@ -147,7 +150,7 @@ Tokens: `--duration-*` (zeroed under `prefers-reduced-motion`).
 
 | Call | Decision |
 |---|---|
-| Memorial cover with no photo | Soft paper gradient via `--color-bg-cover-fallback-*` and `[data-theme="memorial-cover-fallback"]`. Copy: `memorialPublic.coverNoPhotoAlt`. |
+| Memorial cover with no photo | Soft celestial blue and paper gradient via `--color-bg-cover-fallback-*` and `[data-theme="memorial-cover-fallback"]`. Copy: `memorialPublic.coverNoPhotoAlt`. |
 | S-022 projector framing | No separate desktop app. Center phone-width column at `--space-projector-max` (~480px) on warm paper for demo projection. |
 | fil tab labels | Keep Home / Capture / Archive / Ask as English product names in both locales; localize sentences and actions (Taglish + po/opo). |
 
