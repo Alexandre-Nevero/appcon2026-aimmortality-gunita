@@ -154,6 +154,9 @@ export const source = pgTable("source", {
   uploadedByMembershipId: uuid("uploaded_by_membership_id")
     .notNull()
     .references(() => membership.id, { onDelete: "restrict" }),
+  // Despite the name, this stores the full Blob URL (what fetch() and @vercel/blob's del() both
+  // need), not the store-relative pathname — kept as-is to avoid a migration for a naming fix;
+  // see apps/web/src/media/blob.ts.
   blobPathname: text("blob_pathname").notNull(),
   mimeType: text("mime_type").notNull(),
   byteSize: integer("byte_size").notNull(),

@@ -16,6 +16,7 @@ export async function uploadSourceFile(
   return { pathname: result.pathname, url: result.url };
 }
 
-export async function deleteSourceFile(pathname: string): Promise<void> {
-  await del(pathname);
+// Accepts either the full URL or the store-relative pathname — @vercel/blob's del() supports both.
+export async function deleteSourceFile(urlOrPathname: string): Promise<void> {
+  await del(urlOrPathname);
 }

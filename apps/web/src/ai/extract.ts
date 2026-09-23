@@ -5,7 +5,7 @@ import {
   recipeStepKindSchema,
 } from "@gunita/core";
 import type { LanguageModel } from "ai";
-import { generateObject } from "ai";
+import { APICallError, generateObject } from "ai";
 import { z } from "zod";
 
 const recipeStepFixtureSchema = z.object({
@@ -60,6 +60,25 @@ export async function extractItems(
     prompt: `${EXTRACTION_PROMPT}\n\nSegments:\n${segmentsText}`,
   });
   return object;
+}
+
+// System Design's Groq→Gemini fallback ("on 429/timeout → Gemini Flash-Lite with the same schema").
+// Retries once, with `fallbackModel`, only on a retryable provider error (rate limit, timeout,
+// 5xx) — a genuine extraction failure (e.g. a schema validation error) still surfaces immediately
+// rather than being retried against a second model that would hit the same problem.
+export async function extractItemsWithFallback(
+  primaryModel: LanguageModel,
+  fallbackModel: LanguageModel,
+  segments: ExtractionSegment[],
+): Promise<ExtractionResult> {
+  try {
+    return await extractItems(primaryModel, segments);
+  } catch (error) {
+    if (APICallError.isInstance(error) && error.isRetryable) {
+      return extractItems(fallbackModel, segments);
+    }
+    throw error;
+  }
 }
 
 export interface ValidatedRecipeStep {

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { MAX_UPLOAD_BYTES, sourceTypeFromMime, validateUpload } from "../src/media/validate";
+import {
+  MAX_UPLOAD_BYTES,
+  sniffFileKind,
+  sourceTypeFromMime,
+  validateUpload,
+} from "../src/media/validate";
 
 // TC-010 — Upload validation
 describe("validateUpload", () => {
@@ -43,5 +48,23 @@ describe("sourceTypeFromMime", () => {
 
   it("returns null for an unrecognized MIME type", () => {
     expect(sourceTypeFromMime("application/x-msdownload")).toBeNull();
+  });
+});
+
+// TC-010 — a renamed file (e.g. `.exe` saved as `.webm`) is caught by its actual bytes
+describe("sniffFileKind", () => {
+  it("identifies real formats by their magic bytes", () => {
+    expect(sniffFileKind(new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34]))).toBe(
+      "document",
+    ); // %PDF-1.4
+    expect(sniffFileKind(new Uint8Array([0xff, 0xd8, 0xff, 0xe0]))).toBe("photo"); // JPEG
+    expect(sniffFileKind(new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a]))).toBe("photo"); // PNG
+    expect(sniffFileKind(new Uint8Array([0x1a, 0x45, 0xdf, 0xa3, 0x01]))).toBe("audio"); // WebM
+  });
+
+  it("doesn't recognize an executable's bytes as any allowed kind", () => {
+    // MZ header — a Windows executable, regardless of what Content-Type the client claims.
+    const exeBytes = new Uint8Array([0x4d, 0x5a, 0x90, 0x00, 0x03, 0x00]);
+    expect(sniffFileKind(exeBytes)).toBeNull();
   });
 });

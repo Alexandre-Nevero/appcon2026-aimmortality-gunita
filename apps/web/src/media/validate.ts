@@ -42,15 +42,45 @@ export function validateUpload(input: UploadValidationInput): UploadValidationEr
   return null;
 }
 
-// A renamed file (e.g. `.exe` saved as `.webm`) still declares its real MIME type via magic-byte
-// sniffing done by the caller (Vercel Blob / the platform's file-type detection) before this runs;
-// this function only enforces the allowlist against whatever MIME type was actually sniffed.
 export function sourceTypeFromMime(mimeType: string): Exclude<SourceType, "text"> | null {
   const entries = Object.entries(ALLOWED_MIME_BY_TYPE) as Array<
     [Exclude<SourceType, "text">, readonly string[]]
   >;
   for (const [type, mimes] of entries) {
     if (mimes.includes(mimeType)) return type;
+  }
+  return null;
+}
+
+function bytesStartWith(bytes: Uint8Array, signature: number[], offset = 0): boolean {
+  if (bytes.length < offset + signature.length) return false;
+  return signature.every((byte, i) => bytes[offset + i] === byte);
+}
+
+function readAscii(bytes: Uint8Array, offset: number, length: number): string {
+  if (bytes.length < offset + length) return "";
+  return String.fromCharCode(...bytes.subarray(offset, offset + length));
+}
+
+// A renamed file (e.g. an `.exe` saved as `.webm`) declares whatever Content-Type the client sends,
+// which sourceTypeFromMime/validateUpload can't see through on their own — System Design requires
+// "MIME sniffing plus allowlist". This checks the file's actual leading bytes against known format
+// signatures instead of trusting the declared type. Coarse (family-level, not exact codec), which
+// is enough to catch a mismatched/spoofed upload without needing a full file-type library.
+export function sniffFileKind(bytes: Uint8Array): Exclude<SourceType, "text"> | null {
+  if (bytesStartWith(bytes, [0x25, 0x50, 0x44, 0x46])) return "document"; // %PDF
+  if (bytesStartWith(bytes, [0xff, 0xd8, 0xff])) return "photo"; // JPEG
+  if (bytesStartWith(bytes, [0x89, 0x50, 0x4e, 0x47])) return "photo"; // PNG
+  if (bytesStartWith(bytes, [0x1a, 0x45, 0xdf, 0xa3])) return "audio"; // WebM/EBML
+  if (bytesStartWith(bytes, [0x49, 0x44, 0x33])) return "audio"; // MP3 (ID3 tag)
+  if (bytes.length >= 2 && bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0) return "audio"; // MP3 frame sync
+  if (bytesStartWith(bytes, [0x52, 0x49, 0x46, 0x46]) && readAscii(bytes, 8, 4) === "WAVE") {
+    return "audio"; // RIFF....WAVE
+  }
+  if (readAscii(bytes, 4, 4) === "ftyp") {
+    const brand = readAscii(bytes, 8, 4).trim();
+    const heicBrands = ["heic", "heix", "heim", "heis", "hevc", "hevx", "mif1", "msf1"];
+    return heicBrands.includes(brand) ? "photo" : "audio"; // mp4/m4a family otherwise
   }
   return null;
 }
