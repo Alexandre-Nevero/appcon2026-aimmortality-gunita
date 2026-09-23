@@ -1,6 +1,6 @@
 {
-  "id": "7d0c52d1-ffaf-4db5-bac5-23a2ddf2908e",
-  "prevId": "690247ca-ec00-458e-85ea-0f2a251ce2ba",
+  "id": "a2b31419-1e8f-4a4d-9119-f0ac71844e52",
+  "prevId": "3d532153-7652-4979-9188-cb6ff3a72d8a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -2051,6 +2051,7 @@
         "invite_sent",
         "source_deleted",
         "item_deleted",
+        "item_visibility_changed",
         "contribution_approved",
         "contribution_rejected",
         "memorial_activated",
