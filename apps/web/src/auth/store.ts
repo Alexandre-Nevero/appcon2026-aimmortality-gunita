@@ -1,268 +1,400 @@
 import { randomBytes, randomUUID } from "node:crypto";
 
-import type { MemoryDB } from "better-auth/adapters/memory";
+import type { Locale, MembershipRole, Visibility } from "@gunita/core";
+import { and, eq, sql } from "drizzle-orm";
+import { z } from "zod";
 
 import { ApiError } from "@/src/auth/errors";
+import { db } from "@/src/db";
+import {
+  activity,
+  authUser,
+  authVerification,
+  consent,
+  membership,
+  person,
+  source,
+  space,
+} from "@/src/db/schema";
+import { uploadSourceFile } from "@/src/media/blob";
 
-export type SpaceLocale = "fil" | "en";
-export type MembershipRole = "steward" | "family";
-export type Visibility = "private" | "family" | "memorial";
-export type ConsentEvidenceType = "voice" | "written";
+const inviteCodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const inviteCodeLength = 10;
+const inviteIdentifierPrefix = "invite:";
 
-export interface AuthUserRecord {
-  id: string;
-  email: string;
-  name: string;
-  image?: string | null;
-  emailVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+const consentArtifactSchema = z.object({
+  consent: z.object({
+    evidenceType: z.enum(["voice", "written"]),
+    transcript: z.string(),
+    mediaReferenceId: z.string().nullable(),
+    familyVisibilityDefault: z.enum(["family", "private"]),
+    stewardAttestation: z.boolean(),
+  }),
+});
+
+type MembershipRow = typeof membership.$inferSelect;
+type SpaceRow = typeof space.$inferSelect;
+type SourceRow = typeof source.$inferSelect;
+type ConsentRow = typeof consent.$inferSelect;
+type AuthUserRow = typeof authUser.$inferSelect;
+type AuthVerificationRow = typeof authVerification.$inferSelect;
+
+type ConsentEvidenceType = "voice" | "written";
+
+const invitePayloadSchema = z.object({
+  spaceId: z.string().uuid(),
+  role: z.literal("family"),
+  invitedByMembershipId: z.string().uuid(),
+  createdByUserId: z.string(),
+});
+
+type InvitePayload = z.infer<typeof invitePayloadSchema>;
+
+function now(): Date {
+  return new Date();
 }
 
-export interface SpaceRecord {
-  id: string;
-  featuredPersonName: string;
-  locale: SpaceLocale;
-  createdAt: string;
-  createdByUserId: string;
+function toIso(value: Date | null | undefined): string | null {
+  return value ? value.toISOString() : null;
 }
 
-export interface MembershipRecord {
-  id: string;
-  spaceId: string;
-  userId: string;
-  role: MembershipRole;
-  createdAt: string;
+function normalizeInviteCode(code: string): string {
+  return code.trim().toUpperCase();
 }
 
-export interface InviteRecord {
-  id: string;
-  spaceId: string;
-  role: "family";
-  code: string;
-  createdAt: string;
-  createdByUserId: string;
-  expiresAt: string;
-  acceptedAt: string | null;
-  acceptedByUserId: string | null;
-  revokedAt: string | null;
-}
-
-export interface ConsentSourceRecord {
-  id: string;
-  spaceId: string;
-  visibility: "private";
-  category: "consent";
-  evidenceType: ConsentEvidenceType;
-  text: string;
-  mediaReferenceId: string | null;
-  createdAt: string;
-  createdByUserId: string;
-}
-
-export interface ConsentRecord {
-  id: string;
-  spaceId: string;
-  evidenceSourceId: string;
-  participationApproved: boolean;
-  aiProcessingAllowed: boolean;
-  familyVisibilityDefault: "family" | "private";
-  memorialUseAllowed: boolean;
-  voiceClipsAllowed: boolean;
-  stewardAttestation: boolean;
-  recordedAt: string;
-  recordedByUserId: string;
-  withdrawnAt: string | null;
-  withdrawalReason: string | null;
-}
-
-export interface DomainStore extends MemoryDB {
-  user: AuthUserRecord[];
-  session: Record<string, unknown>[];
-  account: Record<string, unknown>[];
-  verification: Record<string, unknown>[];
-  spaces: SpaceRecord[];
-  memberships: MembershipRecord[];
-  invites: InviteRecord[];
-  consents: ConsentRecord[];
-  sources: ConsentSourceRecord[];
-}
-
-declare global {
-  // eslint-disable-next-line no-var
-  var __gunitaAuthStore: DomainStore | undefined;
-}
-
-function createStore(): DomainStore {
-  return {
-    user: [],
-    session: [],
-    account: [],
-    verification: [],
-    spaces: [],
-    memberships: [],
-    invites: [],
-    consents: [],
-    sources: [],
-  };
-}
-
-export const authStore = globalThis.__gunitaAuthStore ?? createStore();
-
-if (!globalThis.__gunitaAuthStore) {
-  globalThis.__gunitaAuthStore = authStore;
-}
-
-function nowIso(): string {
-  return new Date().toISOString();
-}
-
-function generateId(prefix: string): string {
-  return `${prefix}_${randomUUID()}`;
+function inviteIdentifier(code: string): string {
+  return `${inviteIdentifierPrefix}${normalizeInviteCode(code)}`;
 }
 
 function createInviteCode(): string {
-  return randomBytes(6).toString("base64url").toUpperCase();
+  let code = "";
+
+  while (code.length < inviteCodeLength) {
+    for (const byte of randomBytes(inviteCodeLength)) {
+      const unbiasedMax = Math.floor(256 / inviteCodeAlphabet.length) * inviteCodeAlphabet.length;
+
+      if (byte >= unbiasedMax) {
+        continue;
+      }
+
+      code += inviteCodeAlphabet[byte % inviteCodeAlphabet.length];
+
+      if (code.length === inviteCodeLength) {
+        return code;
+      }
+    }
+  }
+
+  return code;
 }
 
-export function resetAuthStore(): void {
-  authStore.user.length = 0;
-  authStore.session.length = 0;
-  authStore.account.length = 0;
-  authStore.verification.length = 0;
-  authStore.spaces.length = 0;
-  authStore.memberships.length = 0;
-  authStore.invites.length = 0;
-  authStore.consents.length = 0;
-  authStore.sources.length = 0;
+function parseConsentArtifact(row: SourceRow | undefined) {
+  const parsed = consentArtifactSchema.safeParse(row?.artifactContext);
+
+  return parsed.success ? parsed.data.consent : null;
 }
 
-export function findUserByEmail(email: string): AuthUserRecord | undefined {
-  const normalizedEmail = email.trim().toLowerCase();
+function parseInvitePayload(row: AuthVerificationRow): InvitePayload {
+  let parsedValue: unknown;
 
-  return authStore.user.find((user) => user.email.toLowerCase() === normalizedEmail);
-}
-
-export function findUserById(userId: string): AuthUserRecord | undefined {
-  return authStore.user.find((user) => user.id === userId);
-}
-
-export function findSpaceById(spaceId: string): SpaceRecord | undefined {
-  return authStore.spaces.find((space) => space.id === spaceId);
-}
-
-export function findMembership(spaceId: string, userId: string): MembershipRecord | undefined {
-  return authStore.memberships.find((membership) => membership.spaceId === spaceId && membership.userId === userId);
-}
-
-export function getMembershipForUser(userId: string): MembershipRecord | undefined {
-  return authStore.memberships.find((membership) => membership.userId === userId);
-}
-
-export function listMembershipsForSpace(spaceId: string): MembershipRecord[] {
-  return authStore.memberships.filter((membership) => membership.spaceId === spaceId);
-}
-
-export function createSpaceForSteward(input: {
-  featuredPersonName: string;
-  locale: SpaceLocale;
-  userId: string;
-}): { space: SpaceRecord; membership: MembershipRecord } {
-  const existingMembership = getMembershipForUser(input.userId);
-
-  if (existingMembership) {
+  try {
+    parsedValue = JSON.parse(row.value);
+  } catch (error) {
     throw new ApiError(
-      409,
-      "SPACE_ALREADY_EXISTS",
-      "A user may only belong to one family space in the MVP.",
+      500,
+      "INVITE_DATA_INVALID",
+      "Stored invite data is invalid JSON.",
+      error instanceof Error ? { cause: error.message } : undefined,
     );
   }
 
-  const space: SpaceRecord = {
-    id: generateId("space"),
-    featuredPersonName: input.featuredPersonName,
-    locale: input.locale,
-    createdAt: nowIso(),
-    createdByUserId: input.userId,
-  };
+  const parsed = invitePayloadSchema.safeParse(parsedValue);
 
-  const membership: MembershipRecord = {
-    id: generateId("membership"),
-    spaceId: space.id,
-    userId: input.userId,
-    role: "steward",
-    createdAt: nowIso(),
-  };
-
-  authStore.spaces.push(space);
-  authStore.memberships.push(membership);
-
-  return { space, membership };
-}
-
-export function requireStewardMembership(spaceId: string, userId: string): MembershipRecord {
-  const membership = findMembership(spaceId, userId);
-
-  if (!membership) {
-    throw new ApiError(403, "SPACE_ACCESS_DENIED", "You are not a member of this family space.");
+  if (!parsed.success) {
+    throw new ApiError(
+      500,
+      "INVITE_DATA_INVALID",
+      "Stored invite data failed validation.",
+      parsed.error.flatten(),
+    );
   }
 
-  if (membership.role !== "steward") {
-    throw new ApiError(403, "STEWARD_REQUIRED", "Only the steward can perform this action.");
-  }
-
-  return membership;
+  return parsed.data;
 }
 
-export function createInviteForSpace(input: {
-  spaceId: string;
-  createdByUserId: string;
-  expiresInDays: number;
-}): InviteRecord {
-  const expiresAt = new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000).toISOString();
+function mapSpace(spaceRow: SpaceRow, featuredPersonName: string, createdByUserId: string) {
+  return {
+    id: spaceRow.id,
+    featuredPersonName,
+    locale: spaceRow.locale,
+    createdAt: spaceRow.createdAt.toISOString(),
+    updatedAt: spaceRow.updatedAt.toISOString(),
+    createdByUserId,
+  };
+}
 
-  const invite: InviteRecord = {
-    id: generateId("invite"),
-    spaceId: input.spaceId,
-    role: "family",
-    code: createInviteCode(),
-    createdAt: nowIso(),
-    createdByUserId: input.createdByUserId,
-    expiresAt,
+function mapMembership(row: MembershipRow) {
+  return {
+    id: row.id,
+    spaceId: row.spaceId,
+    userId: row.userId,
+    role: row.role,
+    createdAt: row.createdAt.toISOString(),
+    invitedAt: toIso(row.invitedAt),
+    joinedAt: toIso(row.joinedAt),
+    invitedByMembershipId: row.invitedByMembershipId,
+  };
+}
+
+function mapInvite(code: string, verificationRow: AuthVerificationRow, payload: InvitePayload) {
+  return {
+    id: verificationRow.id,
+    spaceId: payload.spaceId,
+    role: payload.role,
+    code,
+    createdAt: verificationRow.createdAt.toISOString(),
+    createdByUserId: payload.createdByUserId,
+    expiresAt: verificationRow.expiresAt.toISOString(),
     acceptedAt: null,
     acceptedByUserId: null,
     revokedAt: null,
   };
-
-  authStore.invites.push(invite);
-
-  return invite;
 }
 
-export function validateInviteCode(code: string): InviteRecord {
-  const normalizedCode = code.trim().toUpperCase();
-  const invite = authStore.invites.find((candidate) => candidate.code === normalizedCode);
+function mapEvidenceSource(row: SourceRow) {
+  const consentArtifact = parseConsentArtifact(row);
+
+  return {
+    id: row.id,
+    spaceId: row.spaceId,
+    visibility: row.visibility,
+    evidenceType: consentArtifact?.evidenceType ?? "written",
+    text: consentArtifact?.transcript ?? "",
+    mediaReferenceId: consentArtifact?.mediaReferenceId ?? null,
+    createdAt: row.createdAt.toISOString(),
+    createdByMembershipId: row.uploadedByMembershipId,
+    blobPathname: row.blobPathname,
+    mimeType: row.mimeType,
+    byteSize: row.byteSize,
+  };
+}
+
+function mapConsent(row: ConsentRow, evidenceSourceRow: SourceRow | undefined) {
+  const consentArtifact = parseConsentArtifact(evidenceSourceRow);
+
+  return {
+    id: row.id,
+    spaceId: row.spaceId,
+    evidenceSourceId: row.evidenceSourceId,
+    participationApproved: row.participationConsented,
+    aiProcessingAllowed: row.aiProcessingConsented,
+    familyVisibilityDefault: consentArtifact?.familyVisibilityDefault ?? "family",
+    memorialUseAllowed: row.memorialUseAllowed,
+    voiceClipsAllowed: row.voiceClipsAllowed,
+    stewardAttestation: consentArtifact?.stewardAttestation ?? true,
+    recordedAt: toIso(row.recordedAt),
+    recordedByMembershipId: row.recordedByMembershipId,
+    withdrawnAt: toIso(row.withdrawnAt),
+    withdrawalReason: row.withdrawnReason,
+  };
+}
+
+async function findInviteByCode(code: string): Promise<{
+  code: string;
+  payload: InvitePayload;
+  verification: AuthVerificationRow;
+} | null> {
+  const normalizedCode = normalizeInviteCode(code);
+  const verificationRow = await db.query.authVerification.findFirst({
+    where: eq(authVerification.identifier, inviteIdentifier(normalizedCode)),
+  });
+
+  if (!verificationRow) {
+    return null;
+  }
+
+  return {
+    code: normalizedCode,
+    payload: parseInvitePayload(verificationRow),
+    verification: verificationRow,
+  };
+}
+
+async function createUniqueInviteCode(): Promise<string> {
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const code = createInviteCode();
+    const existing = await db.query.authVerification.findFirst({
+      where: eq(authVerification.identifier, inviteIdentifier(code)),
+    });
+
+    if (!existing) {
+      return code;
+    }
+  }
+
+  throw new ApiError(500, "INVITE_CODE_GENERATION_FAILED", "Unable to generate a unique invite code.");
+}
+
+export async function findUserByEmail(email: string): Promise<AuthUserRow | undefined> {
+  const normalizedEmail = email.trim().toLowerCase();
+  const [userRow] = await db
+    .select()
+    .from(authUser)
+    .where(sql`lower(${authUser.email}) = ${normalizedEmail}`)
+    .limit(1);
+
+  return userRow;
+}
+
+export async function findUserById(userId: string): Promise<AuthUserRow | undefined> {
+  return db.query.authUser.findFirst({ where: eq(authUser.id, userId) });
+}
+
+export async function findSpaceById(spaceId: string): Promise<SpaceRow | undefined> {
+  return db.query.space.findFirst({ where: eq(space.id, spaceId) });
+}
+
+export async function findMembership(
+  spaceId: string,
+  userId: string,
+): Promise<MembershipRow | undefined> {
+  return db.query.membership.findFirst({
+    where: and(eq(membership.spaceId, spaceId), eq(membership.userId, userId)),
+  });
+}
+
+export async function getMembershipForUser(userId: string): Promise<MembershipRow | undefined> {
+  return db.query.membership.findFirst({ where: eq(membership.userId, userId) });
+}
+
+export async function listMembershipsForSpace(spaceId: string): Promise<MembershipRow[]> {
+  return db.query.membership.findMany({ where: eq(membership.spaceId, spaceId) });
+}
+
+export async function createSpaceForSteward(input: {
+  featuredPersonName: string;
+  locale: Locale;
+  userId: string;
+}) {
+  return db.transaction(async (tx) => {
+    const existingMembership = await tx.query.membership.findFirst({
+      where: eq(membership.userId, input.userId),
+    });
+
+    if (existingMembership) {
+      throw new ApiError(
+        409,
+        "SPACE_ALREADY_EXISTS",
+        "A user may only belong to one family space in the MVP.",
+      );
+    }
+
+    const [spaceRow] = await tx
+      .insert(space)
+      .values({
+        name: input.featuredPersonName,
+        locale: input.locale,
+      })
+      .returning();
+
+    await tx.insert(person).values({
+      spaceId: spaceRow.id,
+      displayName: input.featuredPersonName,
+      aliases: [],
+      isFeatured: true,
+    });
+
+    const [membershipRow] = await tx
+      .insert(membership)
+      .values({
+        spaceId: spaceRow.id,
+        userId: input.userId,
+        role: "steward",
+        joinedAt: now(),
+      })
+      .returning();
+
+    return {
+      space: mapSpace(spaceRow, input.featuredPersonName, input.userId),
+      membership: mapMembership(membershipRow),
+    };
+  });
+}
+
+export async function requireStewardMembership(
+  spaceId: string,
+  userId: string,
+): Promise<MembershipRow> {
+  const membershipRow = await findMembership(spaceId, userId);
+
+  if (!membershipRow) {
+    throw new ApiError(403, "SPACE_ACCESS_DENIED", "You are not a member of this family space.");
+  }
+
+  if (membershipRow.role !== "steward") {
+    throw new ApiError(403, "STEWARD_REQUIRED", "Only the steward can perform this action.");
+  }
+
+  return membershipRow;
+}
+
+export async function createInviteForSpace(input: {
+  spaceId: string;
+  createdByMembership: MembershipRow;
+  expiresInDays: number;
+}) {
+  const code = await createUniqueInviteCode();
+  const expiresAt = new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000);
+  const payload: InvitePayload = {
+    spaceId: input.spaceId,
+    role: "family",
+    invitedByMembershipId: input.createdByMembership.id,
+    createdByUserId: input.createdByMembership.userId,
+  };
+
+  const [verificationRow] = await db
+    .insert(authVerification)
+    .values({
+      id: randomUUID(),
+      identifier: inviteIdentifier(code),
+      value: JSON.stringify(payload),
+      expiresAt,
+    })
+    .returning();
+
+  await db.insert(activity).values({
+    spaceId: input.spaceId,
+    membershipId: input.createdByMembership.id,
+    type: "invite_sent",
+    targetType: "verification",
+    targetId: verificationRow.id,
+    metadata: {
+      expiresAt: expiresAt.toISOString(),
+    },
+  });
+
+  return mapInvite(code, verificationRow, payload);
+}
+
+export async function validateInviteCode(code: string) {
+  const invite = await findInviteByCode(code);
 
   if (!invite) {
     throw new ApiError(400, "INVALID_INVITE_CODE", "Invalid invite code.");
   }
 
-  if (invite.revokedAt) {
-    throw new ApiError(400, "INVALID_INVITE_CODE", "This invite code is no longer active.");
-  }
-
-  if (Date.parse(invite.expiresAt) <= Date.now()) {
+  if (invite.verification.expiresAt <= now()) {
     throw new ApiError(400, "INVALID_INVITE_CODE", "This invite code has expired.");
   }
 
   return invite;
 }
 
-export function acceptInviteForUser(code: string, userId: string): InviteRecord {
-  const invite = validateInviteCode(code);
-  const existingMembership = getMembershipForUser(userId);
+export async function acceptInviteForUser(code: string, userId: string) {
+  const invite = await validateInviteCode(code);
+  const existingMembership = await getMembershipForUser(userId);
 
-  if (existingMembership && existingMembership.spaceId !== invite.spaceId) {
+  if (existingMembership && existingMembership.spaceId !== invite.payload.spaceId) {
     throw new ApiError(
       409,
       "SPACE_MEMBERSHIP_EXISTS",
@@ -271,30 +403,28 @@ export function acceptInviteForUser(code: string, userId: string): InviteRecord 
   }
 
   if (!existingMembership) {
-    authStore.memberships.push({
-      id: generateId("membership"),
-      spaceId: invite.spaceId,
+    await db.insert(membership).values({
+      spaceId: invite.payload.spaceId,
       userId,
-      role: "family",
-      createdAt: nowIso(),
+      role: invite.payload.role,
+      invitedByMembershipId: invite.payload.invitedByMembershipId,
+      invitedAt: invite.verification.createdAt,
+      joinedAt: now(),
     });
   }
 
-  if (!invite.acceptedAt) {
-    invite.acceptedAt = nowIso();
-    invite.acceptedByUserId = userId;
-  }
+  await db.delete(authVerification).where(eq(authVerification.id, invite.verification.id));
 
   return invite;
 }
 
-export function findConsentBySpaceId(spaceId: string): ConsentRecord | undefined {
-  return authStore.consents.find((consent) => consent.spaceId === spaceId);
+export async function findConsentBySpaceId(spaceId: string): Promise<ConsentRow | undefined> {
+  return db.query.consent.findFirst({ where: eq(consent.spaceId, spaceId) });
 }
 
-export function recordConsentForSpace(input: {
+export async function recordConsentForSpace(input: {
   spaceId: string;
-  userId: string;
+  recordedByMembership: MembershipRow;
   evidenceType: ConsentEvidenceType;
   evidenceText: string;
   evidenceMediaReferenceId?: string | undefined;
@@ -304,74 +434,158 @@ export function recordConsentForSpace(input: {
   memorialUseAllowed: boolean;
   voiceClipsAllowed: boolean;
   stewardAttestation: boolean;
-}): { consent: ConsentRecord; evidenceSource: ConsentSourceRecord } {
-  const evidenceSource: ConsentSourceRecord = {
-    id: generateId("source"),
-    spaceId: input.spaceId,
-    visibility: "private",
-    category: "consent",
-    evidenceType: input.evidenceType,
-    text: input.evidenceText,
-    mediaReferenceId: input.evidenceMediaReferenceId ?? null,
-    createdAt: nowIso(),
-    createdByUserId: input.userId,
-  };
+}) {
+  const evidenceCreatedAt = now();
+  let evidenceBlobPathname: string;
+  let evidenceMimeType: string;
+  let evidenceByteSize: number;
 
-  authStore.sources.push(evidenceSource);
-
-  const existingConsent = findConsentBySpaceId(input.spaceId);
-  const updatedConsent: ConsentRecord = {
-    id: existingConsent?.id ?? generateId("consent"),
-    spaceId: input.spaceId,
-    evidenceSourceId: evidenceSource.id,
-    participationApproved: input.participationApproved,
-    aiProcessingAllowed: input.aiProcessingAllowed,
-    familyVisibilityDefault: input.familyVisibilityDefault,
-    memorialUseAllowed: input.memorialUseAllowed,
-    voiceClipsAllowed: input.voiceClipsAllowed,
-    stewardAttestation: input.stewardAttestation,
-    recordedAt: nowIso(),
-    recordedByUserId: input.userId,
-    withdrawnAt: null,
-    withdrawalReason: null,
-  };
-
-  if (existingConsent) {
-    Object.assign(existingConsent, updatedConsent);
+  if (input.evidenceType === "voice") {
+    evidenceBlobPathname = input.evidenceMediaReferenceId!;
+    evidenceMimeType = "audio/webm";
+    evidenceByteSize = 0;
   } else {
-    authStore.consents.push(updatedConsent);
+    const { url } = await uploadSourceFile(
+      input.spaceId,
+      `consent-${randomUUID()}.txt`,
+      input.evidenceText,
+      "text/plain",
+    );
+
+    evidenceBlobPathname = url;
+    evidenceMimeType = "text/plain";
+    evidenceByteSize = Buffer.byteLength(input.evidenceText, "utf-8");
   }
 
+  const [evidenceSourceRow] = await db
+    .insert(source)
+    .values({
+      spaceId: input.spaceId,
+      type: input.evidenceType === "voice" ? "audio" : "text",
+      status: "ready",
+      origin: "from_them",
+      visibility: "private",
+      uploadedByMembershipId: input.recordedByMembership.id,
+      blobPathname: evidenceBlobPathname,
+      mimeType: evidenceMimeType,
+      byteSize: evidenceByteSize,
+      artifactContext: {
+        consent: {
+          evidenceType: input.evidenceType,
+          transcript: input.evidenceText,
+          mediaReferenceId: input.evidenceMediaReferenceId ?? null,
+          familyVisibilityDefault: input.familyVisibilityDefault,
+          stewardAttestation: input.stewardAttestation,
+        },
+      },
+      createdAt: evidenceCreatedAt,
+      updatedAt: evidenceCreatedAt,
+    })
+    .returning();
+
+  const existingConsent = await findConsentBySpaceId(input.spaceId);
+  const recordedAt = now();
+  let consentRow: ConsentRow;
+
+  if (existingConsent) {
+    const [updatedConsentRow] = await db
+      .update(consent)
+      .set({
+        participationConsented: input.participationApproved,
+        aiProcessingConsented: input.aiProcessingAllowed,
+        memorialUseAllowed: input.memorialUseAllowed,
+        voiceClipsAllowed: input.voiceClipsAllowed,
+        evidenceSourceId: evidenceSourceRow.id,
+        recordedAt,
+        recordedByMembershipId: input.recordedByMembership.id,
+        withdrawnAt: null,
+        withdrawnReason: null,
+      })
+      .where(eq(consent.id, existingConsent.id))
+      .returning();
+
+    consentRow = updatedConsentRow;
+  } else {
+    const [createdConsentRow] = await db
+      .insert(consent)
+      .values({
+        spaceId: input.spaceId,
+        participationConsented: input.participationApproved,
+        aiProcessingConsented: input.aiProcessingAllowed,
+        memorialUseAllowed: input.memorialUseAllowed,
+        voiceClipsAllowed: input.voiceClipsAllowed,
+        evidenceSourceId: evidenceSourceRow.id,
+        recordedAt,
+        recordedByMembershipId: input.recordedByMembership.id,
+      })
+      .returning();
+
+    consentRow = createdConsentRow;
+  }
+
+  await db.insert(activity).values({
+    spaceId: input.spaceId,
+    membershipId: input.recordedByMembership.id,
+    type: "consent_recorded",
+    targetType: "consent",
+    targetId: consentRow.id,
+    metadata: {
+      evidenceSourceId: evidenceSourceRow.id,
+    },
+  });
+
   return {
-    consent: existingConsent ?? updatedConsent,
-    evidenceSource,
+    consent: mapConsent(consentRow, evidenceSourceRow),
+    evidenceSource: mapEvidenceSource(evidenceSourceRow),
   };
 }
 
-export function withdrawConsentForSpace(input: {
+export async function withdrawConsentForSpace(input: {
   spaceId: string;
+  membershipId: string;
   reason?: string | undefined;
-}): ConsentRecord {
-  const consent = findConsentBySpaceId(input.spaceId);
+}) {
+  const consentRow = await findConsentBySpaceId(input.spaceId);
 
-  if (!consent || consent.withdrawnAt) {
+  if (!consentRow || consentRow.withdrawnAt) {
     throw new ApiError(409, "CONSENT_NOT_ACTIVE", "There is no active consent to withdraw.");
   }
 
-  consent.withdrawnAt = nowIso();
-  consent.withdrawalReason = input.reason ?? null;
+  const [updatedConsentRow] = await db
+    .update(consent)
+    .set({
+      withdrawnAt: now(),
+      withdrawnReason: input.reason ?? null,
+    })
+    .where(eq(consent.id, consentRow.id))
+    .returning();
 
-  return consent;
+  await db.insert(activity).values({
+    spaceId: input.spaceId,
+    membershipId: input.membershipId,
+    type: "consent_withdrawn",
+    targetType: "consent",
+    targetId: updatedConsentRow.id,
+    metadata: {},
+  });
+
+  const evidenceSourceRow = updatedConsentRow.evidenceSourceId
+    ? await db.query.source.findFirst({
+        where: eq(source.id, updatedConsentRow.evidenceSourceId),
+      })
+    : undefined;
+
+  return mapConsent(updatedConsentRow, evidenceSourceRow);
 }
 
-export function requireSpace(spaceId: string): SpaceRecord {
-  const space = findSpaceById(spaceId);
+export async function requireSpace(spaceId: string): Promise<SpaceRow> {
+  const spaceRow = await findSpaceById(spaceId);
 
-  if (!space) {
+  if (!spaceRow) {
     throw new ApiError(404, "SPACE_NOT_FOUND", "Family space not found.");
   }
 
-  return space;
+  return spaceRow;
 }
 
 export function canViewerAccessVisibility(role: MembershipRole, visibility: Visibility): boolean {
@@ -382,10 +596,10 @@ export function canViewerAccessVisibility(role: MembershipRole, visibility: Visi
   return visibility !== "private";
 }
 
-export function assertSpaceAllowsCapture(spaceId: string): void {
-  const consent = findConsentBySpaceId(spaceId);
+export async function assertSpaceAllowsCapture(spaceId: string): Promise<void> {
+  const consentRow = await findConsentBySpaceId(spaceId);
 
-  if (!consent || consent.withdrawnAt || !consent.participationApproved) {
+  if (!consentRow || consentRow.withdrawnAt || !consentRow.participationConsented) {
     throw new ApiError(
       409,
       "CONSENT_REQUIRED",
@@ -394,10 +608,15 @@ export function assertSpaceAllowsCapture(spaceId: string): void {
   }
 }
 
-export function assertSpaceAllowsAiProcessing(spaceId: string): void {
-  const consent = findConsentBySpaceId(spaceId);
+export async function assertSpaceAllowsAiProcessing(spaceId: string): Promise<void> {
+  const consentRow = await findConsentBySpaceId(spaceId);
 
-  if (!consent || consent.withdrawnAt || !consent.participationApproved || !consent.aiProcessingAllowed) {
+  if (
+    !consentRow ||
+    consentRow.withdrawnAt ||
+    !consentRow.participationConsented ||
+    !consentRow.aiProcessingConsented
+  ) {
     throw new ApiError(
       409,
       "AI_PROCESSING_NOT_ALLOWED",
@@ -406,10 +625,10 @@ export function assertSpaceAllowsAiProcessing(spaceId: string): void {
   }
 }
 
-export function assertMemorialUseAllowed(spaceId: string): void {
-  const consent = findConsentBySpaceId(spaceId);
+export async function assertMemorialUseAllowed(spaceId: string): Promise<void> {
+  const consentRow = await findConsentBySpaceId(spaceId);
 
-  if (!consent || consent.withdrawnAt || !consent.memorialUseAllowed) {
+  if (!consentRow || consentRow.withdrawnAt || !consentRow.memorialUseAllowed) {
     throw new ApiError(
       409,
       "MEMORIAL_USE_NOT_ALLOWED",
@@ -418,13 +637,13 @@ export function assertMemorialUseAllowed(spaceId: string): void {
   }
 }
 
-export function canUseVoiceClips(spaceId: string): boolean {
-  const consent = findConsentBySpaceId(spaceId);
+export async function canUseVoiceClips(spaceId: string): Promise<boolean> {
+  const consentRow = await findConsentBySpaceId(spaceId);
 
   return Boolean(
-    consent &&
-      !consent.withdrawnAt &&
-      consent.memorialUseAllowed &&
-      consent.voiceClipsAllowed,
+    consentRow &&
+      !consentRow.withdrawnAt &&
+      consentRow.memorialUseAllowed &&
+      consentRow.voiceClipsAllowed,
   );
 }

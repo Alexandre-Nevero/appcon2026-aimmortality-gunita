@@ -1,22 +1,40 @@
 import { betterAuth } from "better-auth";
-import { memoryAdapter } from "better-auth/adapters/memory";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 
-import { authStore } from "@/src/auth/store";
+import { db } from "@/src/db";
+import { authAccount, authSession, authUser, authVerification } from "@/src/db/schema";
 
 const baseURL =
   process.env.BETTER_AUTH_URL ??
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
-const secret =
-  process.env.BETTER_AUTH_SECRET ?? "gunita-local-build-secret-gunita-local-build-secret";
+function requireBetterAuthSecret(): string {
+  const secret = process.env.BETTER_AUTH_SECRET?.trim();
+
+  if (!secret) {
+    throw new Error(
+      "BETTER_AUTH_SECRET is required (see docs/ops.md § Configuration & secrets).",
+    );
+  }
+
+  return secret;
+}
 
 export const auth = betterAuth({
   baseURL,
   basePath: "/api/auth",
-  secret,
+  secret: requireBetterAuthSecret(),
   trustedOrigins: [baseURL],
-  database: memoryAdapter(authStore),
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema: {
+      user: authUser,
+      session: authSession,
+      account: authAccount,
+      verification: authVerification,
+    },
+  }),
   emailAndPassword: {
     enabled: true,
   },

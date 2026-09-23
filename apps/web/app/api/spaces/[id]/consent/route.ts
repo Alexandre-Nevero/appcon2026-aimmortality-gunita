@@ -42,12 +42,13 @@ export async function POST(request: Request, context: RouteContext): Promise<Res
     const { id: spaceId } = await context.params;
     const body = await parseJsonBody(request, consentSchema);
 
-    requireSpace(spaceId);
-    requireStewardMembership(spaceId, session.user.id);
+    await requireSpace(spaceId);
+    const stewardMembership = await requireStewardMembership(spaceId, session.user.id);
 
     if (body.action === "withdraw") {
-      const consent = withdrawConsentForSpace({
+      const consent = await withdrawConsentForSpace({
         spaceId,
+        membershipId: stewardMembership.id,
         reason: body.reason,
       });
 
@@ -86,9 +87,9 @@ export async function POST(request: Request, context: RouteContext): Promise<Res
       );
     }
 
-    const result = recordConsentForSpace({
+    const result = await recordConsentForSpace({
       spaceId,
-      userId: session.user.id,
+      recordedByMembership: stewardMembership,
       evidenceType: body.evidenceType,
       evidenceText: body.evidenceText,
       evidenceMediaReferenceId: body.evidenceMediaReferenceId,

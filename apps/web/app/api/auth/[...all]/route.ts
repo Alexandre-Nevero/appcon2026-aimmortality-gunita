@@ -2,7 +2,6 @@ import { toNextJsHandler } from "better-auth/next-js";
 import { z } from "zod";
 
 import { auth } from "@/src/auth/auth";
-import { ApiError } from "@/src/auth/errors";
 import { errorResponse, parseJsonBody } from "@/src/auth/http";
 import { acceptInviteForUser, findUserByEmail, validateInviteCode } from "@/src/auth/store";
 
@@ -46,19 +45,26 @@ async function forwardAuthRequest(
     return response;
   }
 
-  const email = typeof body.email === "string" ? body.email : null;
+  try {
+    const email = typeof body.email === "string" ? body.email : null;
 
-  if (!email) {
-    throw new ApiError(500, "AUTH_EMAIL_MISSING", "Auth response could not be linked to an invite.");
+    if (!email) {
+      throw new Error("Auth response could not be linked to an invite because the request email was missing.");
+    }
+
+    const user = await findUserByEmail(email);
+
+    if (!user) {
+      throw new Error("Signed-in user could not be found after auth.");
+    }
+
+    await acceptInviteForUser(inviteCode, user.id);
+  } catch (error) {
+    console.error("Invite acceptance failed after successful auth.", {
+      inviteCode,
+      error,
+    });
   }
-
-  const user = findUserByEmail(email);
-
-  if (!user) {
-    throw new ApiError(500, "AUTH_USER_NOT_FOUND", "Signed-in user could not be found after auth.");
-  }
-
-  acceptInviteForUser(inviteCode, user.id);
 
   return response;
 }
@@ -68,7 +74,7 @@ async function handleSignUp(request: Request): Promise<Response> {
   const { inviteCode, ...authBody } = parsedBody;
 
   if (inviteCode) {
-    validateInviteCode(inviteCode);
+    await validateInviteCode(inviteCode);
   }
 
   return forwardAuthRequest(request, authBody, inviteCode);
@@ -79,7 +85,7 @@ async function handleSignIn(request: Request): Promise<Response> {
   const { inviteCode, ...authBody } = parsedBody;
 
   if (inviteCode) {
-    validateInviteCode(inviteCode);
+    await validateInviteCode(inviteCode);
   }
 
   return forwardAuthRequest(request, authBody, inviteCode);

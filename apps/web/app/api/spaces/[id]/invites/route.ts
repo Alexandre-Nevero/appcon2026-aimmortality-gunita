@@ -23,12 +23,12 @@ export async function POST(request: Request, context: RouteContext): Promise<Res
       emptyValue: {},
     });
 
-    requireSpace(spaceId);
-    requireStewardMembership(spaceId, session.user.id);
+    await requireSpace(spaceId);
+    const stewardMembership = await requireStewardMembership(spaceId, session.user.id);
 
-    const invite = createInviteForSpace({
+    const invite = await createInviteForSpace({
       spaceId,
-      createdByUserId: session.user.id,
+      createdByMembership: stewardMembership,
       expiresInDays: body.expiresInDays,
     });
 

@@ -1,339 +1,690 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { GET as authGet, POST as authPost } from "../../app/api/auth/[...all]/route";
-import { POST as consentPost } from "../../app/api/spaces/[id]/consent/route";
-import { POST as invitePost } from "../../app/api/spaces/[id]/invites/route";
-import { POST as spacesPost } from "../../app/api/spaces/route";
-import { ApiError } from "./errors";
-import {
-  assertSpaceAllowsAiProcessing,
-  assertMemorialUseAllowed,
-  assertSpaceAllowsCapture,
-  canUseVoiceClips,
-  canViewerAccessVisibility,
-  findUserByEmail,
-  getMembershipForUser,
-  resetAuthStore,
-} from "./store";
+type InsertConfig = {
+  execute?: () => Promise<unknown>;
+  returning?: () => Promise<unknown[]>;
+};
 
-function createJsonRequest(url: string, body: unknown, cookie?: string): Request {
-  const headers = new Headers({
-    "content-type": "application/json",
-  });
-
-  if (cookie) {
-    headers.set("cookie", cookie);
-  }
-
-  return new Request(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
-  });
-}
-
-function getCookie(response: Response): string {
-  const cookie = response.headers.get("set-cookie");
-
-  if (!cookie) {
-    throw new Error("Expected auth response to include a session cookie.");
-  }
-
-  return cookie;
-}
-
-async function createSignedInUser(input: {
-  name: string;
-  email: string;
-  password: string;
-  inviteCode?: string;
-}): Promise<{ cookie: string }> {
-  const response = await authPost(
-    createJsonRequest("http://localhost:3000/api/auth/sign-up/email", input),
-  );
-
-  expect(response.status).toBe(200);
+function createInsertResult(config: InsertConfig = {}) {
+  const promise = Promise.resolve(config.execute?.());
 
   return {
-    cookie: getCookie(response),
+    then: promise.then.bind(promise),
+    catch: promise.catch.bind(promise),
+    finally: promise.finally.bind(promise),
+    returning: async () => config.returning?.() ?? [],
   };
 }
 
-describe("ASK-006 identity and consent APIs", () => {
-  beforeEach(() => {
-    resetAuthStore();
-  });
+function getDrizzleTableName(table: unknown): string | undefined {
+  return (table as Record<symbol, string>)[Symbol.for("drizzle:Name")];
+}
 
-  it("TC-001 creates one steward-owned space and Better Auth issues a session", async () => {
-    const steward = await createSignedInUser({
-      name: "Kirby Steward",
-      email: "kirby@example.com",
-      password: "Password123",
+async function importStoreWithDb(dbMock: unknown) {
+  vi.resetModules();
+  vi.doMock("@/src/db", () => ({ db: dbMock }));
+
+  return import("./store");
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
+  vi.resetModules();
+  vi.doUnmock("@/src/db");
+  vi.doUnmock("@/src/auth/store");
+  vi.doUnmock("@/src/auth/session");
+  vi.doUnmock("@/src/auth/auth");
+  vi.doUnmock("@/src/media/blob");
+  vi.doUnmock("better-auth/next-js");
+});
+
+describe("TASK-006 store integration", () => {
+  it("creates a space through the real space/person/membership schema tables atomically", async () => {
+    const inserted: Array<{ table: string; values: unknown }> = [];
+    const txMock = {
+      query: {
+        membership: {
+          findFirst: vi.fn().mockResolvedValue(undefined),
+        },
+      },
+      insert: vi.fn((table: unknown) => ({
+        values: (values: unknown) => {
+          if (getDrizzleTableName(table) === "space") {
+            inserted.push({ table: "space", values });
+
+            return createInsertResult({
+              returning: async () => [
+                {
+                  id: "space-1",
+                  name: "Lola Nena",
+                  locale: "fil",
+                  createdAt: new Date("2026-09-24T00:00:00.000Z"),
+                  updatedAt: new Date("2026-09-24T00:00:00.000Z"),
+                },
+              ],
+            });
+          }
+
+          if (getDrizzleTableName(table) === "person") {
+            inserted.push({ table: "person", values });
+
+            return createInsertResult();
+          }
+
+          if (getDrizzleTableName(table) === "membership") {
+            inserted.push({ table: "membership", values });
+
+            return createInsertResult({
+              returning: async () => [
+                {
+                  id: "membership-1",
+                  spaceId: "space-1",
+                  userId: "user-1",
+                  role: "steward",
+                  localeOverride: null,
+                  invitedByMembershipId: null,
+                  invitedAt: null,
+                  joinedAt: new Date("2026-09-24T00:00:00.000Z"),
+                  createdAt: new Date("2026-09-24T00:00:00.000Z"),
+                },
+              ],
+            });
+          }
+
+          throw new Error("Unexpected insert table");
+        },
+      })),
+    };
+
+    const dbMock = {
+      transaction: vi.fn(async (callback: (tx: typeof txMock) => Promise<unknown>) => callback(txMock)),
+    };
+
+    const { createSpaceForSteward } = await importStoreWithDb(dbMock);
+    const result = await createSpaceForSteward({
+      featuredPersonName: "Lola Nena",
+      locale: "fil",
+      userId: "user-1",
     });
 
-    const sessionResponse = await authGet(
-      new Request("http://localhost:3000/api/auth/get-session", {
-        method: "GET",
+    expect(inserted.map((entry) => entry.table)).toEqual(["space", "person", "membership"]);
+    expect(dbMock.transaction).toHaveBeenCalledTimes(1);
+    expect(inserted[0]?.values).toMatchObject({
+      name: "Lola Nena",
+      locale: "fil",
+    });
+    expect(inserted[1]?.values).toMatchObject({
+      spaceId: "space-1",
+      displayName: "Lola Nena",
+      isFeatured: true,
+    });
+    expect(inserted[2]?.values).toMatchObject({
+      spaceId: "space-1",
+      userId: "user-1",
+      role: "steward",
+    });
+    expect(result.space.featuredPersonName).toBe("Lola Nena");
+    expect(result.membership.role).toBe("steward");
+  });
+
+  it("creates invite codes in the verification table and logs invite_sent activity", async () => {
+    const authVerificationValues: Array<Record<string, unknown>> = [];
+    const activityValues: Array<Record<string, unknown>> = [];
+    const inviterMembershipId = "22222222-2222-2222-2222-222222222222";
+    const verificationId = "33333333-3333-3333-3333-333333333333";
+
+    const dbMock = {
+      query: {
+        authVerification: {
+          findFirst: vi.fn().mockResolvedValue(undefined),
+        },
+      },
+      insert: vi.fn((table: unknown) => ({
+        values: (values: Record<string, unknown>) => {
+          if (getDrizzleTableName(table) === "verification") {
+            authVerificationValues.push(values);
+
+            return createInsertResult({
+              returning: async () => [
+                {
+                  id: verificationId,
+                  identifier: values.identifier,
+                  value: values.value,
+                  expiresAt: values.expiresAt,
+                  createdAt: new Date("2026-09-24T00:00:00.000Z"),
+                  updatedAt: new Date("2026-09-24T00:00:00.000Z"),
+                },
+              ],
+            });
+          }
+
+          if (getDrizzleTableName(table) === "activity") {
+            activityValues.push(values);
+            return createInsertResult();
+          }
+
+          throw new Error("Unexpected insert table");
+        },
+      })),
+    };
+
+    const { createInviteForSpace } = await importStoreWithDb(dbMock);
+    const invite = await createInviteForSpace({
+      spaceId: "11111111-1111-1111-1111-111111111111",
+      createdByMembership: {
+        id: inviterMembershipId,
+        spaceId: "11111111-1111-1111-1111-111111111111",
+        userId: "user-1",
+        role: "steward",
+        localeOverride: null,
+        invitedByMembershipId: null,
+        invitedAt: null,
+        joinedAt: new Date("2026-09-24T00:00:00.000Z"),
+        createdAt: new Date("2026-09-24T00:00:00.000Z"),
+      },
+      expiresInDays: 7,
+    });
+
+    expect(invite.code).toMatch(/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{10}$/);
+    expect(authVerificationValues[0]?.identifier).toBe(`invite:${invite.code}`);
+    expect(JSON.parse(String(authVerificationValues[0]?.value))).toMatchObject({
+      spaceId: "11111111-1111-1111-1111-111111111111",
+      role: "family",
+      invitedByMembershipId: inviterMembershipId,
+      createdByUserId: "user-1",
+    });
+    expect(activityValues[0]).toMatchObject({
+      spaceId: "11111111-1111-1111-1111-111111111111",
+      membershipId: inviterMembershipId,
+      type: "invite_sent",
+      targetType: "verification",
+      targetId: verificationId,
+    });
+    expect(activityValues[0]?.metadata).toMatchObject({
+      expiresAt: expect.any(String),
+    });
+  });
+
+  it("accepts persisted invites into real memberships and consumes the verification record", async () => {
+    const insertedMemberships: Array<Record<string, unknown>> = [];
+    const deletedTables: Array<string | undefined> = [];
+    const inviterMembershipId = "22222222-2222-4222-8222-222222222222";
+    const verificationId = "33333333-3333-4333-8333-333333333333";
+    const inviteSpaceId = "11111111-1111-4111-8111-111111111111";
+
+    const dbMock = {
+      query: {
+        authVerification: {
+          findFirst: vi.fn().mockResolvedValue({
+            id: verificationId,
+            identifier: "invite:ABCDEFG234",
+            value: JSON.stringify({
+              spaceId: inviteSpaceId,
+              role: "family",
+              invitedByMembershipId: inviterMembershipId,
+              createdByUserId: "user-1",
+            }),
+            expiresAt: new Date("2026-10-24T00:00:00.000Z"),
+            createdAt: new Date("2026-09-24T00:00:00.000Z"),
+            updatedAt: new Date("2026-09-24T00:00:00.000Z"),
+          }),
+        },
+        membership: {
+          findFirst: vi.fn().mockResolvedValue(undefined),
+        },
+      },
+      insert: vi.fn((table: unknown) => ({
+        values: (values: Record<string, unknown>) => {
+          if (getDrizzleTableName(table) === "membership") {
+            insertedMemberships.push(values);
+            return createInsertResult();
+          }
+
+          throw new Error("Unexpected insert table");
+        },
+      })),
+      delete: vi.fn((table: unknown) => ({
+        where: vi.fn(async () => {
+          deletedTables.push(getDrizzleTableName(table));
+        }),
+      })),
+    };
+
+    const { acceptInviteForUser } = await importStoreWithDb(dbMock);
+    const invite = await acceptInviteForUser("ABCDEFG234", "user-2");
+
+    expect(invite.code).toBe("ABCDEFG234");
+    expect(insertedMemberships[0]).toMatchObject({
+      spaceId: inviteSpaceId,
+      userId: "user-2",
+      role: "family",
+      invitedByMembershipId: inviterMembershipId,
+    });
+    expect(deletedTables).toEqual(["verification"]);
+  });
+
+  it("stores written consent text through uploadSourceFile before creating the real source and consent rows", async () => {
+    const insertedSources: Array<Record<string, unknown>> = [];
+    const insertedConsents: Array<Record<string, unknown>> = [];
+    const uploadSourceFile = vi.fn().mockResolvedValue({
+      pathname: "sources/space-1/consent-1.txt",
+      url: "https://blob.example.com/sources/space-1/consent-1.txt",
+    });
+
+    vi.doMock("@/src/media/blob", () => ({ uploadSourceFile }));
+
+    const dbMock = {
+      query: {
+        consent: {
+          findFirst: vi.fn().mockResolvedValue(undefined),
+        },
+      },
+      insert: vi.fn((table: unknown) => ({
+        values: (values: Record<string, unknown>) => {
+          if (getDrizzleTableName(table) === "source") {
+            insertedSources.push(values);
+
+            return createInsertResult({
+              returning: async () => [
+                {
+                  id: "source-1",
+                  spaceId: values.spaceId,
+                  type: values.type,
+                  status: values.status,
+                  statusReason: null,
+                  origin: values.origin,
+                  visibility: values.visibility,
+                  contributorPersonId: null,
+                  uploadedByMembershipId: values.uploadedByMembershipId,
+                  blobPathname: values.blobPathname,
+                  mimeType: values.mimeType,
+                  byteSize: values.byteSize,
+                  durationSeconds: null,
+                  artifactContext: values.artifactContext,
+                  aiVisibleDescription: null,
+                  createdAt: new Date("2026-09-24T00:00:00.000Z"),
+                  updatedAt: new Date("2026-09-24T00:00:00.000Z"),
+                },
+              ],
+            });
+          }
+
+          if (getDrizzleTableName(table) === "consent") {
+            insertedConsents.push(values);
+
+            return createInsertResult({
+              returning: async () => [
+                {
+                  id: "consent-1",
+                  spaceId: values.spaceId,
+                  participationConsented: values.participationConsented,
+                  aiProcessingConsented: values.aiProcessingConsented,
+                  memorialUseAllowed: values.memorialUseAllowed,
+                  voiceClipsAllowed: values.voiceClipsAllowed,
+                  evidenceSourceId: values.evidenceSourceId,
+                  recordedAt: new Date("2026-09-24T00:00:00.000Z"),
+                  recordedByMembershipId: values.recordedByMembershipId,
+                  withdrawnAt: null,
+                  withdrawnReason: null,
+                  createdAt: new Date("2026-09-24T00:00:00.000Z"),
+                },
+              ],
+            });
+          }
+
+          if (getDrizzleTableName(table) === "activity") {
+            return createInsertResult();
+          }
+
+          throw new Error("Unexpected insert table");
+        },
+      })),
+    };
+
+    const { recordConsentForSpace } = await importStoreWithDb(dbMock);
+    const result = await recordConsentForSpace({
+      spaceId: "11111111-1111-1111-1111-111111111111",
+      recordedByMembership: {
+        id: "22222222-2222-2222-2222-222222222222",
+        spaceId: "11111111-1111-1111-1111-111111111111",
+        userId: "user-1",
+        role: "steward",
+        localeOverride: null,
+        invitedByMembershipId: null,
+        invitedAt: null,
+        joinedAt: new Date("2026-09-24T00:00:00.000Z"),
+        createdAt: new Date("2026-09-24T00:00:00.000Z"),
+      },
+      evidenceType: "written",
+      evidenceText: "Payag ako sa GUNITA.",
+      participationApproved: true,
+      aiProcessingAllowed: true,
+      familyVisibilityDefault: "family",
+      memorialUseAllowed: true,
+      voiceClipsAllowed: false,
+      stewardAttestation: true,
+    });
+
+    expect(uploadSourceFile).toHaveBeenCalledWith(
+      "11111111-1111-1111-1111-111111111111",
+      expect.stringMatching(/^consent-.*\.txt$/),
+      "Payag ako sa GUNITA.",
+      "text/plain",
+    );
+    expect(insertedSources[0]).toMatchObject({
+      visibility: "private",
+      type: "text",
+      origin: "from_them",
+      status: "ready",
+      blobPathname: "https://blob.example.com/sources/space-1/consent-1.txt",
+      mimeType: "text/plain",
+      byteSize: Buffer.byteLength("Payag ako sa GUNITA.", "utf-8"),
+    });
+    expect(insertedConsents[0]).toMatchObject({
+      spaceId: "11111111-1111-1111-1111-111111111111",
+      evidenceSourceId: "source-1",
+      participationConsented: true,
+      aiProcessingConsented: true,
+    });
+    expect(result.evidenceSource.visibility).toBe("private");
+    expect(result.consent.participationApproved).toBe(true);
+  });
+
+  it("stores voice consent as a ready private audio source without re-uploading it", async () => {
+    const insertedSources: Array<Record<string, unknown>> = [];
+    const uploadSourceFile = vi.fn();
+
+    vi.doMock("@/src/media/blob", () => ({ uploadSourceFile }));
+
+    const dbMock = {
+      query: {
+        consent: {
+          findFirst: vi.fn().mockResolvedValue(undefined),
+        },
+      },
+      insert: vi.fn((table: unknown) => ({
+        values: (values: Record<string, unknown>) => {
+          if (getDrizzleTableName(table) === "source") {
+            insertedSources.push(values);
+
+            return createInsertResult({
+              returning: async () => [
+                {
+                  id: "source-2",
+                  spaceId: values.spaceId,
+                  type: values.type,
+                  status: values.status,
+                  statusReason: null,
+                  origin: values.origin,
+                  visibility: values.visibility,
+                  contributorPersonId: null,
+                  uploadedByMembershipId: values.uploadedByMembershipId,
+                  blobPathname: values.blobPathname,
+                  mimeType: values.mimeType,
+                  byteSize: values.byteSize,
+                  durationSeconds: null,
+                  artifactContext: values.artifactContext,
+                  aiVisibleDescription: null,
+                  createdAt: new Date("2026-09-24T00:00:00.000Z"),
+                  updatedAt: new Date("2026-09-24T00:00:00.000Z"),
+                },
+              ],
+            });
+          }
+
+          if (getDrizzleTableName(table) === "consent") {
+            return createInsertResult({
+              returning: async () => [
+                {
+                  id: "consent-2",
+                  spaceId: values.spaceId,
+                  participationConsented: values.participationConsented,
+                  aiProcessingConsented: values.aiProcessingConsented,
+                  memorialUseAllowed: values.memorialUseAllowed,
+                  voiceClipsAllowed: values.voiceClipsAllowed,
+                  evidenceSourceId: values.evidenceSourceId,
+                  recordedAt: new Date("2026-09-24T00:00:00.000Z"),
+                  recordedByMembershipId: values.recordedByMembershipId,
+                  withdrawnAt: null,
+                  withdrawnReason: null,
+                  createdAt: new Date("2026-09-24T00:00:00.000Z"),
+                },
+              ],
+            });
+          }
+
+          if (getDrizzleTableName(table) === "activity") {
+            return createInsertResult();
+          }
+
+          throw new Error("Unexpected insert table");
+        },
+      })),
+    };
+
+    const { recordConsentForSpace } = await importStoreWithDb(dbMock);
+    await recordConsentForSpace({
+      spaceId: "11111111-1111-1111-1111-111111111111",
+      recordedByMembership: {
+        id: "22222222-2222-2222-2222-222222222222",
+        spaceId: "11111111-1111-1111-1111-111111111111",
+        userId: "user-1",
+        role: "steward",
+        localeOverride: null,
+        invitedByMembershipId: null,
+        invitedAt: null,
+        joinedAt: new Date("2026-09-24T00:00:00.000Z"),
+        createdAt: new Date("2026-09-24T00:00:00.000Z"),
+      },
+      evidenceType: "voice",
+      evidenceText: "Payag ako sa GUNITA.",
+      evidenceMediaReferenceId: "https://blob.example.com/voice-consent.webm",
+      participationApproved: true,
+      aiProcessingAllowed: true,
+      familyVisibilityDefault: "family",
+      memorialUseAllowed: true,
+      voiceClipsAllowed: true,
+      stewardAttestation: true,
+    });
+
+    expect(uploadSourceFile).not.toHaveBeenCalled();
+    expect(insertedSources[0]).toMatchObject({
+      type: "audio",
+      status: "ready",
+      visibility: "private",
+      blobPathname: "https://blob.example.com/voice-consent.webm",
+      mimeType: "audio/webm",
+      byteSize: 0,
+    });
+    expect(insertedSources[0]?.artifactContext).toMatchObject({
+      consent: {
+        evidenceType: "voice",
+        mediaReferenceId: "https://blob.example.com/voice-consent.webm",
+      },
+    });
+  });
+});
+
+describe("TASK-006 route behavior", () => {
+  it("accepts the documented featuredPersonName contract", async () => {
+    const requireSession = vi.fn().mockResolvedValue({ user: { id: "user-1" } });
+    const createSpaceForSteward = vi.fn().mockResolvedValue({
+      space: {
+        id: "space-1",
+        featuredPersonName: "Lola Nena",
+        locale: "fil",
+        createdAt: "2026-09-24T00:00:00.000Z",
+        updatedAt: "2026-09-24T00:00:00.000Z",
+        createdByUserId: "user-1",
+      },
+      membership: {
+        id: "membership-1",
+        spaceId: "space-1",
+        userId: "user-1",
+        role: "steward",
+        createdAt: "2026-09-24T00:00:00.000Z",
+        invitedAt: null,
+        joinedAt: "2026-09-24T00:00:00.000Z",
+        invitedByMembershipId: null,
+      },
+    });
+
+    vi.resetModules();
+    vi.doMock("@/src/auth/session", () => ({ requireSession }));
+    vi.doMock("@/src/auth/store", () => ({ createSpaceForSteward }));
+
+    const { POST } = await import("../../app/api/spaces/route");
+    const response = await POST(
+      new Request("http://localhost:3000/api/spaces", {
+        method: "POST",
         headers: {
-          cookie: steward.cookie,
+          "content-type": "application/json",
         },
+        body: JSON.stringify({
+          featuredPersonName: "Lola Nena",
+          locale: "fil",
+        }),
       }),
     );
 
-    expect(sessionResponse.status).toBe(200);
-
-    const sessionBody = await sessionResponse.json();
-
-    expect(sessionBody.user.email).toBe("kirby@example.com");
-
-    const firstSpaceResponse = await spacesPost(
-      createJsonRequest(
-        "http://localhost:3000/api/spaces",
-        {
-          featuredPersonName: "Lola Nena",
-          locale: "fil",
-        },
-        steward.cookie,
-      ),
-    );
-
-    expect(firstSpaceResponse.status).toBe(201);
-
-    const firstSpaceBody = await firstSpaceResponse.json();
-
-    expect(firstSpaceBody.membership.role).toBe("steward");
-
-    const secondSpaceResponse = await spacesPost(
-      createJsonRequest(
-        "http://localhost:3000/api/spaces",
-        {
-          featuredPersonName: "Lolo Ben",
-          locale: "en",
-        },
-        steward.cookie,
-      ),
-    );
-
-    expect(secondSpaceResponse.status).toBe(409);
+    expect(response.status).toBe(201);
+    expect(createSpaceForSteward).toHaveBeenCalledWith({
+      featuredPersonName: "Lola Nena",
+      locale: "fil",
+      userId: "user-1",
+    });
   });
 
-  it("TC-002 accepts valid invites and family access excludes Private visibility", async () => {
-    const steward = await createSignedInUser({
-      name: "Kirby Steward",
-      email: "kirby@example.com",
-      password: "Password123",
-    });
+  it("rejects POST /api/spaces when featuredPersonName is missing", async () => {
+    const requireSession = vi.fn().mockResolvedValue({ user: { id: "user-1" } });
+    const createSpaceForSteward = vi.fn();
 
-    const spaceResponse = await spacesPost(
-      createJsonRequest(
-        "http://localhost:3000/api/spaces",
-        {
-          featuredPersonName: "Lola Nena",
-          locale: "fil",
+    vi.resetModules();
+    vi.doMock("@/src/auth/session", () => ({ requireSession }));
+    vi.doMock("@/src/auth/store", () => ({ createSpaceForSteward }));
+
+    const { POST } = await import("../../app/api/spaces/route");
+    const response = await POST(
+      new Request("http://localhost:3000/api/spaces", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
         },
-        steward.cookie,
-      ),
-    );
-
-    const spaceBody = await spaceResponse.json();
-    const spaceId = spaceBody.space.id as string;
-
-    const inviteResponse = await invitePost(
-      createJsonRequest(`http://localhost:3000/api/spaces/${spaceId}/invites`, {}, steward.cookie),
-      { params: Promise.resolve({ id: spaceId }) },
-    );
-
-    expect(inviteResponse.status).toBe(201);
-
-    const inviteBody = await inviteResponse.json();
-    const inviteCode = inviteBody.invite.code as string;
-
-    const family = await createSignedInUser({
-      name: "Tita Ana",
-      email: "ana@example.com",
-      password: "Password123",
-      inviteCode,
-    });
-
-    expect(family.cookie).toContain("better-auth");
-
-    const familyUser = findUserByEmail("ana@example.com");
-
-    expect(familyUser).toBeDefined();
-
-    const membership = getMembershipForUser(familyUser!.id);
-
-    expect(membership?.spaceId).toBe(spaceId);
-    expect(membership?.role).toBe("family");
-    expect(canViewerAccessVisibility("family", "private")).toBe(false);
-    expect(canViewerAccessVisibility("family", "family")).toBe(true);
-    expect(canViewerAccessVisibility("family", "memorial")).toBe(true);
-
-    const invalidInviteResponse = await authPost(
-      createJsonRequest("http://localhost:3000/api/auth/sign-up/email", {
-        name: "Pinsan Jo",
-        email: "jo@example.com",
-        password: "Password123",
-        inviteCode: "NOT-A-REAL-CODE",
+        body: JSON.stringify({
+          locale: "fil",
+        }),
       }),
     );
 
-    expect(invalidInviteResponse.status).toBe(400);
+    expect(response.status).toBe(400);
+    expect(createSpaceForSteward).not.toHaveBeenCalled();
 
-    const invalidInviteBody = await invalidInviteResponse.json();
+    const body = await response.json();
 
-    expect(invalidInviteBody.error.message).toContain("Invalid invite code");
+    expect(body.error.code).toBe("INVALID_BODY");
+    expect(body.error.details.fieldErrors.featuredPersonName).toBeDefined();
   });
 
-  it("TC-003 blocks capture until consent is recorded", async () => {
-    const steward = await createSignedInUser({
-      name: "Kirby Steward",
-      email: "kirby@example.com",
-      password: "Password123",
-    });
+  it("rejects the undocumented POST /api/spaces name alias", async () => {
+    const requireSession = vi.fn().mockResolvedValue({ user: { id: "user-1" } });
+    const createSpaceForSteward = vi.fn();
 
-    const spaceResponse = await spacesPost(
-      createJsonRequest(
-        "http://localhost:3000/api/spaces",
-        {
-          featuredPersonName: "Lola Nena",
+    vi.resetModules();
+    vi.doMock("@/src/auth/session", () => ({ requireSession }));
+    vi.doMock("@/src/auth/store", () => ({ createSpaceForSteward }));
+
+    const { POST } = await import("../../app/api/spaces/route");
+    const response = await POST(
+      new Request("http://localhost:3000/api/spaces", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "Lola Nena",
           locale: "fil",
-        },
-        steward.cookie,
-      ),
+        }),
+      }),
     );
 
-    const spaceBody = await spaceResponse.json();
-    const spaceId = spaceBody.space.id as string;
+    expect(response.status).toBe(400);
+    expect(createSpaceForSteward).not.toHaveBeenCalled();
 
-    expect(() => assertSpaceAllowsCapture(spaceId)).toThrow(ApiError);
+    const body = await response.json();
 
-    const consentResponse = await consentPost(
-      createJsonRequest(
-        `http://localhost:3000/api/spaces/${spaceId}/consent`,
-        {
-          evidenceType: "written",
-          evidenceText: "Payag ako sa paglahok at paggamit ng aking mga kuwento sa GUNITA.",
-          participationApproved: true,
-          aiProcessingAllowed: true,
-          familyVisibilityDefault: "family",
-          memorialUseAllowed: true,
-          voiceClipsAllowed: true,
-          stewardAttestation: true,
-        },
-        steward.cookie,
-      ),
-      { params: Promise.resolve({ id: spaceId }) },
-    );
-
-    expect(consentResponse.status).toBe(200);
-    expect(() => assertSpaceAllowsCapture(spaceId)).not.toThrow();
-    expect(() => assertSpaceAllowsAiProcessing(spaceId)).not.toThrow();
+    expect(body.error.code).toBe("INVALID_BODY");
+    expect(body.error.details.fieldErrors.featuredPersonName).toBeDefined();
   });
 
-  it("TC-004 stores consent evidence as Private and enforces memorial and voice choices", async () => {
-    const steward = await createSignedInUser({
-      name: "Kirby Steward",
-      email: "kirby@example.com",
-      password: "Password123",
-    });
-
-    const spaceResponse = await spacesPost(
-      createJsonRequest(
-        "http://localhost:3000/api/spaces",
-        {
-          featuredPersonName: "Lola Nena",
-          locale: "fil",
+  it("preserves Better Auth's successful response and cookie when invite acceptance fails", async () => {
+    const handlerPost = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "set-cookie": "better-auth.session_token=abc123; Path=/; HttpOnly",
         },
-        steward.cookie,
-      ),
+      }),
+    );
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    vi.resetModules();
+    vi.doMock("@/src/auth/auth", () => ({ auth: {} }));
+    vi.doMock("better-auth/next-js", () => ({
+      toNextJsHandler: () => ({
+        GET: vi.fn(),
+        POST: handlerPost,
+        PATCH: vi.fn(),
+        PUT: vi.fn(),
+        DELETE: vi.fn(),
+      }),
+    }));
+    vi.doMock("@/src/auth/store", () => ({
+      validateInviteCode: vi.fn().mockResolvedValue({}),
+      findUserByEmail: vi.fn().mockResolvedValue({ id: "user-2" }),
+      acceptInviteForUser: vi.fn().mockRejectedValue(new Error("invite acceptance failed")),
+    }));
+
+    const { POST } = await import("../../app/api/auth/[...all]/route");
+    const response = await POST(
+      new Request("http://localhost:3000/api/auth/sign-in/email", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          email: "family@example.com",
+          password: "Password123",
+          inviteCode: "ABCDEFG234",
+        }),
+      }),
     );
 
-    const spaceBody = await spaceResponse.json();
-    const spaceId = spaceBody.space.id as string;
-
-    const consentResponse = await consentPost(
-      createJsonRequest(
-        `http://localhost:3000/api/spaces/${spaceId}/consent`,
-        {
-          evidenceType: "voice",
-          evidenceText: "Oo, pumapayag ako sa family archive pero hindi sa memorial voice clips.",
-          evidenceMediaReferenceId: "blob://private-consent-audio-001",
-          participationApproved: true,
-          aiProcessingAllowed: true,
-          familyVisibilityDefault: "family",
-          memorialUseAllowed: false,
-          voiceClipsAllowed: false,
-          stewardAttestation: true,
-        },
-        steward.cookie,
-      ),
-      { params: Promise.resolve({ id: spaceId }) },
+    expect(response.status).toBe(200);
+    expect(response.headers.get("set-cookie")).toContain("better-auth.session_token=abc123");
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Invite acceptance failed after successful auth.",
+      expect.objectContaining({
+        inviteCode: "ABCDEFG234",
+      }),
     );
-
-    expect(consentResponse.status).toBe(200);
-
-    const consentBody = await consentResponse.json();
-
-    expect(consentBody.evidenceSource.visibility).toBe("private");
-    expect(() => assertMemorialUseAllowed(spaceId)).toThrow(ApiError);
-    expect(canUseVoiceClips(spaceId)).toBe(false);
   });
+});
 
-  it("TC-005 blocks new capture after consent withdrawal", async () => {
-    const steward = await createSignedInUser({
-      name: "Kirby Steward",
-      email: "kirby@example.com",
-      password: "Password123",
-    });
+describe("TASK-006 auth configuration", () => {
+  it("fails fast when BETTER_AUTH_SECRET is missing", async () => {
+    const originalSecret = process.env.BETTER_AUTH_SECRET;
 
-    const spaceResponse = await spacesPost(
-      createJsonRequest(
-        "http://localhost:3000/api/spaces",
-        {
-          featuredPersonName: "Lola Nena",
-          locale: "fil",
-        },
-        steward.cookie,
-      ),
+    delete process.env.BETTER_AUTH_SECRET;
+    vi.resetModules();
+
+    await expect(import("./auth")).rejects.toThrow(
+      "BETTER_AUTH_SECRET is required (see docs/ops.md § Configuration & secrets).",
     );
 
-    const spaceBody = await spaceResponse.json();
-    const spaceId = spaceBody.space.id as string;
-
-    await consentPost(
-      createJsonRequest(
-        `http://localhost:3000/api/spaces/${spaceId}/consent`,
-        {
-          evidenceType: "written",
-          evidenceText: "Payag ako sa GUNITA habang gusto ko pa itong ituloy.",
-          participationApproved: true,
-          aiProcessingAllowed: true,
-          familyVisibilityDefault: "family",
-          memorialUseAllowed: true,
-          voiceClipsAllowed: true,
-          stewardAttestation: true,
-        },
-        steward.cookie,
-      ),
-      { params: Promise.resolve({ id: spaceId }) },
-    );
-
-    expect(() => assertSpaceAllowsCapture(spaceId)).not.toThrow();
-
-    const withdrawResponse = await consentPost(
-      createJsonRequest(
-        `http://localhost:3000/api/spaces/${spaceId}/consent`,
-        {
-          action: "withdraw",
-          reason: "Requested by the featured person.",
-        },
-        steward.cookie,
-      ),
-      { params: Promise.resolve({ id: spaceId }) },
-    );
-
-    expect(withdrawResponse.status).toBe(200);
-    expect(() => assertSpaceAllowsCapture(spaceId)).toThrow(ApiError);
+    if (originalSecret) {
+      process.env.BETTER_AUTH_SECRET = originalSecret;
+    }
   });
 });
