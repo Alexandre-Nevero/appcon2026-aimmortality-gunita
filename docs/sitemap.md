@@ -260,7 +260,7 @@ No push notifications and no email links in the MVP (BR-080).
 ## Self-check (advisory)
 
 - [x] Every product `S-###` serves at least one `F-###` (or is a system screen)
-- [x] Important PRD features have at least one serving screen (F-001–F-022)
+- [x] Important PRD features have at least one serving screen (F-001–F-023)
 - [x] Interactive screens declare states
 - [x] 404 / 500 / access-denied exist
 - [x] Every §2 screen is in the §3 tree

@@ -33,7 +33,7 @@ credible.
 ## Scope
 
 ### In scope
-- The MVP defined in the [PRD](prd.md): F-001–F-022, one family space, one featured person.
+- The MVP defined in the [PRD](prd.md): F-001–F-023, one family space, one featured person.
 - Delivery as a single mobile-first Next.js web app (ADR-004); UI in Filipino (Taglish-friendly)
   or English (ADR-005).
 - The business model hypothesis in ADR-003, for the pitch.

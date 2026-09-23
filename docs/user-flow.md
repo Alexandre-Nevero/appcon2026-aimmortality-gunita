@@ -35,7 +35,7 @@ All flows run in the **same Next.js web app** (phone browser primary). Memorial 
 | UF-012 | Withdraw consent | Featured person via steward | S-019 | S-005 | F-002 (BR-004) | Should-Have | Rare |
 | UF-013 | Visitor: photo memories | Memorial visitor | S-030 | S-033 | F-023 (UJ-009) | Must-Have | Once per visitor |
 
-**Coverage:** F-001–F-022 each appear in at least one flow (F-015 in every flow that shows items).
+**Coverage:** F-001–F-023 each appear in at least one flow (F-015 in every flow that shows items).
 
 ---
 

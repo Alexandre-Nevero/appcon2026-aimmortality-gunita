@@ -788,7 +788,7 @@ recordings, and text must be ones the team is allowed to publish.
 | Judges read the sub-theme as requiring a simulated person | Relevance and Innovation in Design scores | Pitch the stance explicitly: representation, not replica; show Ask GUNITA returning her real voice. The team's own research (the invented "Mark" road-trip story from a family chatbot) shows why simulation fails |
 | Taglish transcription errors on elderly speech | Wrong transcripts become wrong items | Original audio stays authoritative; transcripts editable; nothing is verified without review; test transcription on the demo recordings in the first hours |
 | AI invents a fact in an answer | Destroys trust in the whole archive | Reviewed-only retrieval, mandatory citations, abstention, evaluation set |
-| 22 P0 areas in about 25 hours | Functionality (15 points) | Golden path first; simplest working form for the rest |
+| 23 P0 areas in about 25 hours | Functionality (15 points) | Golden path first; simplest working form for the rest |
 | Browser audio: recording and autoplay limits on iOS Safari and Android Chrome | Recording or recap audio fails on judges' phones | Tap-to-play only; MediaRecorder with format fallbacks; test on real phones over HTTPS |
 | Private item leaks to family or public | Consent breach | Visibility checked at retrieval (BR-033); leak cases in the evaluation set |
 | Visitor spam or hurtful content | Harm on a memorial | Pending by default, steward approval, rate limit |

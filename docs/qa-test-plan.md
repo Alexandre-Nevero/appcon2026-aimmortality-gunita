@@ -35,7 +35,7 @@ Use the cheapest layer that proves the behavior, in risk order:
 ## Scope
 
 ### In scope
-F-001–F-022, the business rules they cite, Methods EQ-001–EQ-012, the golden path, and the AppCon
+F-001–F-023, the business rules they cite, Methods EQ-001–EQ-013, the golden path, and the AppCon
 submission requirements. fil/en copy presence on new screens (BR-014) is a manual spot-check.
 
 ### Out of scope

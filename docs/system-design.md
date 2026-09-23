@@ -40,7 +40,7 @@ The featured loved one has no account. They take part on the steward's phone bro
 
 | Component | Responsibility | Owns | Depends on | Implements |
 |---|---|---|---|---|
-| **Web app** (`apps/web`, Next.js 16 App Router) | Family/steward UI, API, public memorial pages, background processing | All server logic + UI | Neon, Blob, Groq, Gemini; `packages/core` | all F-001–F-022 |
+| **Web app** (`apps/web`, Next.js 16 App Router) | Family/steward UI, API, public memorial pages, background processing | All server logic + UI | Neon, Blob, Groq, Gemini; `packages/core` | all F-001–F-023 |
 | **Core package** (`packages/core`) | Shared Zod schemas, enums, label text (fil/en), and pure rules: visibility check, review transitions, citation validation, quote check, first-person guard | Business-rule logic | none | BR-014, BR-020–BR-037, F-015 |
 | **Auth module** | Better Auth: email + password cookie sessions; memberships and roles (`steward`, `family`) | Users, sessions, memberships | Neon | F-001 |
 | **Access module** | One function decides what a viewer may see; every query goes through it | Visibility filter (BR-030–BR-033) | core rules | F-009 |
@@ -120,7 +120,7 @@ POST /api/spaces/:id/ask {question}                      (family members only, B
     During mode: offer "Add as a GUNITA Question" (BR-038)
 ```
 
-### Memorial (F-016–F-020)
+### Memorial (F-016–F-020, F-023)
 
 ```
 activate (typed name confirm) → mode = memorial, activity row

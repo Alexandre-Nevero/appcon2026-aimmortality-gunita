@@ -13,7 +13,7 @@ disagree, the canonical owner wins until the other is reconciled.
 |---|---|---|
 | Decision *why* / pivots (**audit root**) | [ADRs](adr/) | append-only; newest Accepted wins |
 | Business objectives, business model, business risks | [BRD](brd.md) | model hypothesis per ADR-003 |
-| What we build (features `F-###`, journeys `UJ-###`, rules `BR-###`), judging context | [PRD](prd.md) | approved v0.3 |
+| What we build (features `F-###`, journeys `UJ-###`, rules `BR-###`), judging context | [PRD](prd.md) | approved v0.4 |
 | Screens · IA · routes · access (`S-###`), **ux-maps** static half | [Sitemap](sitemap.md) | |
 | Journeys across screens (`UF-###`, edge cases `EV-###`), **ux-maps** dynamic half | [User Flow](user-flow.md) | requires sitemap |
 | How it's built: architecture, components, integrations, security posture, stack currency | [System Design](system-design.md) | no separate security doc for this build |
