@@ -2,18 +2,13 @@ import { originSchema } from "@gunita/core";
 import { eq } from "drizzle-orm";
 import { after, NextRequest, NextResponse } from "next/server";
 
+import { requireMembership } from "@/src/access/session";
 import { models } from "@/src/ai/models";
 import { processSource } from "@/src/ai/pipeline";
 import { db } from "@/src/db";
 import { consent, source } from "@/src/db/schema";
 import { uploadSourceFile } from "@/src/media/blob";
 import { sniffFileKind, sourceTypeFromMime, validateUpload } from "@/src/media/validate";
-
-// TODO(TASK-006): replace with the real Better Auth session → membership resolver once it lands.
-// Until then this is a stand-in so the route can be built and typechecked against the real schema.
-async function requireMembership(_request: NextRequest, _spaceId: string) {
-  return { membershipId: "seed-steward-placeholder", role: "steward" as const };
-}
 
 // System Design "Capture → structure": POST /api/spaces/:id/sources (multipart).
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
