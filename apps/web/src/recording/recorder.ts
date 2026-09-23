@@ -1,0 +1,300 @@
+// F-003 capture: dependency-injected MediaRecorder controller.
+//
+// Browser APIs (MediaRecorder, navigator.mediaDevices) are injected via
+// `environment` so the flow — including the 4 MB size cap and the
+// permission-denied path (TC-081) — is unit-testable under Node/vitest.
+
+import { DEFAULT_TIMESLICE_MS, MAX_RECORDING_BYTES } from "@/src/recording/constants";
+import { classifyMediaError, isSecureRecordingContext } from "@/src/recording/environment";
+import { RecordingError } from "@/src/recording/errors";
+import { resolveMimeType, type IsTypeSupported } from "@/src/recording/formats";
+import { totalChunkBytes } from "@/src/recording/size";
+
+export type RecorderState =
+  | "idle"
+  | "requesting"
+  | "recording"
+  | "stopping"
+  | "stopped"
+  | "error";
+
+export interface RecordingResult {
+  blob: Blob;
+  mimeType: string;
+  sizeBytes: number;
+  durationMs: number;
+}
+
+export interface RecorderEnvironment {
+  isSecureContext: boolean;
+  hasMediaRecorder: boolean;
+  isTypeSupported: IsTypeSupported;
+  getUserMedia: (constraints: MediaStreamConstraints) => Promise<MediaStream>;
+  createRecorder: (stream: MediaStream, options: MediaRecorderOptions) => MediaRecorder;
+  now: () => number;
+}
+
+export interface BrowserRecorderOptions {
+  maxBytes?: number;
+  timesliceMs?: number;
+  environment?: Partial<RecorderEnvironment>;
+}
+
+export interface BrowserRecorder {
+  readonly state: RecorderState;
+  readonly mimeType: string | null;
+  readonly sizeBytes: number;
+  /** Requests the mic and begins recording. Rejects with a {@link RecordingError}. */
+  start(): Promise<void>;
+  /** Stops and resolves with the recorded blob, or rejects (e.g. size cap). */
+  stop(): Promise<RecordingResult>;
+  /** Discards the in-progress recording and returns to `idle` for re-record. */
+  cancel(): void;
+}
+
+function resolveEnvironment(overrides?: Partial<RecorderEnvironment>): RecorderEnvironment {
+  const globalRef = globalThis as typeof globalThis & {
+    MediaRecorder?: typeof MediaRecorder;
+    isSecureContext?: boolean;
+    navigator?: Navigator;
+  };
+  const mediaDevices = globalRef.navigator?.mediaDevices;
+  const MediaRecorderCtor = globalRef.MediaRecorder;
+
+  return {
+    isSecureContext: overrides?.isSecureContext ?? Boolean(globalRef.isSecureContext),
+    hasMediaRecorder: overrides?.hasMediaRecorder ?? typeof MediaRecorderCtor !== "undefined",
+    isTypeSupported:
+      overrides?.isTypeSupported ??
+      ((type: string) =>
+        typeof MediaRecorderCtor !== "undefined" &&
+        typeof MediaRecorderCtor.isTypeSupported === "function" &&
+        MediaRecorderCtor.isTypeSupported(type)),
+    getUserMedia:
+      overrides?.getUserMedia ??
+      ((constraints: MediaStreamConstraints) => {
+        if (!mediaDevices?.getUserMedia) {
+          return Promise.reject(
+            new RecordingError(
+              "UNSUPPORTED_ENVIRONMENT",
+              "getUserMedia is not available in this browser.",
+            ),
+          );
+        }
+        return mediaDevices.getUserMedia(constraints);
+      }),
+    createRecorder:
+      overrides?.createRecorder ??
+      ((stream: MediaStream, options: MediaRecorderOptions) => {
+        if (typeof MediaRecorderCtor === "undefined") {
+          throw new RecordingError(
+            "UNSUPPORTED_ENVIRONMENT",
+            "MediaRecorder is not available in this browser.",
+          );
+        }
+        return new MediaRecorderCtor(stream, options);
+      }),
+    now: overrides?.now ?? (() => Date.now()),
+  };
+}
+
+export function createBrowserRecorder(options: BrowserRecorderOptions = {}): BrowserRecorder {
+  const maxBytes = options.maxBytes ?? MAX_RECORDING_BYTES;
+  const timesliceMs = options.timesliceMs ?? DEFAULT_TIMESLICE_MS;
+  const env = resolveEnvironment(options.environment);
+
+  let state: RecorderState = "idle";
+  let mimeType: string | null = null;
+  let recorder: MediaRecorder | null = null;
+  let stream: MediaStream | null = null;
+  let chunks: Blob[] = [];
+  let sizeBytes = 0;
+  let startedAt = 0;
+  let oversize = false;
+  let capturedError: unknown = null;
+
+  let settledResult: RecordingResult | null = null;
+  let settledError: unknown = null;
+  let resolveStop: ((result: RecordingResult) => void) | null = null;
+  let rejectStop: ((error: unknown) => void) | null = null;
+
+  function stopTracks(): void {
+    stream?.getTracks().forEach((track) => track.stop());
+    stream = null;
+  }
+
+  function clearPending(): void {
+    resolveStop = null;
+    rejectStop = null;
+  }
+
+  function finalize(): void {
+    stopTracks();
+
+    if (oversize || capturedError) {
+      const error = oversize
+        ? new RecordingError(
+            "SIZE_LIMIT_EXCEEDED",
+            `Recording exceeded the ${maxBytes} byte limit.`,
+          )
+        : classifyMediaError(capturedError);
+      state = "error";
+      settledError = error;
+      const reject = rejectStop;
+      clearPending();
+      reject?.(error);
+      return;
+    }
+
+    const blob = new Blob(chunks, { type: mimeType ?? "" });
+    const result: RecordingResult = {
+      blob,
+      mimeType: mimeType ?? "",
+      sizeBytes: blob.size,
+      durationMs: Math.max(0, env.now() - startedAt),
+    };
+    state = "stopped";
+    settledResult = result;
+    const resolve = resolveStop;
+    clearPending();
+    resolve?.(result);
+  }
+
+  function handleData(event: BlobEvent): void {
+    const data = event.data;
+    if (!data || data.size <= 0) {
+      return;
+    }
+
+    chunks.push(data);
+    sizeBytes = totalChunkBytes(chunks);
+
+    if (sizeBytes > maxBytes && !oversize) {
+      oversize = true;
+      if (recorder && recorder.state !== "inactive") {
+        state = "stopping";
+        recorder.stop();
+      }
+    }
+  }
+
+  async function start(): Promise<void> {
+    if (state !== "idle") {
+      throw new RecordingError("INVALID_STATE", `Cannot start recording from state "${state}".`);
+    }
+
+    if (!isSecureRecordingContext(env)) {
+      throw new RecordingError(
+        "UNSUPPORTED_ENVIRONMENT",
+        "Recording requires a secure context (HTTPS) with MediaRecorder support.",
+      );
+    }
+
+    mimeType = resolveMimeType(env.isTypeSupported);
+    state = "requesting";
+
+    try {
+      stream = await env.getUserMedia({ audio: true });
+    } catch (error) {
+      state = "error";
+      throw classifyMediaError(error);
+    }
+
+    try {
+      recorder = env.createRecorder(stream, { mimeType });
+    } catch (error) {
+      stopTracks();
+      state = "error";
+      throw error instanceof RecordingError
+        ? error
+        : new RecordingError("RECORDING_FAILED", "Could not create the media recorder.", error);
+    }
+
+    chunks = [];
+    sizeBytes = 0;
+    oversize = false;
+    capturedError = null;
+    settledResult = null;
+    settledError = null;
+
+    recorder.ondataavailable = handleData;
+    recorder.onerror = (event: Event) => {
+      capturedError =
+        (event as unknown as { error?: unknown }).error ?? new Error("MediaRecorder error");
+    };
+    recorder.onstop = () => {
+      finalize();
+    };
+
+    startedAt = env.now();
+    recorder.start(timesliceMs);
+    state = "recording";
+  }
+
+  function stop(): Promise<RecordingResult> {
+    if (settledError) {
+      return Promise.reject(settledError);
+    }
+    if (settledResult) {
+      return Promise.resolve(settledResult);
+    }
+    if (state !== "recording" && state !== "stopping") {
+      return Promise.reject(
+        new RecordingError("INVALID_STATE", `Cannot stop recording from state "${state}".`),
+      );
+    }
+
+    return new Promise<RecordingResult>((resolve, reject) => {
+      resolveStop = resolve;
+      rejectStop = reject;
+      if (state === "recording" && recorder && recorder.state !== "inactive") {
+        state = "stopping";
+        recorder.stop();
+      }
+    });
+  }
+
+  function cancel(): void {
+    if (recorder) {
+      recorder.ondataavailable = null;
+      recorder.onstop = null;
+      recorder.onerror = null;
+      if (recorder.state !== "inactive") {
+        try {
+          recorder.stop();
+        } catch {
+          // ignore: cancelling a recorder that is already stopping
+        }
+      }
+    }
+    stopTracks();
+
+    const reject = rejectStop;
+    clearPending();
+    reject?.(new RecordingError("CANCELLED", "Recording was cancelled."));
+
+    recorder = null;
+    chunks = [];
+    sizeBytes = 0;
+    oversize = false;
+    capturedError = null;
+    settledResult = null;
+    settledError = null;
+    state = "idle";
+  }
+
+  return {
+    get state() {
+      return state;
+    },
+    get mimeType() {
+      return mimeType;
+    },
+    get sizeBytes() {
+      return sizeBytes;
+    },
+    start,
+    stop,
+    cancel,
+  };
+}
