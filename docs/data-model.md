@@ -200,11 +200,13 @@ exact `(spaceId, submittedIpHash, submittedAt)` shape EQ-010's rate-limit query 
 
 ### `activity`
 Space/memorial-level audit trail: consent recorded/withdrawn, invites, source/item deletion,
-contribution moderation, Memorial Mode activation/reversal/publish, link enable/disable. **Not**
-per-item review history (that's `item_revision`) and **not** the analytics `event` table below —
-this is the accountability log behind "who did what and when" (BR-021, BR-051). `targetId` has no
-foreign key, since the target row (e.g. a just-deleted source) may no longer exist when this is
-read later.
+contribution moderation, Memorial Mode activation/reversal/publish, link enable/disable, and
+per-item **visibility** changes (`item_visibility_changed`, added by TASK-011). **Not** per-item
+review history (that's `item_revision` — a review action's own visibility side-effect, e.g. the
+BR-030 default on first review, is captured there instead) and **not** the analytics `event` table
+below — this is the accountability log behind "who did what and when" (BR-021, BR-051). `targetId`
+has no foreign key, since the target row (e.g. a just-deleted source) may no longer exist when this
+is read later.
 
 ### `event`
 Analytics events, **exactly** the six from [User Flow §6](user-flow.md#6-instrumentation-before-launch):

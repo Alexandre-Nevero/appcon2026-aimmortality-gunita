@@ -37,10 +37,18 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
+  // Read what we'll need to clean up *before* deleting — once the source (and its cascaded items)
+  // are gone, we can no longer look them up.
   const itemsFromSource = await db.query.item.findMany({ where: eq(item.sourceId, id) });
   const removedItemIds = new Set(itemsFromSource.map((i) => i.id));
-
   const recapRow = await db.query.recap.findFirst({ where: eq(recap.spaceId, row.spaceId) });
+
+  // consent.evidenceSourceId is ON DELETE RESTRICT (data-model.md): deleting a source still
+  // serving as consent evidence throws here. Do the delete *before* any other write, so a failure
+  // leaves no false "source_deleted" activity entry or a recap already stripped of cards for a
+  // source that, in fact, still exists.
+  await db.delete(source).where(eq(source.id, id));
+
   if (recapRow) {
     const snapshot = Array.isArray(recapRow.snapshot) ? recapRow.snapshot : [];
     const filtered = snapshot.filter(
@@ -59,8 +67,6 @@ export async function DELETE(request: NextRequest, context: { params: Promise<{ 
     targetType: "source",
     targetId: id,
   });
-
-  await db.delete(source).where(eq(source.id, id));
 
   try {
     await deleteSourceFile(row.blobPathname);

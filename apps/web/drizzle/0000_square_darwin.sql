@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";--> statement-breakpoint
 CREATE EXTENSION IF NOT EXISTS "vector";--> statement-breakpoint
-CREATE TYPE "public"."activity_type" AS ENUM('consent_recorded', 'consent_withdrawn', 'invite_sent', 'source_deleted', 'item_deleted', 'contribution_approved', 'contribution_rejected', 'memorial_activated', 'memorial_reversed', 'memorial_published', 'memorial_link_disabled', 'memorial_link_enabled');--> statement-breakpoint
+CREATE TYPE "public"."activity_type" AS ENUM('consent_recorded', 'consent_withdrawn', 'invite_sent', 'source_deleted', 'item_deleted', 'item_visibility_changed', 'contribution_approved', 'contribution_rejected', 'memorial_activated', 'memorial_reversed', 'memorial_published', 'memorial_link_disabled', 'memorial_link_enabled');--> statement-breakpoint
 CREATE TYPE "public"."ai_call_provider" AS ENUM('groq', 'gemini');--> statement-breakpoint
 CREATE TYPE "public"."ai_call_purpose" AS ENUM('transcribe', 'vision', 'extract', 'hints', 'ask', 'caption', 'embed');--> statement-breakpoint
 CREATE TYPE "public"."ai_call_status" AS ENUM('ok', 'error');--> statement-breakpoint

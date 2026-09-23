@@ -1,5 +1,5 @@
 {
-  "id": "690247ca-ec00-458e-85ea-0f2a251ce2ba",
+  "id": "3d532153-7652-4979-9188-cb6ff3a72d8a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1976,6 +1976,7 @@
         "invite_sent",
         "source_deleted",
         "item_deleted",
+        "item_visibility_changed",
         "contribution_approved",
         "contribution_rejected",
         "memorial_activated",
