@@ -35,7 +35,7 @@ Use the cheapest layer that proves the behavior, in risk order:
 ## Scope
 
 ### In scope
-F-001–F-022, the business rules they cite, Methods EQ-001–EQ-012, the golden path, and the AppCon
+F-001–F-023, the business rules they cite, Methods EQ-001–EQ-013, the golden path, and the AppCon
 submission requirements. fil/en copy presence on new screens (BR-014) is a manual spot-check.
 
 ### Out of scope
@@ -79,17 +79,18 @@ Secrets are referenced by name only (see [Ops](ops.md)).
 | F-020 | Moderation | TC-053, TC-054 | integration + e2e | vitest / playwright | todo |
 | F-021 | Correction/deletion | TC-055, TC-056 | integration | vitest | todo |
 | F-022 | AI guardrail | TC-033, TC-034, TC-060, TC-061 | unit + eval + static | vitest / eval / script | todo |
+| F-023 | Photo memories | TC-057, TC-058, TC-059 | unit + integration + manual | vitest / manual | unit pass; integration + manual pending DB |
 
 ## Automation contract
 
 | Test ID | Level/tool | Test path | Command | Trigger | Artifact/evidence |
 |---|---|---|---|---|---|
-| TC-012–TC-014, TC-020, TC-022, TC-030, TC-031, TC-033, TC-034 | unit / Vitest | `packages/core/src/**/*.test.ts` | `pnpm --filter core test` | local, PR | Vitest report |
-| TC-001–TC-005, TC-010, TC-011, TC-015–TC-019, TC-021, TC-023, TC-025, TC-026, TC-032, TC-035–TC-037, TC-040–TC-044, TC-052–TC-056 | integration / Vitest + Neon test branch + AI SDK mock models | `apps/web/test/**/*.test.ts` | `pnpm --filter web test` | local, PR | Vitest report |
+| TC-012–TC-014, TC-020, TC-022, TC-030, TC-031, TC-033, TC-034, TC-057 (rule half) | unit / Vitest | `packages/core/src/**/*.test.ts` | `pnpm --filter core test` | local, PR | Vitest report |
+| TC-001–TC-005, TC-010, TC-011, TC-015–TC-019, TC-021, TC-023, TC-025, TC-026, TC-032, TC-035–TC-037, TC-040–TC-044, TC-052–TC-056, TC-057, TC-058 | integration / Vitest + Neon test branch + AI SDK mock models | `apps/web/test/**/*.test.ts` | `pnpm --filter web test` | local, PR | Vitest report |
 | TC-024, TC-045, TC-050, TC-051, TC-053 (web half) | e2e / Playwright | `apps/web/e2e/*.spec.ts` | `pnpm test:e2e` | PR (preview URL), before demo | HTML report + trace on failure |
 | TC-060 | eval / script with live providers | `eval/run.ts`, cases in `eval/cases.json` | `pnpm eval` | manual before demo; after prompt/model/τ change | `eval/results/<date>.json` |
 | TC-061 | static / script | `scripts/check-no-tts.sh` | `pnpm check:guardrails` | PR | exit code |
-| TC-070, TC-080–TC-083 | manual | this doc | — | before submission | checklist + notes in PR |
+| TC-070, TC-080–TC-083, TC-059 | manual | this doc | — | before submission | checklist + notes in PR |
 
 AI SDK test helpers (mock language/embedding/transcription models from `ai/test`) replace live
 providers in integration tests. Confirm exact export names at scaffold (SDK 7).
@@ -304,6 +305,27 @@ providers in integration tests. Confirm exact export names at scaffold (SDK 7).
 - **Covers:** BR-062 · **Level:** integration
 - **Expected:** approved contribution appears in Ask only under "Others remember", never under
   "In their own words".
+
+**TC-057 — Photo memories show only approved visitor photos**
+- **Covers:** F-023, BR-062, BR-081 · **Level:** unit (`isMemorialPublic`) + integration
+- **Expected:** a disabled link, draft/missing recap, or reversed Memorial Mode is not public;
+  S-033 lists only `approved` contributions with a photo, oldest first; pending, rejected,
+  text-only, and audio-only contributions never appear; order is oldest first and does not depend on hearts.
+
+**TC-058 — Soft tribute toggle (EQ-013)**
+- **Covers:** F-023, BR-081, ADR-008 · **Level:** integration (unit for body/cookie helpers; `curl` against a
+  seeded DB until a Neon test branch exists)
+- **Expected:** `hearted: true` twice leaves one row and returns `{ hearted: true }` with no `count`
+  key; `hearted: false` returns `{ hearted: false }`; a pending, rejected, text-only, or
+  other-memorial contribution → 404; a disabled or unpublished memorial → 404; malformed body → 400;
+  `gunita_visitor` (httpOnly) is set only when missing, with `maxAge` 1,209,600 seconds; `tribute`
+  rows hold a 64-char hex HMAC, never the cookie value.
+
+**TC-059 — Photo memories on a phone (manual)**
+- **Covers:** F-023, BR-080, BR-081 · **Level:** manual, iOS Safari + Android Chrome over HTTPS
+- **Expected:** S-030 → S-033 via the entry link; one photo per swipe; heart toggles; no number is
+  shown; no comment box, share button, or "most loved" ordering;
+  back returns to S-030; a disabled link shows S-034; S-032 has no link to S-033.
 
 ### Correction and deletion
 

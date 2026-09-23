@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 import "dotenv/config";
@@ -74,6 +75,7 @@ export async function seed(options: { reset?: boolean; fixturePath?: string } = 
   if (existing) {
     if (!options.reset) {
       console.log(`Space "${fixture.space.name}" already seeded. Pass --reset to reseed.`);
+      if (existing.memorialToken) console.log(`Memorial: /m/${existing.memorialToken}/memories`);
       return { spaceId: existing.id, reseeded: false };
     }
     await deleteSpaceTree(existing.id);
@@ -220,6 +222,45 @@ export async function seed(options: { reset?: boolean; fixturePath?: string } = 
         segmentIds: stepSegmentIds,
       });
     }
+  }
+
+  if (fixture.publishMemorial) {
+    // System Design: token is 128-bit random base64url, generated here so it is never committed.
+    const token = randomBytes(16).toString("base64url");
+    const now = new Date();
+    await db
+      .update(space)
+      .set({ lifecycleMode: "memorial", memorialToken: token, memorialActivatedAt: now })
+      .where(eq(space.id, createdSpace.id));
+    await db.insert(recap).values({
+      spaceId: createdSpace.id,
+      status: "published",
+      publishedAt: now,
+      publishedByMembershipId: firstMembershipId,
+    });
+    await db.insert(activity).values([
+      { spaceId: createdSpace.id, membershipId: firstMembershipId, type: "memorial_activated" },
+      { spaceId: createdSpace.id, membershipId: firstMembershipId, type: "memorial_published" },
+    ]);
+    console.log(`Memorial published: /m/${token}  ·  photo memories: /m/${token}/memories`);
+  }
+
+  // Fixture order becomes submission order, which is S-033's display order.
+  const firstSubmittedAt = Date.now() - fixture.contributions.length * 1000;
+  for (const [index, c] of fixture.contributions.entries()) {
+    await db.insert(contribution).values({
+      spaceId: createdSpace.id,
+      displayName: c.displayName,
+      relationship: c.relationship,
+      textContent: c.textContent ?? null,
+      photoBlobPathname: c.photoBlobPathname ?? null,
+      audioBlobPathname: c.audioBlobPathname ?? null,
+      status: c.status,
+      submittedIpHash: "seed",
+      submittedAt: new Date(firstSubmittedAt + index * 1000),
+      reviewedByMembershipId: c.status === "pending" ? null : firstMembershipId,
+      reviewedAt: c.status === "pending" ? null : new Date(),
+    });
   }
 
   console.log(`Seeded space "${createdSpace.name}" (${createdSpace.id}).`);

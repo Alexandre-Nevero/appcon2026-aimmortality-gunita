@@ -8,6 +8,13 @@
       "when": 1790183065829,
       "tag": "0000_square_darwin",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790184104380,
+      "tag": "0001_majestic_omega_sentinel",
+      "breakpoints": true
     }
   ]
 }

@@ -68,4 +68,28 @@ describe("seed/data/family.json", () => {
       }
     }
   });
+
+  it("accepts a published memorial with visitor contributions and rejects empty ones (BR-060)", () => {
+    const base = { space: { name: "Test Family" } };
+    const parsed = familyFixture.parse({
+      ...base,
+      publishMemorial: true,
+      contributions: [
+        {
+          displayName: "Ana",
+          relationship: "Kapitbahay",
+          photoBlobPathname: "https://example.public.blob.vercel-storage.com/a.jpg",
+          status: "approved",
+        },
+      ],
+    });
+    expect(parsed.publishMemorial).toBe(true);
+    expect(parsed.contributions[0].status).toBe("approved");
+
+    expect(familyFixture.parse(base).contributions).toEqual([]);
+    expect(
+      familyFixture.safeParse({ ...base, contributions: [{ displayName: "Ana", relationship: "Kapitbahay" }] })
+        .success,
+    ).toBe(false);
+  });
 });

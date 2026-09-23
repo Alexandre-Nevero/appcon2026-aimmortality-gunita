@@ -7,7 +7,7 @@
 > value sets are owned by `packages/core/src/enums.ts` (docs/implementation-plan.md §0.1 frozen
 > contract) and imported into the schema — never redefine a value set in both places.
 > **Not yet run against a live database.** `pnpm --filter web db:generate` produced
-> `apps/web/drizzle/0000_fresh_northstar.sql` and it was hand-reviewed (see §7), but
+> `apps/web/drizzle/0000_slimy_smasher.sql` and it was hand-reviewed (see §7), but
 > `pnpm --filter web db:migrate` needs a real Neon `DATABASE_URL_UNPOOLED` (TASK-022) to execute.
 
 ## 0. How to read this doc
@@ -47,6 +47,7 @@ item *───* person   (via item_person)
 space 1───* question
 space 1───1 recap
 space 1───* contribution
+contribution 1───* tribute
 space 1───* activity
 space 1───* event
 space 1───* ai_call
@@ -197,6 +198,14 @@ F-019/F-020. `submittedIpHash` is `SHA-256(ip ‖ daily_salt)` (Methods EQ-010) 
 stored. The `contribution_has_content` `CHECK` constraint enforces BR-060 (at least one of text,
 photo, audio) at the DB level, not just in a form validator. `contribution_rate_limit_idx` is the
 exact `(spaceId, submittedIpHash, submittedAt)` shape EQ-010's rate-limit query needs.
+`photoBlobPathname` stores the **full Blob URL** (same convention as `source.blobPathname`, see `apps/web/src/media/blob.ts`); S-033 renders it directly.
+
+### `tribute`
+F-023/BR-081 (ADR-007). One soft tribute ("heart") per approved visitor photo per device.
+`visitorKeyHash` is `HMAC-SHA-256(IP_HASH_SECRET, gunita_visitor cookie)` — never the raw cookie,
+an IP, or a name. `tribute_contribution_visitor_unique` on `(contributionId, visitorKeyHash)`
+makes a repeat heart a no-op (one heart per phone). The total is not shown (ADR-008). Deleting a
+contribution cascades its tributes.
 
 ### `activity`
 Space/memorial-level audit trail: consent recorded/withdrawn, invites, source/item deletion,
@@ -242,7 +251,7 @@ answer module must never write prompt or transcript text into this column.
   (`apps/web/drizzle/0000_slimy_smasher.sql`) was hand-reviewed for the `vector`/HNSW index, partial
   unique indexes, and the `CHECK` constraint, and `pnpm --filter web typecheck` /
   `pnpm --filter web test` (fixture-schema tests) pass, but "migrates cleanly on Neon" is unverified
-  until TASK-022 lands.
+  until TASK-022 lands. `0001_*.sql` adds `tribute` (ADR-007) and is equally unverified until TASK-022.
 - **`seed/load.ts` isn't transactional.** Its writes are a long sequence of unwrapped inserts (the
   Neon HTTP driver doesn't support interactive transactions the way a persistent connection would).
   If a fixture throws partway through (an unknown segment/person key, for example), the rows already

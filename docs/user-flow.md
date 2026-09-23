@@ -33,8 +33,9 @@ All flows run in the **same Next.js web app** (phone browser primary). Memorial 
 | UF-010 | Moderate visitor memories | Steward | S-024 | S-030 | F-020 (UJ-008) | Must-Have | During/after the lamay |
 | UF-011 | Correct or delete material | Steward | S-013 | S-012 | F-021 | Must-Have | Occasional |
 | UF-012 | Withdraw consent | Featured person via steward | S-019 | S-005 | F-002 (BR-004) | Should-Have | Rare |
+| UF-013 | Visitor: photo memories | Memorial visitor | S-030 | S-033 | F-023 (UJ-009) | Must-Have | Once per visitor |
 
-**Coverage:** F-001–F-022 each appear in at least one flow (F-015 in every flow that shows items).
+**Coverage:** F-001–F-023 each appear in at least one flow (F-015 in every flow that shows items).
 
 ---
 
@@ -49,7 +50,7 @@ All flows run in the **same Next.js web app** (phone browser primary). Memorial 
 5. S-016: "How did Lola make adobo?" → cited answer → S-104 plays the clip. An unrecorded question →
    Hindi pa alam → "Add as question".
 6. S-020 → S-021 → S-022 → S-023: Memorial Mode, selection, publish, QR.
-7. Phone scans the QR → S-030 → S-031 → S-032. S-024: approve → it appears on S-030 as About them.
+7. Phone scans the QR → S-030 → S-031 (with a photo) → S-032. S-024: approve → it appears on S-030 as About them → S-033 shows the photo; tap the heart.
 
 ```mermaid
 flowchart LR
@@ -154,6 +155,15 @@ flowchart LR
 | 1 | S-024 | Opens pending list | Shows name, relationship, content | List |
 | 2 | S-024 | Approve or reject (no editing, BR-063) | Approved → "Memories from others" labeled About them | Visible on S-030 after reload |
 
+### UF-013 — Visitor: photo memories
+
+| Step | Screen | User does | System does | Success looks like |
+|---|---|---|---|---|
+| 1 | S-030 | Taps "See photo memories" | Opens S-033 | Full-screen first photo |
+| 2 | S-033 | Swipes up | Snaps to the next approved visitor photo (oldest first) | One photo per swipe |
+| 3 | S-033 | Taps the heart | Saves or removes this phone's tribute | Heart filled or empty; no number |
+| 4 | S-033 | Taps back | Returns to S-030 | Nothing else asked of them (BR-080) |
+
 ### UF-011 — Correct or delete material
 
 | Step | Screen | User does | System does | Success looks like |
@@ -187,6 +197,9 @@ flowchart LR
 | EV-018 | UF-009 | Submit with nothing but name | Submit disabled; inline message | Add text/photo/audio | No |
 | EV-019 | UF-009 | Slow venue connection | Cards load text first; images lazy; audio on tap | none | No |
 | EV-020 | UF-011 | Deleting a source used in a published recap | S-102 warns cards will be removed | Confirm | Intended |
+| EV-021 | UF-013 | No approved visitor photos yet | S-033 empty state + "Share a memory" | Share one or come back later | No |
+| EV-022 | UF-013 | Heart fails to send (network, 404) | Heart reverts; "Couldn't send. Try again." | Tap again | No |
+| EV-023 | UF-013 | Browser blocks cookies | Heart still works, but each tap may count as a new visitor | none (ADR-007 known limit) | No |
 
 ---
 

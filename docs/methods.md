@@ -48,6 +48,7 @@ here so no number is invented by a model.
 | EQ-010 | Visitor submission allowed | Allow iff `count(submissions where memorial = m and ip_hash = h and created_at > now − 10 min) < 5` [assumption]; `h = SHA-256(ip ‖ daily_salt)` | DS-006 | High | PRD BR-064 |
 | EQ-011 | Wake friction time | Per visit: `t = share_submitted.at − memorial_opened.at` (same visit id). Metric = median `t` over test visits; pass iff median < 90 s | DS-005 | High | PRD Success metrics (TALA threshold) |
 | EQ-012 | AI quality bar scores | Abstention accuracy = unanswerable questions that abstained ÷ unanswerable questions. Citation correctness = answerable questions where every sentence's citation supports it (human-judged) ÷ answerable. Impersonation count = outputs with first person as the person. Leak count = outputs mentioning a non-visible item | DS-007 | High (counts) with human judgment for citation support | PRD AI quality bar |
+| EQ-013 | Tribute total on a photo memory | Not displayed. One heart per device. No count is returned or shown | DS-009 | High (rule) | PRD BR-081, ADR-008 |
 
 **Fixed parameters (not computed, recorded so they aren't re-invented):**
 
@@ -74,6 +75,7 @@ here so no number is invented by a model.
 | DS-006 | Visitor contributions + hashed IPs | GUNITA `contribution` table | Internal; hashed, salted daily | High |
 | DS-007 | AI evaluation set | Fictional demo family in repo (`eval/`) | MIT, public (PRD BR-040) | High |
 | DS-008 | Items, review states, visibility, memberships | GUNITA database | Internal | High |
+| DS-009 | Tributes (contribution id + HMAC of anonymous device cookie) | GUNITA `tribute` table | Internal; pseudonymous; no IP, no name | High |
 
 ---
 
@@ -88,6 +90,7 @@ here so no number is invented by a model.
 | F-012 Ask GUNITA | Sentence kept, quotes | EQ-003 | TC-030, TC-031 |
 | F-013 Abstention | Answer-or-abstain gate | EQ-001, EQ-002 | TC-032, TC-060 |
 | F-019 Guest contribution | Submission allowed | EQ-010 | TC-052 |
+| F-023 Photo memories | Heart toggle; total not shown | EQ-013 | TC-058 |
 | Success metrics | Wake friction, outcome shares, review rates, eval scores | EQ-008, EQ-009, EQ-011, EQ-012 | TC-060, TC-070 |
 ---
 

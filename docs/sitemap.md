@@ -2,7 +2,7 @@
 
 **Project:** GUNITA
 **Maintained by:** Alex
-**Last updated:** 2026-09-23 (synced to ADR-004 / ADR-005)
+**Last updated:** 2026-09-23 (synced to ADR-004 / ADR-005 / ADR-007)
 **Status:** Draft
 **FMD version:** 4.6.2
 
@@ -85,6 +85,7 @@ needs S-020's reverse action.
 | S-030 | Memorial recap | Cover, life moments, in their own words (tap-to-play), recipe, lesson, closing; "Memories from others" section | F-017, F-018, F-020 | QR scan, shared link | Public (token) | loading / success / unavailable → S-034 |
 | S-031 | Share a memory | Name, relationship, text / photo / voice note, review notice | F-019 | S-030 button | Public (token) | idle / recording / uploading / rate-limited / error |
 | S-032 | Thank you | Confirms the family will review; ends the interaction | F-019 | S-031 submit | Public (token) | static |
+| S-033 | Photo memories | Full-screen vertical scroll of approved visitor photos; soft tribute heart with no count; no comments, no share | F-023 | S-030 link | Public (token) | empty / success / tribute failed (reverts) / unavailable → S-034 |
 | S-034 | Memorial unavailable | Neutral message when the link is disabled, unpublished, or unknown | F-018 | any `/m/*` failure | Public | static |
 
 **System screens:**
@@ -144,7 +145,8 @@ NEXT.JS APP ROUTER (one app)
 PUBLIC MEMORIAL
 /m/[token]                          S-030
 ├── /m/[token]/share                S-031
-└── /m/[token]/thanks               S-032
+├── /m/[token]/thanks               S-032
+└── /m/[token]/memories             S-033
 (unavailable)                       S-034
 ```
 
@@ -158,6 +160,7 @@ flowchart TD
   Tabs --> Ask["Ask S-016"]
   Home --> Mem["Memorial S-020 → S-021 → S-022 → S-023, S-024"]
   QR["/m/token S-030"] --> Share["S-031"] --> Thanks["S-032"]
+  QR --> Photos["S-033 Photo memories"]
 ```
 
 **Depth rule:** capture, review, and Ask are at most two taps from Home.
@@ -178,6 +181,7 @@ flowchart TD
 | `/m/[token]` | S-030 | `token` | Public | GET | No (`noindex`) | S-034 if disabled/unpublished/unknown |
 | `/m/[token]/share` | S-031 | `token` | Public | GET | No | form posts to API |
 | `/m/[token]/thanks` | S-032 | `token` | Public | GET | No | |
+| `/m/[token]/memories` | S-033 | `token` | Public | GET | No (`noindex`) | S-034 if disabled/unpublished/unknown; heart posts to `POST /api/m/:token/tributes` |
 
 **Route conventions:** kebab-case segments; opaque IDs (UUID); memorial token is 128-bit random
 base64url.
@@ -222,7 +226,7 @@ No push notifications and no email links in the MVP (BR-080).
 | Screen | Phone browser | Desktop | Differences that matter |
 |---|---|---|---|
 | S-001–S-024 (family UI) | primary (375 px) | usable; same routes | MediaRecorder + mic permissions |
-| S-030–S-032 | primary (375 px) | centered column ≤ 480 px | judges may open on laptops |
+| S-030–S-033 | primary (375 px) | centered column ≤ 480 px | judges may open on laptops; S-033 is full-bleed black on phone, centered ≤ 480 px on desktop |
 
 **Breakpoints:** 375 / 768. **Primary design target:** phone, 375 px wide. No native app.
 
@@ -239,6 +243,8 @@ No push notifications and no email links in the MVP (BR-080).
 | Payments / plans | ADR-003, not built | after validation |
 | Lapida page / nine-night guide | not in finalized MVP | after MVP |
 | Native / Expo apps | ADR-004: web only | never for this hackathon |
+| Comments on photo memories | ADR-007: people talk in person at the lamay | never in MVP |
+| Sharing photo memories outside the memorial | ADR-007: contributor and steward consent not designed | after AppCon review |
 
 ---
 
@@ -254,7 +260,7 @@ No push notifications and no email links in the MVP (BR-080).
 ## Self-check (advisory)
 
 - [x] Every product `S-###` serves at least one `F-###` (or is a system screen)
-- [x] Important PRD features have at least one serving screen (F-001–F-022)
+- [x] Important PRD features have at least one serving screen (F-001–F-023)
 - [x] Interactive screens declare states
 - [x] 404 / 500 / access-denied exist
 - [x] Every §2 screen is in the §3 tree
