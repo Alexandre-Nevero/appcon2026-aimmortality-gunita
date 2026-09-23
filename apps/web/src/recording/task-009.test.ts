@@ -179,15 +179,33 @@ describe("createBrowserRecorder", () => {
     expect(recorder.state).toBe("error");
   });
 
-  it("enforces the size cap by auto-stopping and rejecting", async () => {
+  it("requests mono audio capture", async () => {
+    const getUserMedia = vi.fn(async () => {
+      return { getTracks: () => [{ stop: () => {} }] } as unknown as MediaStream;
+    });
+    const { environment } = createTestEnvironment({ getUserMedia });
+    const recorder = createBrowserRecorder({ environment });
+
+    await recorder.start();
+
+    expect(getUserMedia).toHaveBeenCalledWith({ audio: { channelCount: 1 } });
+
+    recorder.cancel();
+  });
+
+  it("auto-stops at the size cap and preserves the captured audio", async () => {
     const { environment, getRecorder } = createTestEnvironment();
     const recorder = createBrowserRecorder({ environment, maxBytes: 100 });
 
     await recorder.start();
-    getRecorder().emit(250); // exceeds the cap -> auto stop
+    getRecorder().emit(60);
+    getRecorder().emit(60); // auto-stop and keep the first 100 bytes
 
-    expect(recorder.state).toBe("error");
-    await expect(recorder.stop()).rejects.toMatchObject({ code: "SIZE_LIMIT_EXCEEDED" });
+    expect(recorder.state).toBe("stopped");
+
+    const result = await recorder.stop();
+    expect(result.sizeBytes).toBe(100);
+    expect(result.blob.size).toBe(100);
   });
 
   it("rejects start() from a non-idle state and stop() when idle", async () => {
@@ -229,5 +247,27 @@ describe("playback helpers (tap-to-play only)", () => {
 
     revokePlaybackUrl(url, factory);
     expect(factory.revokeObjectURL).toHaveBeenCalledWith("blob:fake");
+  });
+
+  it("throws stable recorder errors when object URL APIs are missing", () => {
+    const blob = new Blob([new Uint8Array(4)]);
+    const missingCreateFactory = {} as unknown as Parameters<typeof createPlaybackUrl>[1];
+    const missingRevokeFactory = {
+      createObjectURL: vi.fn(() => "blob:fake"),
+    } as unknown as Parameters<typeof revokePlaybackUrl>[1];
+
+    try {
+      createPlaybackUrl(blob, missingCreateFactory);
+      throw new Error("Expected createPlaybackUrl to throw.");
+    } catch (error) {
+      expect(isRecordingError(error) && error.code).toBe("UNSUPPORTED_ENVIRONMENT");
+    }
+
+    try {
+      revokePlaybackUrl("blob:fake", missingRevokeFactory);
+      throw new Error("Expected revokePlaybackUrl to throw.");
+    } catch (error) {
+      expect(isRecordingError(error) && error.code).toBe("UNSUPPORTED_ENVIRONMENT");
+    }
   });
 });

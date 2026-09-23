@@ -1,7 +1,7 @@
 // F-003 capture: pure MIME-type resolution against the frozen audio contract.
 
-import { DEFAULT_MIME_CANDIDATES } from "@/src/recording/constants";
-import { RecordingError } from "@/src/recording/errors";
+import { DEFAULT_MIME_CANDIDATES } from "./constants";
+import { RecordingError } from "./errors";
 
 export type IsTypeSupported = (type: string) => boolean;
 

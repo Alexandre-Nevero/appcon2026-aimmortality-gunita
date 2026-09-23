@@ -1,6 +1,6 @@
 // F-003 capture: environment guards and getUserMedia error classification.
 
-import { RecordingError } from "@/src/recording/errors";
+import { RecordingError } from "./errors";
 
 /**
  * Recording needs MediaRecorder and a secure context (HTTPS). Mic access is

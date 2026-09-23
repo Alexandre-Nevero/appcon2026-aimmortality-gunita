@@ -1,7 +1,9 @@
 // F-003 capture: shared limits and the frozen audio contract.
 
-/** BR/System Design: recordings are capped at 4 MB. */
-export const MAX_RECORDING_BYTES = 4 * 1024 * 1024;
+import { MAX_UPLOAD_BYTES } from "../media/validate";
+
+/** BR/System Design: recordings reuse the shared 4 MB upload cap. */
+export const MAX_RECORDING_BYTES = MAX_UPLOAD_BYTES;
 
 /**
  * Frozen audio contract (implementation-plan §0.1): probe `audio/webm` then

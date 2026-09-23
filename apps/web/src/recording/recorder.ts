@@ -4,11 +4,11 @@
 // `environment` so the flow — including the 4 MB size cap and the
 // permission-denied path (TC-081) — is unit-testable under Node/vitest.
 
-import { DEFAULT_TIMESLICE_MS, MAX_RECORDING_BYTES } from "@/src/recording/constants";
-import { classifyMediaError, isSecureRecordingContext } from "@/src/recording/environment";
-import { RecordingError } from "@/src/recording/errors";
-import { resolveMimeType, type IsTypeSupported } from "@/src/recording/formats";
-import { totalChunkBytes } from "@/src/recording/size";
+import { DEFAULT_TIMESLICE_MS, MAX_RECORDING_BYTES } from "./constants";
+import { classifyMediaError, isSecureRecordingContext } from "./environment";
+import { RecordingError } from "./errors";
+import { resolveMimeType, type IsTypeSupported } from "./formats";
+import { exceedsSizeLimit, remainingBytes, totalChunkBytes } from "./size";
 
 export type RecorderState =
   | "idle"
@@ -46,7 +46,7 @@ export interface BrowserRecorder {
   readonly sizeBytes: number;
   /** Requests the mic and begins recording. Rejects with a {@link RecordingError}. */
   start(): Promise<void>;
-  /** Stops and resolves with the recorded blob, or rejects (e.g. size cap). */
+  /** Stops and resolves with the recorded blob. */
   stop(): Promise<RecordingResult>;
   /** Discards the in-progress recording and returns to `idle` for re-record. */
   cancel(): void;
@@ -110,7 +110,6 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
   let chunks: Blob[] = [];
   let sizeBytes = 0;
   let startedAt = 0;
-  let oversize = false;
   let capturedError: unknown = null;
 
   let settledResult: RecordingResult | null = null;
@@ -131,13 +130,8 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
   function finalize(): void {
     stopTracks();
 
-    if (oversize || capturedError) {
-      const error = oversize
-        ? new RecordingError(
-            "SIZE_LIMIT_EXCEEDED",
-            `Recording exceeded the ${maxBytes} byte limit.`,
-          )
-        : classifyMediaError(capturedError);
+    if (capturedError) {
+      const error = classifyMediaError(capturedError);
       state = "error";
       settledError = error;
       const reject = rejectStop;
@@ -160,21 +154,36 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
     resolve?.(result);
   }
 
+  function stopRecorder(): void {
+    if (recorder && recorder.state !== "inactive") {
+      state = "stopping";
+      recorder.stop();
+    }
+  }
+
   function handleData(event: BlobEvent): void {
     const data = event.data;
     if (!data || data.size <= 0) {
       return;
     }
 
+    const nextSize = sizeBytes + data.size;
+
+    if (exceedsSizeLimit(nextSize, maxBytes)) {
+      const bytesToKeep = remainingBytes(sizeBytes, maxBytes);
+      if (bytesToKeep > 0) {
+        chunks.push(data.slice(0, bytesToKeep, data.type));
+        sizeBytes = totalChunkBytes(chunks);
+      }
+      stopRecorder();
+      return;
+    }
+
     chunks.push(data);
     sizeBytes = totalChunkBytes(chunks);
 
-    if (sizeBytes > maxBytes && !oversize) {
-      oversize = true;
-      if (recorder && recorder.state !== "inactive") {
-        state = "stopping";
-        recorder.stop();
-      }
+    if (sizeBytes === maxBytes) {
+      stopRecorder();
     }
   }
 
@@ -194,7 +203,7 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
     state = "requesting";
 
     try {
-      stream = await env.getUserMedia({ audio: true });
+      stream = await env.getUserMedia({ audio: { channelCount: 1 } });
     } catch (error) {
       state = "error";
       throw classifyMediaError(error);
@@ -209,10 +218,8 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
         ? error
         : new RecordingError("RECORDING_FAILED", "Could not create the media recorder.", error);
     }
-
     chunks = [];
     sizeBytes = 0;
-    oversize = false;
     capturedError = null;
     settledResult = null;
     settledError = null;
@@ -247,9 +254,8 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
     return new Promise<RecordingResult>((resolve, reject) => {
       resolveStop = resolve;
       rejectStop = reject;
-      if (state === "recording" && recorder && recorder.state !== "inactive") {
-        state = "stopping";
-        recorder.stop();
+      if (state === "recording") {
+        stopRecorder();
       }
     });
   }
@@ -276,7 +282,6 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
     recorder = null;
     chunks = [];
     sizeBytes = 0;
-    oversize = false;
     capturedError = null;
     settledResult = null;
     settledError = null;

@@ -3,14 +3,21 @@
 // The contract is tap-to-play only — never autoplay. These helpers only mint and
 // revoke object URLs; the UI decides when to play in response to a user tap.
 
-import type { RecordingResult } from "@/src/recording/recorder";
+import { RecordingError } from "./errors";
+import type { RecordingResult } from "./recorder";
 
 type ObjectUrlFactory = Pick<typeof URL, "createObjectURL" | "revokeObjectURL">;
 
-function resolveUrlFactory(factory?: ObjectUrlFactory): ObjectUrlFactory {
+function resolveUrlFactory(
+  factory: ObjectUrlFactory | undefined,
+  method: keyof ObjectUrlFactory,
+): ObjectUrlFactory {
   const resolved = factory ?? (globalThis as { URL?: ObjectUrlFactory }).URL;
-  if (!resolved?.createObjectURL) {
-    throw new Error("URL.createObjectURL is not available in this environment.");
+  if (!resolved?.[method]) {
+    throw new RecordingError(
+      "UNSUPPORTED_ENVIRONMENT",
+      `URL.${method} is not available in this environment.`,
+    );
   }
   return resolved;
 }
@@ -21,10 +28,10 @@ export function createPlaybackUrl(
   factory?: ObjectUrlFactory,
 ): string {
   const blob = source instanceof Blob ? source : source.blob;
-  return resolveUrlFactory(factory).createObjectURL(blob);
+  return resolveUrlFactory(factory, "createObjectURL").createObjectURL(blob);
 }
 
 /** Revokes a previously created playback URL to free memory. */
 export function revokePlaybackUrl(url: string, factory?: ObjectUrlFactory): void {
-  resolveUrlFactory(factory).revokeObjectURL(url);
+  resolveUrlFactory(factory, "revokeObjectURL").revokeObjectURL(url);
 }

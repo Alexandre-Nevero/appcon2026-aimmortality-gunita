@@ -1,6 +1,6 @@
 // F-003 capture: pure size-cap helpers for the 4 MB limit.
 
-import { MAX_RECORDING_BYTES } from "@/src/recording/constants";
+import { MAX_RECORDING_BYTES } from "./constants";
 
 export function totalChunkBytes(chunks: readonly Blob[]): number {
   return chunks.reduce((sum, chunk) => sum + chunk.size, 0);
