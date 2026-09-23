@@ -21,22 +21,38 @@ function requireBetterAuthSecret(): string {
   return secret;
 }
 
-export const auth = betterAuth({
-  baseURL,
-  basePath: "/api/auth",
-  secret: requireBetterAuthSecret(),
-  trustedOrigins: [baseURL],
-  database: drizzleAdapter(db, {
-    provider: "pg",
-    schema: {
-      user: authUser,
-      session: authSession,
-      account: authAccount,
-      verification: authVerification,
+function createAuth() {
+  return betterAuth({
+    baseURL,
+    basePath: "/api/auth",
+    secret: requireBetterAuthSecret(),
+    trustedOrigins: [baseURL],
+    database: drizzleAdapter(db, {
+      provider: "pg",
+      schema: {
+        user: authUser,
+        session: authSession,
+        account: authAccount,
+        verification: authVerification,
+      },
+    }),
+    emailAndPassword: {
+      enabled: true,
     },
-  }),
-  emailAndPassword: {
-    enabled: true,
-  },
-  plugins: [nextCookies()],
-});
+    plugins: [nextCookies()],
+  });
+}
+
+type AuthInstance = ReturnType<typeof createAuth>;
+let authInstance: AuthInstance | undefined;
+
+export function getAuth(): AuthInstance {
+  if (authInstance) {
+    return authInstance;
+  }
+
+  const createdAuth = createAuth();
+  authInstance = createdAuth;
+
+  return createdAuth;
+}

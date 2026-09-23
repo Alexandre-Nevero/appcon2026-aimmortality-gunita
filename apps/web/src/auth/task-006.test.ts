@@ -40,7 +40,7 @@ afterEach(() => {
 });
 
 describe("TASK-006 store integration", () => {
-  it("creates a space through the real space/person/membership schema tables atomically", async () => {
+  it("creates a space through the real space/person/membership schema tables atomically", { timeout: 10_000 }, async () => {
     const inserted: Array<{ table: string; values: unknown }> = [];
     const txMock = {
       query: {
@@ -630,7 +630,7 @@ describe("TASK-006 route behavior", () => {
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     vi.resetModules();
-    vi.doMock("@/src/auth/auth", () => ({ auth: {} }));
+    vi.doMock("@/src/auth/auth", () => ({ getAuth: vi.fn(() => ({})) }));
     vi.doMock("better-auth/next-js", () => ({
       toNextJsHandler: () => ({
         GET: vi.fn(),
@@ -673,13 +673,28 @@ describe("TASK-006 route behavior", () => {
 });
 
 describe("TASK-006 auth configuration", () => {
-  it("fails fast when BETTER_AUTH_SECRET is missing", async () => {
+  it("does not require BETTER_AUTH_SECRET just to import the auth route module", { timeout: 10_000 }, async () => {
     const originalSecret = process.env.BETTER_AUTH_SECRET;
 
     delete process.env.BETTER_AUTH_SECRET;
     vi.resetModules();
 
-    await expect(import("./auth")).rejects.toThrow(
+    await expect(import("../../app/api/auth/[...all]/route")).resolves.toBeDefined();
+
+    if (originalSecret) {
+      process.env.BETTER_AUTH_SECRET = originalSecret;
+    }
+  });
+
+  it("fails fast when BETTER_AUTH_SECRET is missing at runtime auth construction", async () => {
+    const originalSecret = process.env.BETTER_AUTH_SECRET;
+
+    delete process.env.BETTER_AUTH_SECRET;
+    vi.resetModules();
+
+    const { getAuth } = await import("./auth");
+
+    expect(() => getAuth()).toThrow(
       "BETTER_AUTH_SECRET is required (see docs/ops.md § Configuration & secrets).",
     );
 

@@ -1,8 +1,8 @@
-import { auth } from "@/src/auth/auth";
+import { getAuth } from "@/src/auth/auth";
 import { ApiError } from "@/src/auth/errors";
 
 export async function requireSession(request: Request) {
-  const session = await auth.api.getSession({
+  const session = await getAuth().api.getSession({
     headers: request.headers,
     query: {
       disableCookieCache: true,

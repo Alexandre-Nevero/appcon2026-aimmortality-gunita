@@ -1,11 +1,27 @@
 import { toNextJsHandler } from "better-auth/next-js";
 import { z } from "zod";
 
-import { auth } from "@/src/auth/auth";
+import { getAuth } from "@/src/auth/auth";
 import { errorResponse, parseJsonBody } from "@/src/auth/http";
 import { acceptInviteForUser, findUserByEmail, validateInviteCode } from "@/src/auth/store";
 
-const authHandler = toNextJsHandler(auth);
+function createAuthHandler() {
+  return toNextJsHandler(getAuth());
+}
+
+type AuthHandler = ReturnType<typeof createAuthHandler>;
+let authHandler: AuthHandler | undefined;
+
+function getAuthHandler(): AuthHandler {
+  if (authHandler) {
+    return authHandler;
+  }
+
+  const createdHandler = createAuthHandler();
+  authHandler = createdHandler;
+
+  return createdHandler;
+}
 
 const signUpBodySchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -33,7 +49,7 @@ async function forwardAuthRequest(
   const headers = new Headers(request.headers);
   headers.set("content-type", "application/json");
 
-  const response = await authHandler.POST(
+  const response = await getAuthHandler().POST(
     new Request(request.url, {
       method: request.method,
       headers,
@@ -102,12 +118,12 @@ async function dispatchPost(request: Request): Promise<Response> {
     return handleSignIn(request);
   }
 
-  return authHandler.POST(request);
+  return getAuthHandler().POST(request);
 }
 
 export async function GET(request: Request): Promise<Response> {
   try {
-    return await authHandler.GET(request);
+    return await getAuthHandler().GET(request);
   } catch (error) {
     return errorResponse(error);
   }
@@ -123,7 +139,7 @@ export async function POST(request: Request): Promise<Response> {
 
 export async function PATCH(request: Request): Promise<Response> {
   try {
-    return await authHandler.PATCH(request);
+    return await getAuthHandler().PATCH(request);
   } catch (error) {
     return errorResponse(error);
   }
@@ -131,7 +147,7 @@ export async function PATCH(request: Request): Promise<Response> {
 
 export async function PUT(request: Request): Promise<Response> {
   try {
-    return await authHandler.PUT(request);
+    return await getAuthHandler().PUT(request);
   } catch (error) {
     return errorResponse(error);
   }
@@ -139,7 +155,7 @@ export async function PUT(request: Request): Promise<Response> {
 
 export async function DELETE(request: Request): Promise<Response> {
   try {
-    return await authHandler.DELETE(request);
+    return await getAuthHandler().DELETE(request);
   } catch (error) {
     return errorResponse(error);
   }
