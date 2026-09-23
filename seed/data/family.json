@@ -1,0 +1,109 @@
+{
+  "_placeholder": "TASK-020 replaces this whole file with the real fictional family (PRD BR-040, docs/demo-script.md). This fixture only exercises seed/load.ts end to end.",
+  "space": {
+    "name": "Placeholder Family (TASK-020 pending)",
+    "locale": "fil"
+  },
+  "consent": {
+    "participationConsented": true,
+    "aiProcessingConsented": true,
+    "memorialUseAllowed": true,
+    "voiceClipsAllowed": true,
+    "evidenceSourceKey": "consent-evidence"
+  },
+  "people": [
+    {
+      "key": "featured",
+      "displayName": "Placeholder Lola",
+      "aliases": ["Lola"],
+      "relationshipToFeatured": null,
+      "isFeatured": true
+    }
+  ],
+  "memberships": [
+    {
+      "userId": "seed-steward-placeholder",
+      "role": "steward"
+    }
+  ],
+  "sources": [
+    {
+      "key": "consent-evidence",
+      "type": "text",
+      "origin": "from_them",
+      "status": "ready",
+      "visibility": "private",
+      "mimeType": "text/plain",
+      "byteSize": 64,
+      "blobPathname": "seed/placeholder/consent.txt",
+      "segments": [
+        { "index": 0, "text": "Placeholder consent evidence text — TASK-020 replaces with the real clip." }
+      ]
+    },
+    {
+      "key": "story-source",
+      "type": "text",
+      "origin": "from_them",
+      "status": "ready",
+      "visibility": "family",
+      "mimeType": "text/plain",
+      "byteSize": 80,
+      "blobPathname": "seed/placeholder/story.txt",
+      "segments": [{ "index": 0, "text": "Placeholder story text. TASK-020 replaces with a real transcript." }]
+    },
+    {
+      "key": "recipe-source",
+      "type": "text",
+      "origin": "from_them",
+      "status": "ready",
+      "visibility": "family",
+      "mimeType": "text/plain",
+      "byteSize": 90,
+      "blobPathname": "seed/placeholder/recipe.txt",
+      "segments": [
+        { "index": 0, "text": "Placeholder measured-step narration." },
+        { "index": 1, "text": "Placeholder by-judgement narration — how you know it's done." }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "sourceKey": "story-source",
+      "type": "story",
+      "title": "Placeholder story",
+      "body": "Placeholder body citing segment 0.",
+      "origin": "from_them",
+      "reviewState": "verified",
+      "visibility": "family",
+      "segmentIndexes": [0],
+      "peopleKeys": ["featured"]
+    },
+    {
+      "sourceKey": "recipe-source",
+      "type": "recipe",
+      "title": "Placeholder recipe",
+      "body": "Placeholder recipe body.",
+      "origin": "from_them",
+      "reviewState": "verified",
+      "visibility": "family",
+      "segmentIndexes": [0, 1],
+      "peopleKeys": ["featured"],
+      "recipeSteps": [
+        {
+          "index": 0,
+          "kind": "measured",
+          "text": "Placeholder measured step",
+          "quantityVerbatim": "1 cup",
+          "segmentIndexes": [0]
+        },
+        {
+          "index": 1,
+          "kind": "judgement",
+          "text": "Placeholder by-judgement step",
+          "quantityVerbatim": null,
+          "segmentIndexes": [1]
+        }
+      ]
+    }
+  ]
+}
