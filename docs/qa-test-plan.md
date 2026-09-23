@@ -79,7 +79,7 @@ Secrets are referenced by name only (see [Ops](ops.md)).
 | F-020 | Moderation | TC-053, TC-054 | integration + e2e | vitest / playwright | todo |
 | F-021 | Correction/deletion | TC-055, TC-056 | integration | vitest | todo |
 | F-022 | AI guardrail | TC-033, TC-034, TC-060, TC-061 | unit + eval + static | vitest / eval / script | todo |
-| F-023 | Photo memories | TC-057, TC-058, TC-059 | unit + integration + manual | vitest / manual | todo |
+| F-023 | Photo memories | TC-057, TC-058, TC-059 | unit + integration + manual | vitest / manual | unit pass; integration + manual pending DB |
 
 ## Automation contract
 
