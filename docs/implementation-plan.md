@@ -161,12 +161,12 @@ python3 tools/check-implementation-plan.py docs/implementation-plan.md
 
 - **Ready now:** TASK-004, 005, 007, 010–030 (all Depends on: —)
 - **Safe parallel set (start immediately):**
-  - Kirby → TASK-001 (first), then TASK-006 / TASK-009 in any order
-  - Shi → TASK-002 + TASK-003 (branch; rebase after TASK-001 folder exists)
+  - Kirby → rebase and finish TASK-006 (PR #5), then TASK-009 after that rebase
+  - Shi → TASK-011, TASK-015, TASK-020 (TASK-002 and TASK-003 already merged)
   - Gian → TASK-004 + TASK-023
-  - Josh → draft UI against fixtures after TASK-001; claim TASK-007
+  - Josh → TASK-007, then later UI tasks
   - Abu → TASK-005 + keep ledger
-- **Blocked:** none by task dependency. Only soft wait: empty repo until Kirby pushes TASK-001 (~1 h).
+- **Blocked:** TASK-002 migrate gate waits on a Neon DATABASE_URL (TASK-022). The repo is not empty.
 - **Integration order (Abu merge preference, not blockers):**
   1. TASK-001 → 002 → 003 → 006 → 020
   2. 008 → 011 → 013 → 015 → 017 → 029
