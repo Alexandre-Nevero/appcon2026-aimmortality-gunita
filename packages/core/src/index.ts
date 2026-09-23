@@ -4,6 +4,7 @@ export * from "./dates";
 export * from "./enums";
 export * from "./guardrail";
 export * from "./labels";
+export * from "./memorial";
 export * from "./recipe";
 export * from "./review";
 export * from "./text";
