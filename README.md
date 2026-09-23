@@ -22,6 +22,34 @@ Agent guide: [`AGENTS.md`](AGENTS.md).
 
 Next.js 16 · Neon + pgvector · Vercel Blob · Groq · Gemini · Better Auth · AI SDK 7
 
+## Getting started
+
+### Requirements
+
+- Node.js 22 or newer
+- pnpm (or `corepack pnpm`)
+
+### Install
+
+```bash
+pnpm install
+```
+
+### Run the web app
+
+```bash
+pnpm --filter web dev
+```
+
+### Build the scaffold
+
+```bash
+pnpm --filter web build
+```
+
+At the moment, this repository contains the TASK-001 scaffold only: a pnpm workspace, a minimal
+Next.js 16 app in `apps/web`, and a stub `packages/core` reserved for later tasks.
+
 ## License
 
 MIT (to be added at submission).
