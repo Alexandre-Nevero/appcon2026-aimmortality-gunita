@@ -244,7 +244,9 @@ Himmel feels like a family scrapbook that someone kept on the kitchen table: war
 
 The signature mark is a hand-drawn blue flower with a small orange heart. It appears on the splash, next to every script page title, and as the doorway to "ask himmel". Treat it as the only decorative flourish that repeats; everything else is a found object.
 
-The interface speaks in lowercase, gentle, first-person-plural voice ("for stories that stay with us", "how would you like to remember?"). Every user-visible string ships in both `fil` (Taglish-friendly) and `en`.
+The interface speaks in a lowercase, gentle, first-person-plural voice. Every user-visible string ships in both `fil` (Taglish-friendly) and `en`.
+
+> Content in the Figma mockups is placeholder. Take visual decisions (color, type, layout, shape, depth, components) from this file, but take all copy, labels, field sets, questions, chip names and sample data from the PRD, the sitemap and the i18n string files. Never copy mockup text into code.
 
 > Naming: the product is **Himmel**. The repository, docs and screen IDs still say GUNITA until the rename lands. "Ask GUNITA" (S-016) is presented as **ask himmel**. The abstention line **"Hindi pa alam"** is unchanged.
 
@@ -271,9 +273,9 @@ The palette is ink on warm paper, one soft sky blue for actions, and the flower'
 
 Three families, each with one job:
 
-- **Homemade Apple** is the family's handwriting. Use it for page titles on sheets ("Login", "Create an account", "Consent", "share the memorial"), the Himmel wordmark, sticker labels on Home and Capture, polaroid captions, and the record button label. Never for body text, form labels, or anything longer than about five words; it becomes unreadable fast.
-- **Newsreader** is the storyteller. Use it for explanatory copy under headers, consent text, memory text, interview questions on the torn-paper card, and chat bubbles. Italic Newsreader marks gentle asides and reassurance ("you can always add details later", "Himmel won't fill in missing details").
-- **Inter** is the utility voice. Use it for screen headers next to the back arrow, form labels, button text, chips, search and chat inputs, and small caps section labels ("THE USER IS COMFORTABLE WITH").
+- **Homemade Apple** is the family's handwriting. Use it for page titles on sheets (sign in, sign up, consent, share), the Himmel wordmark, sticker labels on Home and Capture, polaroid captions, and the record button label. Never for body text, form labels, or anything longer than about five words; it becomes unreadable fast.
+- **Newsreader** is the storyteller. Use it for explanatory copy under headers, consent text, memory text, interview questions on the torn-paper card, and chat bubbles. Italic Newsreader marks gentle asides and reassurance, such as telling the user they can add details later.
+- **Inter** is the utility voice. Use it for screen headers next to the back arrow, form labels, button text, chips, search and chat inputs, and small caps section labels.
 
 Buttons and labels are lowercase in both languages. Script titles use sentence case. Body minimum is 15px; nothing a user must read goes below 12px. Load all three from Google Fonts with fallbacks: `"Homemade Apple", "Segoe Script", cursive`, `Newsreader, Georgia, serif`, `Inter, system-ui, sans-serif`.
 
@@ -281,10 +283,10 @@ Buttons and labels are lowercase in both languages. Script titles use sentence c
 
 Mobile-first at 375px wide, single column, no bottom tab bar.
 
-- **Home is the navigation.** Home is a scrapbook collage of objects, each with a paper sticker label, and each object is a button: camera = capture, stacked polaroids = archive, map/letter = today's question, blue flower = ask himmel, postcard = add my memory (from others), candle = memorial (steward only). Objects are loosely scattered and slightly rotated (between -6° and 6°), but every tap target is at least 64x64px and none overlap another's hit area. The "Himmel's" script wordmark sits top center.
+- **Home is the navigation.** Home is a scrapbook collage of objects, each with a paper sticker label, and each object is a button: camera = capture, stacked polaroids = archive, map/letter = today's question, blue flower = ask himmel, postcard = add my memory (from others), candle = memorial (steward only). Objects are loosely scattered and slightly rotated (between -6° and 6°), but every tap target is at least 64x64px and none overlap another's hit area. The script wordmark sits top center. The set of objects and what each opens follows the sitemap; the mapping above reflects the current mockup.
 - **Inner screens** use a back arrow plus Inter header top left, one line of Newsreader subtitle beneath it (muted, italic for the reassuring half), then content. Page gutter is 24px.
 - **Auth and consent** screens are a white sheet rising from the bottom over a soft-focus nature photo (sky, water, moss). The sheet top corners are 20px, content inside has a 40px gutter, and the script title sits top left with the flower beside it. The primary button is centered, with a small muted text link underneath.
-- **Capture hub** stacks three large objects vertically (cassette = start an interview, postcard = type a memory, polaroid = add a photo), each with a sticker label overlapping its edge. The highlighted sticker marks the recommended action.
+- **Capture hub** stacks large objects vertically (currently cassette = interview, postcard = typed memory, polaroid = photo), each with a sticker label overlapping its edge. The highlighted sticker marks the recommended action.
 - **Archive and memorial selection** use a two-column polaroid grid with 16px gaps.
 - **Ask himmel** keeps suggested questions and the input pinned to the bottom, above the safe area.
 - Spacing follows a 4px base: 4, 8, 12, 16, 24, 32, 48. Vertical rhythm between form fields is 24px.
@@ -315,9 +317,9 @@ Depth comes from paper, not from glass or glow. Objects feel physically placed o
 - **Primary button:** Mist fill, Ink lowercase Inter label, 8px radius, 44px tall. Pressed state goes to Mist-deep. Disabled state is Line fill with Ink-muted text. One primary button per screen.
 - **Input field:** Inter label above in Ink, borderless Field box below. Error message goes under the field in Newsreader 13px, Ink with a small Record-colored dot, never red text.
 - **Sticker label:** White (or Mist-deep when highlighted) paper strip with a Homemade Apple lowercase label, slightly rotated, overlapping the corner of the object it names.
-- **Polaroid card:** White frame, square photo, Homemade Apple caption, and chips below for provenance ("from them", "verified", "from family"). Selectable polaroids show a small Ink check in the top right corner.
+- **Polaroid card:** White frame, square photo, Homemade Apple caption, and chips below for provenance and review status (labels come from the PRD). Selectable polaroids show a small Ink check in the top right corner.
 - **Chip tag:** Line fill, Ink-muted Inter 12px, fully round. Chips show provenance and review status; they are labels, not filters, unless placed in a row under the search bar.
-- **Question card (interview):** Torn Paper-bright card with a strip of tape, question in Newsreader 20px centered, progress dots above ("question 1 of 5"), live Record waveform below, big Record-soft button labeled "press me", skip on the left, re-record on the right, "edit question" link at the bottom.
+- **Question card (interview):** Torn Paper-bright card with a strip of tape, question in Newsreader 20px centered, progress dots above, live Record waveform below, big Record-soft button with a short script label, skip on the left, re-record on the right, "edit question" link at the bottom.
 - **Ask himmel:** Himmel's answers are white bubbles in Newsreader; the user's are Mist-deep pills. Every answer shows cited source links. When Himmel cannot answer from reviewed sources it says "Hindi pa alam" in the same bubble style, never an error style. Suggested questions appear as Ink-muted rows with a return-arrow glyph.
 - **Consent checklist:** Small caps Inter section label, then square Field checkboxes with Newsreader choice text. Nothing is pre-checked.
 - **Memorial:** Entry is an old CRT television object with an "Activate Memorial Mode" button; activation requires typing the person's name. The share screen fans polaroids behind a link field and "copy" button. The thank-you screen is centered: flower, script "thank you", short Newsreader note.
@@ -331,18 +333,13 @@ Depth comes from paper, not from glass or glow. Objects feel physically placed o
 - Do write every label in lowercase and ship `fil` and `en` versions of every string.
 - Do use real, slightly imperfect object photos (cut out, with shadow). Don't use flat vector illustrations or emoji in their place.
 - Do show provenance chips on every memory. Don't show an AI answer without source links.
-- Don't speak as the featured person, ever. Himmel speaks about them ("Lola said..."), never as them.
+- Don't speak as the featured person, ever. Himmel speaks about them, never as them.
+- Don't treat mockup text as final. Copy, form fields and sample data come from the docs and i18n files.
 - Don't add engagement nudges, streaks, badges, counts or push-style reminders. The memorial tribute heart has no counter.
 - Don't autoplay audio. Voice is always tap-to-play.
 - Don't use pure black, pure red for errors, or white text on Record-soft.
 - Don't add a bottom tab bar or floating action button.
 
-## Open issues in the current mockups
+## Open decisions
 
-These are gaps between the Figma and the repo docs that an agent should resolve in favor of the docs unless told otherwise:
-
-- Login asks for "username", but S-001 is email + password. Use "e-mail address".
-- The consent screen repeats its first paragraph twice. Remove the duplicate.
-- Tagline grammar: "for stories that stays with us" should be "for stories that stay with us".
-- "choose what to inlcude" is misspelled on the memorial selection screen.
-- The sitemap and AGENTS.md still describe a four-tab bottom bar and the name GUNITA. Both need an ADR (navigation model and rename) before code diverges from the docs.
+- The sitemap and AGENTS.md still describe a four-tab bottom bar and the name GUNITA. Both the navigation change and the rename need an ADR in `docs/adr/` before code diverges from the docs.
