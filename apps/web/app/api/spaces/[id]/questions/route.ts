@@ -8,9 +8,13 @@ import { db } from "@/src/db";
 import { question } from "@/src/db/schema";
 
 // GET /api/spaces/:id/questions?status=queued — F-014: the GUNITA Question (Hint) queue.
+// Steward-only (docs/sitemap.md S-008 access table: "Steward | ... S-008 ...").
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id: spaceId } = await context.params;
-  await requireMembership(request, spaceId);
+  const membership = await requireMembership(request, spaceId);
+  if (membership.role !== "steward") {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
 
   const statusParam = request.nextUrl.searchParams.get("status");
   const statusFilter = statusParam ? questionStatusSchema.safeParse(statusParam) : null;
@@ -34,10 +38,14 @@ const patchBodySchema = z.object({
 
 // PATCH /api/spaces/:id/questions {questionId, status} — F-014: the steward can queue or dismiss a
 // question (frozen route contract, docs/implementation-plan.md §0.1 — PATCH shares the collection
-// path rather than a nested /questions/:id, so both methods match the same route file).
+// path rather than a nested /questions/:id, so both methods match the same route file). Steward-only,
+// same as GET above.
 export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id: spaceId } = await context.params;
-  await requireMembership(request, spaceId);
+  const membership = await requireMembership(request, spaceId);
+  if (membership.role !== "steward") {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
 
   let body: unknown;
   try {
