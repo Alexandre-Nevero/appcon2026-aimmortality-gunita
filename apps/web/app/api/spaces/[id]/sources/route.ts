@@ -1,4 +1,4 @@
-import { originSchema, sourceTypeSchema } from "@gunita/core";
+import { originSchema } from "@gunita/core";
 import { eq } from "drizzle-orm";
 import { after, NextRequest, NextResponse } from "next/server";
 
@@ -7,7 +7,7 @@ import { processSource } from "@/src/ai/pipeline";
 import { db } from "@/src/db";
 import { consent, source } from "@/src/db/schema";
 import { uploadSourceFile } from "@/src/media/blob";
-import { sourceTypeFromMime, validateUpload } from "@/src/media/validate";
+import { sniffFileKind, sourceTypeFromMime, validateUpload } from "@/src/media/validate";
 
 // TODO(TASK-006): replace with the real Better Auth session → membership resolver once it lands.
 // Until then this is a stand-in so the route can be built and typechecked against the real schema.
@@ -20,9 +20,15 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   const { id: spaceId } = await context.params;
   const membership = await requireMembership(request, spaceId);
 
-  // BR-001: no capture/upload/AI processing until consent is recorded.
+  // BR-001: no capture/upload/AI processing until consent is recorded. BR-004: withdrawal stops
+  // new capture — a withdrawn space still has both booleans true (data-model.md: "withdrawal does
+  // not create a new row"), so withdrawnAt must be checked too, not just the two consent flags.
   const consentRow = await db.query.consent.findFirst({ where: eq(consent.spaceId, spaceId) });
-  if (!consentRow?.participationConsented || !consentRow.aiProcessingConsented) {
+  if (
+    !consentRow?.participationConsented ||
+    !consentRow.aiProcessingConsented ||
+    consentRow.withdrawnAt != null
+  ) {
     return NextResponse.json({ error: "consent_required" }, { status: 409 });
   }
 
@@ -38,7 +44,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     const origin = originSchema.parse(
       originInput ?? (membership.role === "steward" ? "from_them" : "about_them"),
     );
-    const { pathname } = await uploadSourceFile(spaceId, "memory.txt", typedText, "text/plain");
+    const { url } = await uploadSourceFile(spaceId, "memory.txt", typedText, "text/plain");
     const [created] = await db
       .insert(source)
       .values({
@@ -47,7 +53,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
         origin,
         visibility: "private",
         uploadedByMembershipId: membership.membershipId,
-        blobPathname: pathname,
+        blobPathname: url,
         mimeType: "text/plain",
         byteSize: Buffer.byteLength(typedText, "utf-8"),
       })
@@ -75,15 +81,28 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     });
   }
 
+  const fileBytes = new Uint8Array(await file.arrayBuffer());
+  // System Design "Uploads: MIME sniffing plus allowlist" — a renamed file (e.g. an `.exe` saved as
+  // `.webm`) declares whatever Content-Type the client sends; check the actual bytes too.
+  if (sniffFileKind(fileBytes) !== sourceType) {
+    return NextResponse.json({ error: "content_mismatch" }, { status: 400 });
+  }
+
   const originInput = form.get("origin");
   const origin = originSchema.parse(
     originInput ?? (membership.role === "steward" ? "from_them" : "about_them"),
   );
   const artifactContextRaw = form.get("artifactContext");
-  const artifactContext =
-    typeof artifactContextRaw === "string" && artifactContextRaw ? JSON.parse(artifactContextRaw) : null;
+  let artifactContext: unknown = null;
+  if (typeof artifactContextRaw === "string" && artifactContextRaw) {
+    try {
+      artifactContext = JSON.parse(artifactContextRaw);
+    } catch {
+      return NextResponse.json({ error: "invalid_artifact_context" }, { status: 400 });
+    }
+  }
 
-  const { pathname } = await uploadSourceFile(spaceId, file.name, await file.arrayBuffer(), file.type);
+  const { url } = await uploadSourceFile(spaceId, file.name, fileBytes.buffer as ArrayBuffer, file.type);
 
   const [created] = await db
     .insert(source)
@@ -93,7 +112,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       origin,
       visibility: "private",
       uploadedByMembershipId: membership.membershipId,
-      blobPathname: pathname,
+      blobPathname: url,
       mimeType: file.type,
       byteSize: file.size,
       artifactContext,
