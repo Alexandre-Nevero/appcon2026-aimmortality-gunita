@@ -1,5 +1,5 @@
 {
-  "id": "8ad25dae-98b9-41ce-b634-4e9da07c7ba7",
+  "id": "690247ca-ec00-458e-85ea-0f2a251ce2ba",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -340,7 +340,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "restrict",
           "onUpdate": "no action"
         },
         "consent_recorded_by_membership_id_membership_id_fk": {

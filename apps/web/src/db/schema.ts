@@ -195,8 +195,13 @@ export const consent = pgTable("consent", {
   aiProcessingConsented: boolean("ai_processing_consented").notNull().default(false),
   memorialUseAllowed: boolean("memorial_use_allowed").notNull().default(false),
   voiceClipsAllowed: boolean("voice_clips_allowed").notNull().default(false),
+  // [interpretation] RESTRICT, not SET NULL: BR-003 relies on this source as the evidentiary
+  // record of consent. BR-004 lets the steward delete material on request, but silently detaching
+  // the consent evidence link on delete would erase that proof without anyone noticing. Deleting
+  // this specific source must fail loudly instead — worth an ADR if the team wants different
+  // behavior (e.g. requiring the steward to re-record consent first).
   evidenceSourceId: uuid("evidence_source_id").references(() => source.id, {
-    onDelete: "set null",
+    onDelete: "restrict",
   }),
   recordedAt: timestamp("recorded_at", { withTimezone: true }),
   recordedByMembershipId: uuid("recorded_by_membership_id").references(() => membership.id, {
