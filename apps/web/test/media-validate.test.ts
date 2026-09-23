@@ -37,6 +37,15 @@ describe("validateUpload", () => {
     const result = validateUpload({ sourceType: "photo", mimeType: "audio/webm", byteSize: 1024 });
     expect(result?.code).toBe("mime_mismatch");
   });
+
+  it("accepts a codec-qualified MIME type from a real MediaRecorder output", () => {
+    expect(
+      validateUpload({ sourceType: "audio", mimeType: "audio/webm;codecs=opus", byteSize: 1024 }),
+    ).toBeNull();
+    expect(
+      validateUpload({ sourceType: "audio", mimeType: "audio/mp4;codecs=mp4a.40.2", byteSize: 1024 }),
+    ).toBeNull();
+  });
 });
 
 describe("sourceTypeFromMime", () => {
@@ -48,6 +57,10 @@ describe("sourceTypeFromMime", () => {
 
   it("returns null for an unrecognized MIME type", () => {
     expect(sourceTypeFromMime("application/x-msdownload")).toBeNull();
+  });
+
+  it("ignores codec parameters when mapping to a source type", () => {
+    expect(sourceTypeFromMime("audio/webm;codecs=opus")).toBe("audio");
   });
 });
 
