@@ -410,6 +410,24 @@ export const contribution = pgTable(
   ],
 );
 
+// F-023/BR-081 (ADR-007): one soft tribute per approved visitor photo per device. `visitorKeyHash`
+// is HMAC-SHA-256(IP_HASH_SECRET, gunita_visitor cookie) — never the raw cookie, an IP, or a name.
+export const tribute = pgTable(
+  "tribute",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    contributionId: uuid("contribution_id")
+      .notNull()
+      .references(() => contribution.id, { onDelete: "cascade" }),
+    visitorKeyHash: text("visitor_key_hash").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    // A repeat heart is a no-op; also serves the per-photo count (Methods EQ-013).
+    uniqueIndex("tribute_contribution_visitor_unique").on(table.contributionId, table.visitorKeyHash),
+  ],
+);
+
 // Space/memorial-level audit trail (BR-051, BR-070 non-item deletions, BR-021 invites/consent).
 // Per-item review history lives on `item_revision` instead.
 export const activity = pgTable("activity", {

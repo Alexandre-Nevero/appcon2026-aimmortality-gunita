@@ -1,6 +1,7 @@
 import { fileURLToPath } from "node:url";
 
 import {
+  contributionStatusSchema,
   datePrecisionSchema,
   itemTypeSchema,
   localeSchema,
@@ -95,6 +96,22 @@ const membershipFixture = z.object({
   localeOverride: localeSchema.nullable().optional(),
 });
 
+// F-019/F-020 visitor memories, so S-030/S-033 have content before live moderation exists.
+const contributionFixture = z
+  .object({
+    displayName: z.string(),
+    relationship: z.string(),
+    textContent: z.string().nullable().optional(),
+    // Full public Blob URL, same convention as `source.blobPathname`.
+    photoBlobPathname: z.string().nullable().optional(),
+    audioBlobPathname: z.string().nullable().optional(),
+    status: contributionStatusSchema.default("pending"),
+  })
+  .refine((c) => Boolean(c.textContent || c.photoBlobPathname || c.audioBlobPathname), {
+    message: "A contribution needs text, photo, or audio (BR-060)",
+    path: ["textContent"],
+  });
+
 export const familyFixture = z.object({
   space: z.object({ name: z.string(), locale: localeSchema.default("fil") }),
   consent: z
@@ -110,6 +127,9 @@ export const familyFixture = z.object({
   memberships: z.array(membershipFixture).default([]),
   sources: z.array(sourceFixture).default([]),
   items: z.array(itemFixture).default([]),
+  // Activates Memorial Mode and publishes an (empty) recap; the loader prints the /m/<token> URL.
+  publishMemorial: z.boolean().default(false),
+  contributions: z.array(contributionFixture).default([]),
 });
 
 export type FamilyFixture = z.infer<typeof familyFixture>;
