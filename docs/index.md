@@ -32,6 +32,7 @@ disagree, the canonical owner wins until the other is reconciled.
 |---|---|---|---|
 | PRD | [prd.md](prd.md) | Approved v0.4 | 2026-09-23 |
 | BRD | [brd.md](brd.md) | Draft v0.2 | 2026-09-23 |
+| Business Model Canvas (pitch) | [pitch/business-model-canvas.md](pitch/business-model-canvas.md) | Draft | 2026-09-24 |
 | Sitemap | [sitemap.md](sitemap.md) | Draft | 2026-09-23 |
 | User Flow | [user-flow.md](user-flow.md) | Draft | 2026-09-23 |
 | System Design | [system-design.md](system-design.md) | Draft v0.2 | 2026-09-23 |
@@ -46,6 +47,7 @@ disagree, the canonical owner wins until the other is reconciled.
 | ADR-003 B2B2C Memorial package | [adr/ADR-003-b2b2c-memorial-package.md](adr/ADR-003-b2b2c-memorial-package.md) | Accepted | 2026-09-23 |
 | ADR-004 Single Next.js web app | [adr/ADR-004-single-web-app.md](adr/ADR-004-single-web-app.md) | Accepted | 2026-09-23 |
 | ADR-005 UI language fil / en | [adr/ADR-005-ui-language.md](adr/ADR-005-ui-language.md) | Accepted | 2026-09-23 |
+| ADR-006 Product name Himmel | [adr/ADR-006-product-name-himmel.md](adr/ADR-006-product-name-himmel.md) | Accepted | 2026-09-24 |
 | ADR-007 Memorial photo memories | [adr/ADR-007-memorial-photo-memories.md](adr/ADR-007-memorial-photo-memories.md) | Accepted | 2026-09-23 |
 | ADR-008 Tribute heart shows no count | [adr/ADR-008-tribute-heart-no-count.md](adr/ADR-008-tribute-heart-no-count.md) | Accepted | 2026-09-24 |
 | Photo memories plan | [superpowers/plans/2026-09-23-photo-memories.md](superpowers/plans/2026-09-23-photo-memories.md) | Living | 2026-09-23 |
