@@ -130,8 +130,8 @@ QR = https://<web-domain>/m/<token>   (token: 128-bit random, base64url)
 
 Visitor: GET /m/:token  → server-rendered from snapshot + approved contributions (DB only, no AI)
          POST /api/m/:token/contributions (multipart ≤ 4 MB, rate-limited) → status = pending
-         GET /m/:token/memories → approved visitor photos, oldest first, + tribute counts (DB only, no AI)
-         POST /api/m/:token/tributes {contributionId, hearted} → one tribute per device cookie (ADR-007)
+         GET /m/:token/memories → approved visitor photos, oldest first, plus whether this phone hearted each one (DB only, no AI)
+         POST /api/m/:token/tributes {contributionId, hearted} → { hearted } only (ADR-008)
 Steward: approve / reject in moderation queue → approved appear under "Memories from others"
 Source/item deletion → cards referencing it are removed from the snapshot (BR-070)
 ```

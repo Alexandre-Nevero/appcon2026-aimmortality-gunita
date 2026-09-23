@@ -8,6 +8,8 @@
 > **Amended:** 2026-09-23 — memorial photo memories with soft tributes
 > ([ADR-007](adr/ADR-007-memorial-photo-memories.md)); adds F-023, BR-081, UJ-009 and narrows the
 > social-features non-goal. Added after the finalized decision, by team decision.
+> **Amended:** 2026-09-24 — the tribute heart shows no count, and the visitor cookie lasts 14 days
+> ([ADR-008](adr/ADR-008-tribute-heart-no-count.md)).
 > **Traces back to:** `idea.md` (not yet written; this PRD defines the `F-###` IDs it should reuse).
 > **Traces forward to:** system design, data model, QA test plan, pitch deck.
 
@@ -481,9 +483,10 @@ These are product concepts, not a database schema. The data-model doc owns field
 - **BR-080** — No streaks, no gamification, and no notifications meant to bring grieving users
   back. The visitor confirmation screen ends the interaction. (From TALA's anti-engagement design.)
 - **BR-081** — On the memorial, a visitor may leave one tribute heart per approved visitor photo per
-  device and may remove it. The count shows only when it is at least one. Tributes never reorder,
-  rank, or filter photos, never trigger notifications, and are never logged as analytics events.
-  There are no comments and no share controls on photo memories (ADR-007).
+  device and may remove it. The total is never shown, on the memorial or in the public API.
+  Tributes never reorder, rank, or filter photos, never trigger notifications, and are never logged
+  as analytics events. There are no comments and no share controls on photo memories (ADR-007,
+  ADR-008).
 
 ---
 
@@ -691,7 +694,7 @@ These are product concepts, not a database schema. The data-model doc owns field
   code path generates speech.
 - **F-023:** S-033 shows only contributions that are approved and have a photo, oldest first, with
   the About them label; pending, rejected, text-only, and audio-only contributions never appear;
-  a heart can be added and removed and counts once per device; a count of zero shows no number;
+  a heart can be added and removed once per device; no tribute total is shown;
   there is no comment field, share control, or tribute-based ordering; S-032 has no link to S-033;
   a disabled, unpublished, or unknown memorial shows S-034.
 
@@ -795,7 +798,7 @@ recordings, and text must be ones the team is allowed to publish.
 | Mistaken Memorial Mode activation | Distress; premature public exposure | Explicit confirmation, nothing public until publish, reversible |
 | Memorial not reachable from judges' phones | Demo & Delivery | Public HTTPS deployment tested from a mobile network |
 | Proprietary AI APIs vs. open-source rule | Submission compliance | Document each provider, how to substitute it, and how to run core flows |
-| Tribute counts read as a popularity contest | Hurtful at a wake | No ordering by hearts, zero shows nothing, no notifications (BR-081, ADR-007) |
+| Tribute counts read as a popularity contest | Hurtful at a wake | No count is shown (BR-081, ADR-008) |
 
 ---
 

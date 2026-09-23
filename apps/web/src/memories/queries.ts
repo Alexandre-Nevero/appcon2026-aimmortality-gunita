@@ -1,5 +1,5 @@
 import { isMemorialPublic, type Locale } from "@gunita/core";
-import { and, asc, eq, inArray, isNotNull, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull } from "drizzle-orm";
 
 import type { db as Database } from "../db";
 import { contribution, person, recap, space, tribute } from "../db/schema";
@@ -40,7 +40,6 @@ export interface PhotoMemory {
   displayName: string;
   relationship: string;
   textContent: string | null;
-  tributeCount: number;
   hearted: boolean;
 }
 
@@ -59,12 +58,9 @@ export async function listPhotoMemories(
       displayName: contribution.displayName,
       relationship: contribution.relationship,
       textContent: contribution.textContent,
-      tributeCount: sql<number>`count(${tribute.id})::int`,
     })
     .from(contribution)
-    .leftJoin(tribute, eq(tribute.contributionId, contribution.id))
     .where(and(eq(contribution.spaceId, spaceId), isPhotoMemory))
-    .groupBy(contribution.id)
     .orderBy(asc(contribution.submittedAt), asc(contribution.id));
 
   const hearted = new Set<string>();
@@ -89,14 +85,15 @@ export async function listPhotoMemories(
   );
 }
 
-// Returns the new count, or null when the target is not an approved photo in this memorial.
+// Returns this phone's heart state after the write, or null when the target is not an approved
+// photo in this memorial. No count (ADR-008).
 export async function setTribute(
   db: Db,
   spaceId: string,
   contributionId: string,
   visitorKeyHash: string,
   hearted: boolean,
-): Promise<number | null> {
+): Promise<boolean | null> {
   const target = await db.query.contribution.findFirst({
     where: and(eq(contribution.id, contributionId), eq(contribution.spaceId, spaceId), isPhotoMemory),
     columns: { id: true },
@@ -111,9 +108,5 @@ export async function setTribute(
       .where(and(eq(tribute.contributionId, contributionId), eq(tribute.visitorKeyHash, visitorKeyHash)));
   }
 
-  const [{ count }] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(tribute)
-    .where(eq(tribute.contributionId, contributionId));
-  return count;
+  return hearted;
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { MEMORIES_COPY, position, tributeCountLabel } from "../src/components/memories/copy";
+import { MEMORIES_COPY, position } from "../src/components/memories/copy";
 
 describe("photo memories copy (BR-014)", () => {
   it("has fil and en for every string", () => {
@@ -10,15 +10,10 @@ describe("photo memories copy (BR-014)", () => {
     }
   });
 
-  it("shows nothing for zero tributes so no photo looks unloved (BR-081)", () => {
-    expect(tributeCountLabel(0, "en")).toBe("");
-    expect(tributeCountLabel(0, "fil")).toBe("");
-  });
-
-  it("counts tributes gently in both languages (EQ-013)", () => {
-    expect(tributeCountLabel(1, "en")).toBe("1 person remembered this");
-    expect(tributeCountLabel(12, "en")).toBe("12 people remembered this");
-    expect(tributeCountLabel(12, "fil")).toBe("12 ang nakaalala");
+  it("does not ship a tribute-count string (ADR-008)", () => {
+    const copy = JSON.stringify(MEMORIES_COPY);
+    expect(copy).not.toContain("remembered this");
+    expect(copy).not.toContain("nakaalala");
   });
 
   it("shows a 1-based position", () => {

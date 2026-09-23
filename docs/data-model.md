@@ -204,7 +204,7 @@ exact `(spaceId, submittedIpHash, submittedAt)` shape EQ-010's rate-limit query 
 F-023/BR-081 (ADR-007). One soft tribute ("heart") per approved visitor photo per device.
 `visitorKeyHash` is `HMAC-SHA-256(IP_HASH_SECRET, gunita_visitor cookie)` — never the raw cookie,
 an IP, or a name. `tribute_contribution_visitor_unique` on `(contributionId, visitorKeyHash)`
-makes a repeat heart a no-op and serves the per-photo count (Methods EQ-013). Deleting a
+makes a repeat heart a no-op (one heart per phone). The total is not shown (ADR-008). Deleting a
 contribution cascades its tributes.
 
 ### `activity`

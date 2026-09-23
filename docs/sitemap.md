@@ -85,7 +85,7 @@ needs S-020's reverse action.
 | S-030 | Memorial recap | Cover, life moments, in their own words (tap-to-play), recipe, lesson, closing; "Memories from others" section | F-017, F-018, F-020 | QR scan, shared link | Public (token) | loading / success / unavailable → S-034 |
 | S-031 | Share a memory | Name, relationship, text / photo / voice note, review notice | F-019 | S-030 button | Public (token) | idle / recording / uploading / rate-limited / error |
 | S-032 | Thank you | Confirms the family will review; ends the interaction | F-019 | S-031 submit | Public (token) | static |
-| S-033 | Photo memories | Full-screen vertical scroll of approved visitor photos; soft tribute heart with gentle count; no comments, no share | F-023 | S-030 link | Public (token) | empty / success / tribute failed (reverts) / unavailable → S-034 |
+| S-033 | Photo memories | Full-screen vertical scroll of approved visitor photos; soft tribute heart with no count; no comments, no share | F-023 | S-030 link | Public (token) | empty / success / tribute failed (reverts) / unavailable → S-034 |
 | S-034 | Memorial unavailable | Neutral message when the link is disabled, unpublished, or unknown | F-018 | any `/m/*` failure | Public | static |
 
 **System screens:**

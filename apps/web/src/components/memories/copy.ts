@@ -24,13 +24,6 @@ export function photoAlt(name: string, locale: Locale): string {
   return locale === "fil" ? `Larawang ibinahagi ni ${name}` : `Photo shared by ${name}`;
 }
 
-// Methods EQ-013. Zero renders nothing (BR-081).
-export function tributeCountLabel(count: number, locale: Locale): string {
-  if (count <= 0) return "";
-  if (locale === "fil") return `${count} ang nakaalala`;
-  return count === 1 ? "1 person remembered this" : `${count} people remembered this`;
-}
-
 export function position(index: number, total: number): string {
   return `${index + 1} / ${total}`;
 }

@@ -62,7 +62,6 @@ export function MemoriesFeed({ token, locale, featuredName, memories }: Props) {
             <TributeButton
               token={token}
               contributionId={memory.id}
-              initialCount={memory.tributeCount}
               initialHearted={memory.hearted}
               locale={locale}
             />

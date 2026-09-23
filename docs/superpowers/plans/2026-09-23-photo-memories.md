@@ -1,5 +1,10 @@
 # Photo Memories (F-023) + Repo Doc Sync — Implementation Plan
 
+> **Superseded in part (2026-09-24):** the visible tribute count in this plan is withdrawn.
+> See [ADR-008](../../adr/ADR-008-tribute-heart-no-count.md) and
+> [the no-count spec](../specs/2026-09-24-tribute-no-count-design.md).
+> `gunita_visitor` lasts 14 days from first set, not one year.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Approved visitor photos on the public memorial become a full-screen, vertical, Google-Photos-Memories-style scroll (`/m/[token]/memories`, S-033) with a soft tribute heart and gentle count. No comments, no external share, no ranking. Canonical docs are also synced to the code that has already landed on `main`.

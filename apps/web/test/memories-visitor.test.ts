@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { hashVisitorId, isVisitorId, newVisitorId } from "../src/memories/visitor";
+import {
+  hashVisitorId,
+  isVisitorId,
+  newVisitorId,
+  VISITOR_COOKIE_MAX_AGE_SECONDS,
+} from "../src/memories/visitor";
 
 // TC-058: tributes key on an anonymous cookie; only its HMAC is stored.
 describe("visitor key", () => {
@@ -22,6 +27,10 @@ describe("visitor key", () => {
     expect(hashVisitorId("abc", "s1")).toBe(hash);
     expect(hashVisitorId("abc", "s2")).not.toBe(hash);
     expect(hash).not.toContain("abc");
+  });
+
+  it("remembers the phone for 14 days, not a year (ADR-008)", () => {
+    expect(VISITOR_COOKIE_MAX_AGE_SECONDS).toBe(14 * 24 * 60 * 60);
   });
 
   it("fails loudly without a secret", () => {

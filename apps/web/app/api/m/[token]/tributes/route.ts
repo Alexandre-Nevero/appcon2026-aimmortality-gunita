@@ -11,7 +11,7 @@ import {
   VISITOR_COOKIE_MAX_AGE_SECONDS,
 } from "@/src/memories/visitor";
 
-// F-023, ADR-007: POST /api/m/:token/tributes { contributionId, hearted } → { count, hearted }.
+// F-023, ADR-008: POST /api/m/:token/tributes { contributionId, hearted } → { hearted }. No count.
 export async function POST(request: NextRequest, context: { params: Promise<{ token: string }> }) {
   const { token } = await context.params;
   const memorial = await findPublicMemorial(db, token);
@@ -29,10 +29,10 @@ export async function POST(request: NextRequest, context: { params: Promise<{ to
   const existing = request.cookies.get(VISITOR_COOKIE)?.value;
   const visitorId = isVisitorId(existing) ? existing : newVisitorId();
   const { contributionId, hearted } = parsed.data;
-  const count = await setTribute(db, memorial.spaceId, contributionId, hashVisitorId(visitorId), hearted);
-  if (count == null) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  const saved = await setTribute(db, memorial.spaceId, contributionId, hashVisitorId(visitorId), hearted);
+  if (saved == null) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
-  const response = NextResponse.json({ count, hearted });
+  const response = NextResponse.json({ hearted: saved });
   if (visitorId !== existing) {
     response.cookies.set(VISITOR_COOKIE, visitorId, {
       httpOnly: true,

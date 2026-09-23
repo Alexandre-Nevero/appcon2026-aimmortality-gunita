@@ -161,7 +161,7 @@ flowchart LR
 |---|---|---|---|---|
 | 1 | S-030 | Taps "See photo memories" | Opens S-033 | Full-screen first photo |
 | 2 | S-033 | Swipes up | Snaps to the next approved visitor photo (oldest first) | One photo per swipe |
-| 3 | S-033 | Taps the heart | Saves one tribute for this device; returns the count | Heart filled; "N people remembered this" |
+| 3 | S-033 | Taps the heart | Saves or removes this phone's tribute | Heart filled or empty; no number |
 | 4 | S-033 | Taps back | Returns to S-030 | Nothing else asked of them (BR-080) |
 
 ### UF-011 — Correct or delete material

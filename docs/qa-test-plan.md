@@ -310,20 +310,21 @@ providers in integration tests. Confirm exact export names at scaffold (SDK 7).
 - **Covers:** F-023, BR-062, BR-081 · **Level:** unit (`isMemorialPublic`) + integration
 - **Expected:** a disabled link, draft/missing recap, or reversed Memorial Mode is not public;
   S-033 lists only `approved` contributions with a photo, oldest first; pending, rejected,
-  text-only, and audio-only contributions never appear; order never changes with tribute counts.
+  text-only, and audio-only contributions never appear; order is oldest first and does not depend on hearts.
 
 **TC-058 — Soft tribute toggle (EQ-013)**
-- **Covers:** F-023, BR-081 · **Level:** integration (unit for body/cookie helpers; `curl` against a
+- **Covers:** F-023, BR-081, ADR-008 · **Level:** integration (unit for body/cookie helpers; `curl` against a
   seeded DB until a Neon test branch exists)
-- **Expected:** `hearted: true` twice → count rises once; `hearted: false` → count back; a pending,
-  rejected, text-only, or other-memorial contribution → 404; a disabled or unpublished memorial →
-  404; malformed body → 400; `gunita_visitor` (httpOnly) is set only when missing; `tribute` rows
-  hold a 64-char hex HMAC, never the cookie value.
+- **Expected:** `hearted: true` twice leaves one row and returns `{ hearted: true }` with no `count`
+  key; `hearted: false` returns `{ hearted: false }`; a pending, rejected, text-only, or
+  other-memorial contribution → 404; a disabled or unpublished memorial → 404; malformed body → 400;
+  `gunita_visitor` (httpOnly) is set only when missing, with `maxAge` 1,209,600 seconds; `tribute`
+  rows hold a 64-char hex HMAC, never the cookie value.
 
 **TC-059 — Photo memories on a phone (manual)**
 - **Covers:** F-023, BR-080, BR-081 · **Level:** manual, iOS Safari + Android Chrome over HTTPS
-- **Expected:** S-030 → S-033 via the entry link; one photo per swipe; heart toggles and the count
-  updates; zero hearts shows no number; no comment box, share button, or "most loved" ordering;
+- **Expected:** S-030 → S-033 via the entry link; one photo per swipe; heart toggles; no number is
+  shown; no comment box, share button, or "most loved" ordering;
   back returns to S-030; a disabled link shows S-034; S-032 has no link to S-033.
 
 ### Correction and deletion

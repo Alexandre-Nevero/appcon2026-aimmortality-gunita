@@ -2,7 +2,8 @@ import { createHmac, randomBytes } from "node:crypto";
 
 // ADR-007: anonymous per-device id for soft tributes. Only its HMAC is ever stored.
 export const VISITOR_COOKIE = "gunita_visitor";
-export const VISITOR_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+// ADR-008: 14 days from first set. A lamay can run past a week. Not refreshed on later taps.
+export const VISITOR_COOKIE_MAX_AGE_SECONDS = 14 * 24 * 60 * 60;
 
 const VISITOR_ID_RE = /^[A-Za-z0-9_-]{22}$/;
 

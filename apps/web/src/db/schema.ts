@@ -423,7 +423,7 @@ export const tribute = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    // A repeat heart is a no-op; also serves the per-photo count (Methods EQ-013).
+    // A repeat heart is a no-op (one per phone). The total is not shown (ADR-008).
     uniqueIndex("tribute_contribution_visitor_unique").on(table.contributionId, table.visitorKeyHash),
   ],
 );
