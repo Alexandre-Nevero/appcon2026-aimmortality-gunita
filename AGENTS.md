@@ -51,10 +51,14 @@ See [System Design](./docs/system-design.md).
 
 ## Build & run
 ```
-pnpm install
+pnpm install          # pnpm 12.5.1 (packageManager); install with `npm i -g pnpm@12.5.1` if corepack is missing
 pnpm --filter web dev
+pnpm db:generate      # drizzle-kit, diffs apps/web/src/db/schema.ts
+pnpm db:migrate       # needs DATABASE_URL_UNPOOLED (Neon, TASK-022)
+pnpm db:seed          # needs DATABASE_URL; `-- --reset` to reseed
 ```
-(Exact scripts land at scaffold; verify then.)
+(Verified on main 710ab72. `pnpm test:e2e` and `pnpm eval` are declared at the root but not wired
+in `apps/web` yet.)
 
 ## Test
 ```

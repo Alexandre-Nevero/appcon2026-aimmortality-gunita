@@ -33,7 +33,7 @@ that are git-ignored. Never commit values; the repo is public.
 | `GROQ_API_KEY` | Vercel, local, CI (eval only) | transcription + text |
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Vercel, local, CI (eval only) | embeddings, vision, fallback |
 | `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` | Vercel, local | sessions |
-| `IP_HASH_SECRET` | Vercel | salt for visitor rate limiting (Methods EQ-010) |
+| `IP_HASH_SECRET` | Vercel | salt for visitor rate limiting (Methods EQ-010) and HMAC key for anonymous tribute cookies (ADR-007) |
 | `PUBLIC_WEB_URL` / `NEXT_PUBLIC_APP_URL` | Vercel | base URL for QR codes and client links |
 | `MODEL_TRANSCRIBE`, `MODEL_TEXT`, `MODEL_TEXT_FALLBACK`, `MODEL_VISION`, `MODEL_EMBED` | Vercel, local | provider model IDs (swap without code changes) |
 | `ASK_TAU`, `ASK_TOP_K` | Vercel, local | abstention threshold and candidate count (Methods EQ-002) |
