@@ -240,7 +240,7 @@ answer module must never write prompt or transcript text into this column.
   (`apps/web/drizzle/0000_slimy_smasher.sql`) was hand-reviewed for the `vector`/HNSW index, partial
   unique indexes, and the `CHECK` constraint, and `pnpm --filter web typecheck` /
   `pnpm --filter web test` (fixture-schema tests) pass, but "migrates cleanly on Neon" is unverified
-  until TASK-022 lands.
+  until TASK-022 lands. `0001_*.sql` adds `tribute` (ADR-007) and is equally unverified until TASK-022.
 - **`seed/load.ts` isn't transactional.** Its writes are a long sequence of unwrapped inserts (the
   Neon HTTP driver doesn't support interactive transactions the way a persistent connection would).
   If a fixture throws partway through (an unknown segment/person key, for example), the rows already
