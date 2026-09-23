@@ -24,18 +24,25 @@ const segmentFixture = z.object({
   endSeconds: z.number().nullable().optional(),
 });
 
-const sourceFixture = z.object({
-  key: z.string(),
-  type: sourceTypeSchema,
-  origin: originSchema,
-  status: sourceStatusSchema.default("ready"),
-  visibility: visibilitySchema.default("private"),
-  mimeType: z.string(),
-  byteSize: z.number().int().min(0),
-  blobPathname: z.string(),
-  contributorPersonKey: z.string().nullable().optional(),
-  segments: z.array(segmentFixture).default([]),
-});
+const sourceFixture = z
+  .object({
+    key: z.string(),
+    type: sourceTypeSchema,
+    origin: originSchema,
+    status: sourceStatusSchema.default("ready"),
+    visibility: visibilitySchema.default("private"),
+    mimeType: z.string(),
+    byteSize: z.number().int().min(0),
+    blobPathname: z.string(),
+    contributorPersonKey: z.string().nullable().optional(),
+    segments: z.array(segmentFixture).default([]),
+  })
+  // docs/data-model.md `source_segment`: "Photos have no segments — their vision output lives on
+  // `source.aiVisibleDescription` instead."
+  .refine((source) => source.type !== "photo" || source.segments.length === 0, {
+    message: 'A "photo" source must not have segments',
+    path: ["segments"],
+  });
 
 const recipeStepFixture = z.object({
   index: z.number().int().min(0),
@@ -50,21 +57,28 @@ const dateFixture = z.object({
   precision: datePrecisionSchema,
 });
 
-const itemFixture = z.object({
-  sourceKey: z.string(),
-  type: itemTypeSchema,
-  title: z.string(),
-  body: z.string(),
-  origin: originSchema,
-  reviewState: reviewStateSchema.default("ai_suggestion"),
-  visibility: visibilitySchema.nullable().optional(),
-  segmentIndexes: z.array(z.number().int().min(0)).default([]),
-  rawPeople: z.array(z.string()).default([]),
-  places: z.array(z.string()).default([]),
-  dates: z.array(dateFixture).default([]),
-  peopleKeys: z.array(z.string()).default([]),
-  recipeSteps: z.array(recipeStepFixture).default([]),
-});
+const itemFixture = z
+  .object({
+    sourceKey: z.string(),
+    type: itemTypeSchema,
+    title: z.string(),
+    body: z.string(),
+    origin: originSchema,
+    reviewState: reviewStateSchema.default("ai_suggestion"),
+    visibility: visibilitySchema.nullable().optional(),
+    disputeNote: z.string().nullable().optional(),
+    segmentIndexes: z.array(z.number().int().min(0)).default([]),
+    rawPeople: z.array(z.string()).default([]),
+    places: z.array(z.string()).default([]),
+    dates: z.array(dateFixture).default([]),
+    peopleKeys: z.array(z.string()).default([]),
+    recipeSteps: z.array(recipeStepFixture).default([]),
+  })
+  // PRD BR-020: Dispute cannot be saved without a note.
+  .refine((item) => item.reviewState !== "disputed" || Boolean(item.disputeNote?.trim()), {
+    message: 'An item with reviewState "disputed" must have a disputeNote (BR-020)',
+    path: ["disputeNote"],
+  });
 
 const personFixture = z.object({
   key: z.string(),

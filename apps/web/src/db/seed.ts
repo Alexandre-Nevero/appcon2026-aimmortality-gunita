@@ -1,15 +1,22 @@
 import { readFile } from "node:fs/promises";
 
 import "dotenv/config";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 
 import { db } from "./index";
 import {
+  activity,
+  aiCall,
   consent,
+  contribution,
+  event,
   item,
   itemPerson,
+  itemRevision,
   membership,
   person,
+  question,
+  recap,
   recipeStep,
   source,
   sourceSegment,
@@ -17,20 +24,59 @@ import {
 } from "./schema";
 import { DEFAULT_FIXTURE_PATH, familyFixture } from "./seed-fixture";
 
+// Deletes one space and everything under it in FK-safe order (children before parents), rather
+// than relying on `space`'s ON DELETE CASCADE alone. Several tables RESTRICT-reference `membership`
+// (source.uploadedByMembershipId, item_revision.changedByMembershipId, ...); if Postgres happened to
+// process the `membership` cascade before the tables that RESTRICT-reference it, the delete would
+// fail. Deleting explicitly, in dependency order, sidesteps that ordering hazard entirely.
+async function deleteSpaceTree(spaceId: string) {
+  const itemRows = await db.query.item.findMany({ where: eq(item.spaceId, spaceId) });
+  const itemIds = itemRows.map((row) => row.id);
+  const sourceRows = await db.query.source.findMany({ where: eq(source.spaceId, spaceId) });
+  const sourceIds = sourceRows.map((row) => row.id);
+
+  if (itemIds.length > 0) {
+    await db.delete(itemRevision).where(inArray(itemRevision.itemId, itemIds));
+    await db.delete(recipeStep).where(inArray(recipeStep.itemId, itemIds));
+    await db.delete(itemPerson).where(inArray(itemPerson.itemId, itemIds));
+  }
+  await db.delete(aiCall).where(eq(aiCall.spaceId, spaceId));
+  await db.delete(event).where(eq(event.spaceId, spaceId));
+  await db.delete(activity).where(eq(activity.spaceId, spaceId));
+  await db.delete(recap).where(eq(recap.spaceId, spaceId));
+  await db.delete(contribution).where(eq(contribution.spaceId, spaceId));
+  await db.delete(question).where(eq(question.spaceId, spaceId));
+  await db.delete(item).where(eq(item.spaceId, spaceId));
+  await db.delete(consent).where(eq(consent.spaceId, spaceId));
+  if (sourceIds.length > 0) {
+    await db.delete(sourceSegment).where(inArray(sourceSegment.sourceId, sourceIds));
+  }
+  await db.delete(source).where(eq(source.spaceId, spaceId));
+  await db.delete(membership).where(eq(membership.spaceId, spaceId));
+  await db.delete(person).where(eq(person.spaceId, spaceId));
+  await db.delete(space).where(eq(space.id, spaceId));
+}
+
 // docs/ops.md: `pnpm --filter web db:seed` is idempotent; `--reset` wipes the space first.
 export async function seed(options: { reset?: boolean; fixturePath?: string } = {}) {
   const fixturePath = options.fixturePath ?? DEFAULT_FIXTURE_PATH;
   const raw = JSON.parse(await readFile(fixturePath, "utf-8"));
   const fixture = familyFixture.parse(raw);
 
-  const existing = await db.query.space.findFirst({ where: eq(space.name, fixture.space.name) });
+  const matches = await db.query.space.findMany({ where: eq(space.name, fixture.space.name) });
+  if (matches.length > 1) {
+    throw new Error(
+      `${matches.length} spaces are named "${fixture.space.name}" — refusing to guess which one ` +
+        "to reset. Delete the duplicates manually first.",
+    );
+  }
+  const existing = matches[0];
   if (existing) {
     if (!options.reset) {
       console.log(`Space "${fixture.space.name}" already seeded. Pass --reset to reseed.`);
       return { spaceId: existing.id, reseeded: false };
     }
-    // Every other table cascades from space_id (docs/data-model.md), so this clears the whole tree.
-    await db.delete(space).where(eq(space.id, existing.id));
+    await deleteSpaceTree(existing.id);
   }
 
   const [createdSpace] = await db
@@ -147,6 +193,7 @@ export async function seed(options: { reset?: boolean; fixturePath?: string } = 
         dates: i.dates,
         reviewState: i.reviewState,
         visibility: i.visibility ?? null,
+        disputeNote: i.disputeNote ?? null,
         reviewedByMembershipId: i.reviewState === "ai_suggestion" ? null : firstMembershipId,
         reviewedAt: i.reviewState === "ai_suggestion" ? null : new Date(),
       })

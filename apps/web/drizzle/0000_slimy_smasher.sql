@@ -246,7 +246,7 @@ ALTER TABLE "ai_call" ADD CONSTRAINT "ai_call_space_id_space_id_fk" FOREIGN KEY 
 ALTER TABLE "ai_call" ADD CONSTRAINT "ai_call_source_id_source_id_fk" FOREIGN KEY ("source_id") REFERENCES "public"."source"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "ai_call" ADD CONSTRAINT "ai_call_item_id_item_id_fk" FOREIGN KEY ("item_id") REFERENCES "public"."item"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "consent" ADD CONSTRAINT "consent_space_id_space_id_fk" FOREIGN KEY ("space_id") REFERENCES "public"."space"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "consent" ADD CONSTRAINT "consent_evidence_source_id_source_id_fk" FOREIGN KEY ("evidence_source_id") REFERENCES "public"."source"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "consent" ADD CONSTRAINT "consent_evidence_source_id_source_id_fk" FOREIGN KEY ("evidence_source_id") REFERENCES "public"."source"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "consent" ADD CONSTRAINT "consent_recorded_by_membership_id_membership_id_fk" FOREIGN KEY ("recorded_by_membership_id") REFERENCES "public"."membership"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "contribution" ADD CONSTRAINT "contribution_space_id_space_id_fk" FOREIGN KEY ("space_id") REFERENCES "public"."space"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "contribution" ADD CONSTRAINT "contribution_reviewed_by_membership_id_membership_id_fk" FOREIGN KEY ("reviewed_by_membership_id") REFERENCES "public"."membership"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint

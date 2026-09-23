@@ -110,6 +110,14 @@ One row per space (`spaceId` is `unique`). The four boolean columns are BR-002's
 scopes. `evidenceSourceId` points at the Private `source` row holding the recorded/written evidence
 (BR-003). `withdrawnAt`/`withdrawnReason` implement BR-004; withdrawal does not create a new row.
 
+`evidenceSourceId` is `ON DELETE RESTRICT`, not `SET NULL`, **`[interpretation]`**: BR-004 lets the
+steward delete material on request, but BR-003 relies on this exact source as consent's evidentiary
+record. Silently detaching the link on delete would erase that proof without anyone noticing;
+RESTRICT means deleting a source that's still serving as consent evidence fails loudly instead. This
+is a judgment call favoring the legal/evidentiary reading of BR-003 over unconditional deletion —
+worth an ADR if the team wants different behavior (e.g. requiring the steward to explicitly
+re-record consent before its old evidence can be deleted).
+
 ### `source`
 An original upload (F-003/F-007), always kept. `status`/`statusReason` mirror System Design's
 `uploaded → processing → ready | failed(step, reason)` state machine. `artifactContext` is the
@@ -229,10 +237,24 @@ answer module must never write prompt or transcript text into this column.
 
 - **Not yet migrated against a live database.** `pnpm --filter web db:migrate` needs a real Neon
   `DATABASE_URL_UNPOOLED` (TASK-022 provisions this). The generated SQL
-  (`apps/web/drizzle/0000_fresh_northstar.sql`) was hand-reviewed for the `vector`/HNSW index,
-  partial unique indexes, and the `CHECK` constraint, and `pnpm --filter web typecheck` /
+  (`apps/web/drizzle/0000_slimy_smasher.sql`) was hand-reviewed for the `vector`/HNSW index, partial
+  unique indexes, and the `CHECK` constraint, and `pnpm --filter web typecheck` /
   `pnpm --filter web test` (fixture-schema tests) pass, but "migrates cleanly on Neon" is unverified
   until TASK-022 lands.
+- **`seed/load.ts` isn't transactional.** Its writes are a long sequence of unwrapped inserts (the
+  Neon HTTP driver doesn't support interactive transactions the way a persistent connection would).
+  If a fixture throws partway through (an unknown segment/person key, for example), the rows already
+  inserted before the throw stay committed; a later run without `--reset` finds the space by name
+  and reports "already seeded" without knowing the tree is incomplete. Reasonable for a demo-seed
+  script whose only caller is a human running it locally, but worth a real fix (e.g. a "seeding"
+  status flag, or a job-queue-based seed) before this script is trusted in CI.
+- **`deleteSpaceTree` (the `--reset` path) deletes in explicit dependency order**, not via a single
+  cascading `DELETE FROM space`, specifically to avoid a real Postgres hazard: several tables
+  `RESTRICT`-reference `membership` (`source.uploadedByMembershipId`,
+  `item_revision.changedByMembershipId`), and mixing `RESTRICT` with `CASCADE` across a shared
+  parent can raise a spurious FK violation if Postgres processes the cascades in the wrong order
+  (a documented class of Postgres gotcha, not something we could verify without a live database
+  here — deleting explicitly sidesteps the question entirely instead of relying on cascade order).
 - **Rebased onto TASK-001's real scaffold** after it merged into `stage`. `apps/web/package.json`
   and `packages/core/package.json` now carry both the Next.js/scaffold pieces (Kirby) and the
   Drizzle/seed pieces (this task), hand-merged during the rebase — see that commit for the exact
