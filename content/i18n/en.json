@@ -220,7 +220,10 @@
     "extractedEmpty": "Nothing extracted yet. Wait for processing.",
     "transcript": "Transcript",
     "transcriptEmpty": "No transcript yet.",
-    "openInReview": "Open in Review"
+    "openInReview": "Open in Review",
+    "micPermissionDenied": "Microphone access is blocked. Allow the mic for this site in your browser settings, then reload.",
+    "micPermissionDeniedVisitor": "Microphone access is blocked. You can type or add a photo instead.",
+    "recordingTooLarge": "That recording is over the ~4 MB limit. Record a shorter answer, or split it into two."
   },
   "questions": {
     "title": "GUNITA Questions",
@@ -406,7 +409,8 @@
     "thanksClose": "This step is complete.",
     "unavailableTitle": "Memorial unavailable",
     "unavailableBody": "This link is disabled, not yet published, or unknown.",
-    "loadingRecap": "Loading memorial…"
+    "loadingRecap": "Loading memorial…",
+    "micPermissionDenied": "Microphone access is blocked. You can type or add a photo instead."
   },
   "empty": {
     "genericTitle": "Nothing here yet",

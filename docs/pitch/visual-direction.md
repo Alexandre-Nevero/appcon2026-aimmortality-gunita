@@ -1,9 +1,11 @@
 # Visual direction — Himmel
 
-**Owner:** Gian (product design) · **Task:** TASK-004 · **Date:** 2026-09-23 (Asia/Manila)
+**Owner:** Gian (product design) · **Task:** TASK-004 · **Date:** 2026-09-23 (Asia/Manila); naming note 2026-09-24
 **Traces to:** ADR-005, BR-014, BR-080, F-010, F-015, F-017–F-019, F-022 · tokens `content/design-tokens.css` · copy `content/i18n/{fil,en}.json`
 
 > Pitch-facing visual north star for Josh (screens) and the team (demo / judges). Warm, consistent, on-brand under hackathon time — not a full design system.
+
+**Product name:** **Himmel** (PRD / BRD / ADRs updated 2026-09-24). App i18n and repo folder may still say GUNITA until copy/TASK follow-ups.
 
 ---
 
@@ -39,7 +41,7 @@ Source of truth: `content/design-tokens.css`.
 | Cover w/ photo | `--color-bg-inverse` + `[data-theme="memorial-cover"]` | Sparingly |
 | Cover w/o photo | `--color-bg-cover-fallback-*` + `[data-theme="memorial-cover-fallback"]` | Soft celestial blue & paper gradient |
 
-**Badges:** soft green (`--color-badge-from-them-*`, verified), soft violet (about them), soft blue (AI / AI-written), soft amber (uncertain), soft rose (disputed). **Hindi pa alam** uses muted paper tokens — abstention, not error.
+**Badges (F-015 — must stay distinct):** soft green (From them), soft teal (Verified), soft violet (About them), soft sky (AI suggestion), lighter sky (AI-written), soft amber (uncertain), soft rose (disputed), cool wash (rejected). Visibility: slate Private, soft indigo Family, pale lilac Memorial (not warning amber). Recipe chips: mint Measured, peach By judgement. **Hindi pa alam** uses muted paper — abstention, not error.
 
 Do not invent neon greens or purple gradients. New semantic color → add a token first.
 
@@ -89,9 +91,11 @@ Same badge chrome on **every** surface: archive, search, Ask evidence, recap cap
 | `disputed` | Pinagtatalunan / Disputed | `--color-badge-disputed-*` |
 | `aiWritten` | Isinulat ng AI / AI-written | `--color-badge-ai-written-*` |
 | `hindiPaAlam` | **Hindi pa alam** (both) | `--color-badge-hindi-pa-alam-*` |
-| visibility | Pribado / Pamilya / Memoryal | `--color-vis-*` |
+| visibility | Pribado / Pamilya / Memoryal | `--color-vis-private-*` / `--color-vis-family-*` / `--color-vis-memorial-*` (not warning tokens) |
+| `measured` | May sukat / Measured | `--color-badge-measured-*` |
+| `byJudgement` | Sa panlasa / By judgement | `--color-badge-by-judgement-*` |
 
-**Rules:** keys stay stable (`packages/core` + i18n); one badge component; AI-written marker always beside AI prose (BR-023); quotes only for verbatim reviewed text (BR-024).
+**Rules:** keys stay stable (`packages/core` + i18n); one badge component; AI-written marker always beside AI prose (BR-023); quotes only for verbatim reviewed text (BR-024). Origin, review-state, and visibility chips must not share the same fill (F-015). Recipe Measured / By judgement are separate chips, not provenance badges. Keep `packages/core` labels in sync with i18n when either changes (no automated check yet — TASK-003).
 
 ---
 
@@ -153,6 +157,9 @@ Tokens: `--duration-*` (zeroed under `prefers-reduced-motion`).
 | Memorial cover with no photo | Soft celestial blue and paper gradient via `--color-bg-cover-fallback-*` and `[data-theme="memorial-cover-fallback"]`. Copy: `memorialPublic.coverNoPhotoAlt`. |
 | S-022 projector framing | No separate desktop app. Center phone-width column at `--space-projector-max` (~480px) on warm paper for demo projection. |
 | fil tab labels | Keep Home / Capture / Archive / Ask as English product names in both locales; localize sentences and actions (Taglish + po/opo). |
+| Badge / visibility colors | Distinct fills: From them green ≠ Verified teal ≠ Family indigo; Rejected cool wash ≠ Private slate; Memorial pale lilac (never warning amber). |
+| modeDuring (fil) | **Buhay pa** (state), not "Habang buhay" (vow / forever). Pairs with Memoryal. |
+| Recipe chips | Tokens + badge-spec rows for Measured / By judgement (`--color-badge-measured-*`, `--color-badge-by-judgement-*`). fil: May sukat / Sa panlasa. |
 
 ---
 

@@ -13,7 +13,7 @@
   "app": {
     "name": "GUNITA",
     "tagline": "Ingatan ang mga kuwento ng pamilya",
-    "modeDuring": "Habang buhay",
+    "modeDuring": "Buhay pa",
     "modeMemorial": "Memoryal",
     "featuredPersonLabel": "Pinag-uusapan",
     "offlineBanner": "Walang signal muna. Subukan ulit kapag may koneksyon."
@@ -99,7 +99,7 @@
     "inTheirOwnWords": "Sa sarili niyang salita",
     "othersRemember": "Naalala ng iba",
     "memoriesFromOthers": "Mga alaala mula sa iba",
-    "byJudgement": "By judgement",
+    "byJudgement": "Sa panlasa",
     "measured": "May sukat"
   },
   "itemTypes": {
@@ -149,17 +149,17 @@
     "createSpaceCta": "Gawin ang space",
     "nameRequired": "Kailangan ang pangalan.",
     "consentTitle": "Consent",
-    "consentSubtitle": "Bago mag-record, kailangan ang malinaw na pahintulot niya.",
+    "consentSubtitle": "Bago po mag-record, kailangan ang malinaw na pahintulot niya.",
     "consentVoice": "Mag-record ng voice consent",
     "consentWritten": "Maglagay ng written consent",
-    "consentWrittenPlaceholder": "Isulat ang pahintulot…",
+    "consentWrittenPlaceholder": "Isulat po ang pahintulot…",
     "consentChoicesHeading": "Mga pinili",
-    "consentAi": "Payag na gamitin ang AI para mag-organisa (transcript, extract, Ask)",
+    "consentAi": "Payag po ba na gamitin ang AI para mag-organisa (transcript, extract, Ask)?",
     "consentFamilyDefault": "Default visibility: Pamilya",
-    "consentMemorial": "Payag na gamitin sa memoryal (kung may mangyari)",
-    "consentVoiceClips": "Payag na i-play ang original voice clips sa memoryal",
+    "consentMemorial": "Payag po ba na gamitin sa memoryal (kung may mangyari)?",
+    "consentVoiceClips": "Payag po ba na i-play ang original voice clips sa memoryal?",
     "stewardAttestation": "Ako ang steward; kinumpirma kong may pahintulot.",
-    "consentSave": "I-save ang consent",
+    "consentSave": "I-save po ang consent",
     "consentRequired": "Kailangan muna ang consent bago mag-capture.",
     "waitingForConsent": "Hinihintay ang consent mula sa steward.",
     "consentSaved": "Nai-save na ang consent. Pwede nang mag-capture."
@@ -186,12 +186,12 @@
     "addMyMemory": "Idagdag ang alaala ko",
     "consentBlocked": "Kailangan muna ang consent bago mag-record.",
     "interviewTitle": "Interview",
-    "interviewHint": "Isang tanong lang. Malaking letra para madaling basahin.",
+    "interviewHint": "Isang tanong lang po. Malaking letra para madaling basahin.",
     "editQuestion": "I-edit ang tanong",
     "skipQuestion": "Laktawan ang tanong",
     "questionOf": "Tanong {current} sa {total}",
     "recording": "Nagre-record…",
-    "recordingHint": "Magsalita nang natural. Pwede mag-Taglish.",
+    "recordingHint": "Magsalita po nang natural. Pwede mag-Taglish.",
     "uploading": "Nag-a-upload…",
     "uploadFailed": "Hindi na-upload. Subukan ulit.",
     "uploadRetry": "I-upload ulit",
@@ -220,7 +220,10 @@
     "extractedEmpty": "Wala pang nakuha. Hintayin ang processing.",
     "transcript": "Transcript",
     "transcriptEmpty": "Wala pang transcript.",
-    "openInReview": "Buksan sa Review"
+    "openInReview": "Buksan sa Review",
+    "micPermissionDenied": "Hindi po pinayagan ang mikropono. Buksan ang Settings ng browser para sa site na ito, payagan ang mic, tapos i-reload.",
+    "micPermissionDeniedVisitor": "Hindi po pinayagan ang mikropono. Pwede pong mag-type o magdagdag ng larawan sa halip.",
+    "recordingTooLarge": "Masyadong mahaba ang recording (limit ~4 MB). Mag-record po ulit ng mas maikli, o hatiin sa dalawang sagot."
   },
   "questions": {
     "title": "GUNITA Questions",
@@ -406,7 +409,8 @@
     "thanksClose": "Sarado na ang hakbang na ito.",
     "unavailableTitle": "Hindi available ang memoryal",
     "unavailableBody": "Ang link na ito ay naka-disable, hindi pa published, o hindi kilala.",
-    "loadingRecap": "Niloload ang memoryal…"
+    "loadingRecap": "Niloload ang memoryal…",
+    "micPermissionDenied": "Hindi po pinayagan ang mikropono. Pwede pong mag-type o magdagdag ng larawan sa halip."
   },
   "empty": {
     "genericTitle": "Wala pang laman",

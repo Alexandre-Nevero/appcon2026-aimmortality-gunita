@@ -1,5 +1,5 @@
 /*
- * GUNITA design tokens — TASK-004 (Gian / product design)
+ * Himmel design tokens — TASK-004 (Gian / product design)
  * Visual direction: Himmel — quiet journey under an open sky (campfire warmth + celestial blue).
  * Mobile-first ~375px (+ safe-area). Consume via CSS custom properties.
  * Josh wires these in TASK-007 / TASK-027. Prefer prefers-reduced-motion for non-essential animation.
@@ -73,36 +73,45 @@
   --color-info: #2b6cb0;
   --color-info-soft: #bee3f8;
 
-  /* Provenance badges (F-015) — distinct, calm, readable at chip size */
-  --color-badge-from-them-bg: #c6f6d5;
+  /*
+   * Provenance / review badges (F-015) — each semantic must be visually distinct.
+   * Do not reuse the same bg across origin, review-state, and visibility chips.
+   */
+  --color-badge-from-them-bg: #c6f6d5;       /* soft green — their own words */
   --color-badge-from-them-fg: #22543d;
-  --color-badge-about-them-bg: #e9d8fd;
+  --color-badge-about-them-bg: #e9d8fd;      /* soft violet — family/visitor about them */
   --color-badge-about-them-fg: #44337a;
-  --color-badge-ai-bg: #bee3f8;
+  --color-badge-ai-bg: #bee3f8;              /* soft sky — AI suggestion */
   --color-badge-ai-fg: #2a4365;
-  --color-badge-verified-bg: #c6f6d5;
-  --color-badge-verified-fg: #22543d;
-  --color-badge-corrected-bg: #fffaf3;
+  --color-badge-verified-bg: #b2f5ea;        /* soft teal — confirmed (≠ from-them green) */
+  --color-badge-verified-fg: #234e52;
+  --color-badge-corrected-bg: #fffaf3;       /* cream + green outline */
   --color-badge-corrected-fg: #22543d;
   --color-badge-corrected-border: #276749;
-  --color-badge-uncertain-bg: #fefcbf;
+  --color-badge-uncertain-bg: #fefcbf;       /* soft amber — uncertain */
   --color-badge-uncertain-fg: #744210;
-  --color-badge-disputed-bg: #fed7d7;
+  --color-badge-disputed-bg: #fed7d7;        /* soft rose — disputed */
   --color-badge-disputed-fg: #742a2a;
-  --color-badge-rejected-bg: #edf2f7;
-  --color-badge-rejected-fg: #4a5568;
-  --color-badge-ai-written-bg: #bee3f8;
-  --color-badge-ai-written-fg: #2a4365;
-  --color-badge-hindi-pa-alam-bg: #efe6d8;
+  --color-badge-rejected-bg: #f7fafc;        /* cool wash — rejected (≠ private slate) */
+  --color-badge-rejected-fg: #718096;
+  --color-badge-ai-written-bg: #ebf8ff;      /* lighter sky — AI prose marker */
+  --color-badge-ai-written-fg: #2c5282;
+  --color-badge-hindi-pa-alam-bg: #efe6d8;   /* muted paper — abstention, not error */
   --color-badge-hindi-pa-alam-fg: #5c534a;
 
-  /* Visibility chips */
-  --color-vis-private-bg: #edf2f7;
-  --color-vis-private-fg: #4a5568;
-  --color-vis-family-bg: #c6f6d5;
-  --color-vis-family-fg: #22543d;
-  --color-vis-memorial-bg: #fefcbf;
-  --color-vis-memorial-fg: #975a16;
+  /* Recipe step chips (Pamana Measured / By judgement) — not F-015 provenance */
+  --color-badge-measured-bg: #e6fffa;
+  --color-badge-measured-fg: #234e52;
+  --color-badge-by-judgement-bg: #feebc8;
+  --color-badge-by-judgement-fg: #7b341e;
+
+  /* Visibility chips — separate palette from provenance/review */
+  --color-vis-private-bg: #e2e8f0;           /* slate — private (≠ rejected) */
+  --color-vis-private-fg: #2d3748;
+  --color-vis-family-bg: #c3dafe;            /* soft indigo — family circle (≠ from-them) */
+  --color-vis-family-fg: #2a4365;
+  --color-vis-memorial-bg: #faf5ff;          /* pale lilac — memorial publish (≠ about-them, ≠ warning) */
+  --color-vis-memorial-fg: #5b21b6;
 
   /* -------------------------------------------------------------------------
    * Typography — storybook serif + clear sans (F-010)
