@@ -8,7 +8,7 @@ import { DEFAULT_TIMESLICE_MS, MAX_RECORDING_BYTES } from "./constants";
 import { classifyMediaError, isSecureRecordingContext } from "./environment";
 import { RecordingError } from "./errors";
 import { resolveMimeType, type IsTypeSupported } from "./formats";
-import { exceedsSizeLimit, remainingBytes, totalChunkBytes } from "./size";
+import { exceedsSizeLimit, totalChunkBytes } from "./size";
 
 export type RecorderState =
   | "idle"
@@ -50,6 +50,18 @@ export interface BrowserRecorder {
   stop(): Promise<RecordingResult>;
   /** Discards the in-progress recording and returns to `idle` for re-record. */
   cancel(): void;
+}
+
+const EXACT_MONO_CONSTRAINTS = { audio: { channelCount: { exact: 1 } } } as const;
+const PREFERRED_MONO_CONSTRAINTS = { audio: { channelCount: 1 } } as const;
+
+function isOverconstrainedError(error: unknown): boolean {
+  return (
+    !!error &&
+    typeof error === "object" &&
+    "name" in error &&
+    String((error as { name: unknown }).name) === "OverconstrainedError"
+  );
 }
 
 function resolveEnvironment(overrides?: Partial<RecorderEnvironment>): RecorderEnvironment {
@@ -170,11 +182,6 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
     const nextSize = sizeBytes + data.size;
 
     if (exceedsSizeLimit(nextSize, maxBytes)) {
-      const bytesToKeep = remainingBytes(sizeBytes, maxBytes);
-      if (bytesToKeep > 0) {
-        chunks.push(data.slice(0, bytesToKeep, data.type));
-        sizeBytes = totalChunkBytes(chunks);
-      }
       stopRecorder();
       return;
     }
@@ -203,7 +210,14 @@ export function createBrowserRecorder(options: BrowserRecorderOptions = {}): Bro
     state = "requesting";
 
     try {
-      stream = await env.getUserMedia({ audio: { channelCount: 1 } });
+      try {
+        stream = await env.getUserMedia(EXACT_MONO_CONSTRAINTS);
+      } catch (error) {
+        if (!isOverconstrainedError(error)) {
+          throw error;
+        }
+        stream = await env.getUserMedia(PREFERRED_MONO_CONSTRAINTS);
+      }
     } catch (error) {
       state = "error";
       throw classifyMediaError(error);

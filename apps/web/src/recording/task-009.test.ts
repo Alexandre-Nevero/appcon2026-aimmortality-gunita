@@ -39,8 +39,14 @@ class FakeMediaRecorder {
     this.onstop?.();
   }
 
-  emit(bytes: number): void {
-    this.ondataavailable?.({ data: new Blob([new Uint8Array(bytes)]) });
+  emit(data: number | Uint8Array | Blob): void {
+    const blob =
+      typeof data === "number"
+        ? new Blob([new Uint8Array(data)])
+        : data instanceof Blob
+          ? data
+          : new Blob([Uint8Array.from(data)]);
+    this.ondataavailable?.({ data: blob });
   }
 
   fail(error: unknown): void {
@@ -168,18 +174,21 @@ describe("createBrowserRecorder", () => {
 
   it("surfaces the permission-denied path (TC-081)", async () => {
     const denied = Object.assign(new Error("denied"), { name: "NotAllowedError" });
+    const getUserMedia = vi.fn(async () => {
+      throw denied;
+    });
     const { environment } = createTestEnvironment({
-      getUserMedia: async () => {
-        throw denied;
-      },
+      getUserMedia,
     });
     const recorder = createBrowserRecorder({ environment });
 
     await expect(recorder.start()).rejects.toMatchObject({ code: "PERMISSION_DENIED" });
     expect(recorder.state).toBe("error");
+    expect(getUserMedia).toHaveBeenCalledTimes(1);
+    expect(getUserMedia).toHaveBeenCalledWith({ audio: { channelCount: { exact: 1 } } });
   });
 
-  it("requests mono audio capture", async () => {
+  it("attempts exact mono audio capture first", async () => {
     const getUserMedia = vi.fn(async () => {
       return { getTracks: () => [{ stop: () => {} }] } as unknown as MediaStream;
     });
@@ -188,18 +197,63 @@ describe("createBrowserRecorder", () => {
 
     await recorder.start();
 
-    expect(getUserMedia).toHaveBeenCalledWith({ audio: { channelCount: 1 } });
+    expect(getUserMedia).toHaveBeenCalledTimes(1);
+    expect(getUserMedia).toHaveBeenCalledWith({ audio: { channelCount: { exact: 1 } } });
 
     recorder.cancel();
   });
 
-  it("auto-stops at the size cap and preserves the captured audio", async () => {
+  it("falls back to preferred mono when exact mono is overconstrained", async () => {
+    const getUserMedia = vi
+      .fn<
+        (constraints: MediaStreamConstraints) => Promise<MediaStream>
+      >()
+      .mockRejectedValueOnce(
+        Object.assign(new Error("mono unavailable"), { name: "OverconstrainedError" }),
+      )
+      .mockResolvedValueOnce(
+        ({ getTracks: () => [{ stop: () => {} }] }) as unknown as MediaStream,
+      );
+    const { environment } = createTestEnvironment({ getUserMedia });
+    const recorder = createBrowserRecorder({ environment });
+
+    await recorder.start();
+
+    expect(getUserMedia).toHaveBeenNthCalledWith(1, {
+      audio: { channelCount: { exact: 1 } },
+    });
+    expect(getUserMedia).toHaveBeenNthCalledWith(2, { audio: { channelCount: 1 } });
+
+    recorder.cancel();
+  });
+
+  it("drops an overflowing chunk and preserves previously accepted audio", async () => {
+    const { environment, getRecorder } = createTestEnvironment();
+    const recorder = createBrowserRecorder({ environment, maxBytes: 100 });
+    const acceptedChunk = new Uint8Array(60).fill(1);
+    const overflowingChunk = new Uint8Array(60).fill(2);
+
+    await recorder.start();
+    getRecorder().emit(acceptedChunk);
+    getRecorder().emit(overflowingChunk);
+
+    expect(recorder.state).toBe("stopped");
+
+    const result = await recorder.stop();
+    const bytes = new Uint8Array(await result.blob.arrayBuffer());
+
+    expect(result.sizeBytes).toBe(acceptedChunk.length);
+    expect(result.sizeBytes).toBeLessThanOrEqual(100);
+    expect(Array.from(bytes)).toEqual(Array.from(acceptedChunk));
+  });
+
+  it("auto-stops when accepted chunks reach the exact size cap", async () => {
     const { environment, getRecorder } = createTestEnvironment();
     const recorder = createBrowserRecorder({ environment, maxBytes: 100 });
 
     await recorder.start();
     getRecorder().emit(60);
-    getRecorder().emit(60); // auto-stop and keep the first 100 bytes
+    getRecorder().emit(40);
 
     expect(recorder.state).toBe("stopped");
 
