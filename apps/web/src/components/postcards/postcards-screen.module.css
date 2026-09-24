@@ -2,6 +2,8 @@
   max-width: 26.25rem;
   margin: 0 auto;
   padding: 0 var(--space-gutter) var(--space-xl);
+  /* Tape on the tilted notes can poke past the gutter; never scroll sideways. */
+  overflow-x: clip;
 }
 
 .empty {

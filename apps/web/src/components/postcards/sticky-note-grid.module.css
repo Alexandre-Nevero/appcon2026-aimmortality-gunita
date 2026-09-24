@@ -1,10 +1,11 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-xl) var(--space-lg);
+  gap: var(--space-xl) var(--space-sm);
   align-items: start;
-  margin: 0;
-  padding: var(--space-lg) var(--space-xs) 0;
+  /* Bleed a little into the page gutter so each pad gets more room on a 375px screen. */
+  margin: 0 calc(var(--space-xs) * -1);
+  padding: var(--space-lg) 0 0;
   list-style: none;
 }
 
@@ -22,7 +23,7 @@
   flex-direction: column;
   justify-content: flex-end;
   aspect-ratio: 112 / 106;
-  padding: var(--space-lg) var(--space-sm) var(--space-sm);
+  padding: 28px var(--space-md) var(--space-md);
   color: var(--color-ink);
   text-decoration: none;
 }
