@@ -286,6 +286,13 @@
     "changeVisibility": "Baguhin ang visibility",
     "deleteItem": "Burahin ang item"
   },
+  "postcards": {
+    "title": "Mga postcard",
+    "subtitle": "Mga alaalang isinulat ng mga nagmamahal sa kanya.",
+    "add": "Idagdag ang alaala ko",
+    "emptyTitle": "Wala pang nakasulat na alaala",
+    "emptyBody": "Magdagdag ng isa, o kumpirmahin muna ang mga mungkahi sa Review."
+  },
   "ask": {
     "title": "Ask GUNITA",
     "placeholder": "Magtanong tungkol sa minamahal…",

@@ -4,34 +4,34 @@
   padding: 0 var(--space-gutter) var(--space-xl);
 }
 
-.body {
-  margin: 0 0 var(--space-md);
-  font-size: 1rem;
-  line-height: 1.55;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs);
-  margin: 0 0 var(--space-lg);
-}
-
-.notFound {
+.empty {
   margin: var(--space-lg) 0 0;
   padding: var(--space-lg);
-  font-size: 0.9375rem;
-  color: var(--color-ink-muted);
   text-align: center;
   background: var(--color-surface);
   border-radius: var(--radius-md);
 }
 
-.noteTitle {
+.emptyTitle {
   margin: 0 0 var(--space-sm);
   font-family: var(--font-script);
   font-size: 1.25rem;
   font-weight: 400;
-  line-height: 1.5;
   text-transform: lowercase;
+}
+
+.emptyBody {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-xl);
+  padding: var(--space-md) 0;
 }

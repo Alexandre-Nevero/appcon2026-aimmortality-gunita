@@ -286,6 +286,13 @@
     "changeVisibility": "Change visibility",
     "deleteItem": "Delete item"
   },
+  "postcards": {
+    "title": "Postcards",
+    "subtitle": "Memories written down by the people who love her.",
+    "add": "Add my memory",
+    "emptyTitle": "No written memories yet",
+    "emptyBody": "Add one, or confirm suggestions in Review first."
+  },
   "ask": {
     "title": "Ask GUNITA",
     "placeholder": "Ask about your loved one…",
