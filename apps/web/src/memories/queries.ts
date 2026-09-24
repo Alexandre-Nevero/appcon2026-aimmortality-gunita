@@ -2,7 +2,7 @@ import { isMemorialPublic, type Locale } from "@gunita/core";
 import { and, asc, eq, inArray, isNotNull } from "drizzle-orm";
 
 import type { db as Database } from "../db";
-import { contribution, person, recap, space, tribute } from "../db/schema";
+import { consent, contribution, person, recap, space, tribute } from "../db/schema";
 
 type Db = typeof Database;
 
@@ -21,12 +21,17 @@ export async function findPublicMemorial(db: Db, token: string): Promise<PublicM
       lifecycleMode: space.lifecycleMode,
       memorialLinkDisabled: space.memorialLinkDisabled,
       recapStatus: recap.status,
+      memorialUseAllowed: consent.memorialUseAllowed,
+      withdrawnAt: consent.withdrawnAt,
     })
     .from(space)
     .leftJoin(recap, eq(recap.spaceId, space.id))
+    .leftJoin(consent, eq(consent.spaceId, space.id))
     .where(eq(space.memorialToken, token))
     .limit(1);
-  if (!row || !isMemorialPublic(row)) return null;
+  if (!row || !isMemorialPublic(row) || !row.memorialUseAllowed || row.withdrawnAt != null) {
+    return null;
+  }
 
   const featured = await db.query.person.findFirst({
     where: and(eq(person.spaceId, row.spaceId), eq(person.isFeatured, true)),
