@@ -70,4 +70,9 @@ export const fixtures = {
     citations: [] as { itemId: string; excerpt: string }[],
   },
   memorialToken: "demo_memorial_token",
+  interviewQuestions: [
+    "Where did you grow up, and what do you remember most about that place?",
+    "What recipe or meal feels most like home to you?",
+    "Who taught you something important that you still carry today?",
+  ],
 };

@@ -1,0 +1,43 @@
+.page {
+  max-width: 26.25rem;
+  margin: 0 auto;
+  padding: 0 var(--space-gutter) var(--space-xl);
+}
+
+.hint {
+  margin: 0 0 var(--space-lg);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 10rem;
+  padding: var(--space-sm) var(--space-md);
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: var(--color-field);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--color-ink);
+  resize: vertical;
+}
+
+.status {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+}
+
+.error {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-record);
+}
