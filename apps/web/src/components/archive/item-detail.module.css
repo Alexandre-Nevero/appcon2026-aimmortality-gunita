@@ -1,0 +1,28 @@
+.page {
+  max-width: 26.25rem;
+  margin: 0 auto;
+  padding: 0 var(--space-gutter) var(--space-xl);
+}
+
+.body {
+  margin: 0 0 var(--space-md);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin: 0 0 var(--space-lg);
+}
+
+.notFound {
+  margin: var(--space-lg) 0 0;
+  padding: var(--space-lg);
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+  text-align: center;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+}

@@ -1,0 +1,219 @@
+.page {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-gutter) var(--space-xl);
+}
+
+.cover {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.coverTitle {
+  margin: var(--space-md) 0 var(--space-xs);
+  font-family: var(--font-script);
+  font-size: 2rem;
+  font-weight: 400;
+  text-transform: lowercase;
+}
+
+.coverHint {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--color-ink-muted);
+}
+
+.coverPhoto {
+  width: min(14rem, 72vw);
+  margin: var(--space-lg) auto 0;
+  display: block;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-polaroid);
+}
+
+.section {
+  margin-bottom: var(--space-xl);
+}
+
+.sectionTitle {
+  margin: 0 0 var(--space-md);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.card {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.cardTitle {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+}
+
+.cardBody {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+.cardCaption {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+  text-transform: lowercase;
+}
+
+.cardPhoto {
+  width: 100%;
+  margin-top: var(--space-md);
+  border-radius: var(--radius-sm);
+}
+
+.playBtn {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+  text-transform: lowercase;
+  background: var(--color-mist);
+  border: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.transcript {
+  margin: var(--space-sm) 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+
+.contribution {
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgb(26 26 26 / 0.08);
+}
+
+.contributionMeta {
+  margin: 0 0 var(--space-xs);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+}
+
+.primaryLink {
+  display: block;
+  width: 100%;
+  padding: var(--space-md);
+  text-align: center;
+  text-decoration: none;
+  text-transform: lowercase;
+  color: var(--color-ink);
+  background: var(--color-mist);
+  border-radius: var(--radius-pill);
+}
+
+.hint {
+  margin: 0 0 var(--space-lg);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 6rem;
+  padding: var(--space-md);
+  font: inherit;
+  border: 1px solid rgb(26 26 26 / 0.12);
+  border-radius: var(--radius-md);
+  resize: vertical;
+}
+
+.notice {
+  margin: 0;
+  padding: var(--space-md);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  background: rgb(235 138 55 / 0.12);
+  border-radius: var(--radius-md);
+}
+
+.error {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-error, #8b3a3a);
+}
+
+.thanks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl) var(--space-gutter);
+  text-align: center;
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+.thanksTitle {
+  margin: 0;
+  font-family: var(--font-script);
+  font-size: 2.25rem;
+  font-weight: 400;
+  text-transform: lowercase;
+}
+
+.thanksBody {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--color-ink-muted);
+}
+
+.thanksClose {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+  text-transform: lowercase;
+}
+
+.unavailable {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-gutter);
+  text-align: center;
+}
+
+.unavailableTitle {
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+}
+
+.unavailableBody {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
