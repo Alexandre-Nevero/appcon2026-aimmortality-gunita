@@ -46,7 +46,7 @@ task. Coordination is by **write-scope ownership** + **frozen contracts**, not a
 | DELETE | `/api/sources/:id` | Shi | Josh S-102 |
 | GET | `/api/spaces/:id/search?q=` | Shi | Josh S-015 |
 | POST | `/api/spaces/:id/ask` | Kirby | Josh S-016 |
-| GET/PATCH | `/api/spaces/:id/questions` | Shi | Josh S-008 |
+| GET/POST/PATCH | `/api/spaces/:id/questions` | Shi | Josh S-008 |
 | POST | `/api/spaces/:id/memorial/activate` | Kirby | Josh S-020 |
 | POST | `/api/spaces/:id/memorial/publish` | Kirby | Josh S-022 |
 | GET | `/api/spaces/:id/memorial/qr` | Kirby | Josh S-023 |
