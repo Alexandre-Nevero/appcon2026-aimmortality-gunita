@@ -49,8 +49,9 @@ export function ArchiveSearch() {
                 id: row.id,
                 title: row.title,
                 caption: row.caption ?? row.title,
-                photoUrl: row.photoUrl ?? "/objects/polaroid-sample-1.jpg",
+                photoUrl: row.photoUrl ?? "",
                 origin: row.origin,
+                reviewState: row.reviewState,
               })),
             );
             setLoading(false);
