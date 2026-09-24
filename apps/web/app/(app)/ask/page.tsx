@@ -1,5 +1,6 @@
 "use client";
 
+import { ORIGIN_LABELS } from "@gunita/core";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { AskInput } from "@/src/components/ask/ask-input";
@@ -211,6 +212,8 @@ export default function AskPage() {
         emptyLabel={t("ask.evidenceEmpty")}
         citeHint={t("ask.citeHint")}
         closeLabel={t("common.close").toLowerCase()}
+        fromThemLabel={ORIGIN_LABELS.from_them[locale]}
+        aboutThemLabel={ORIGIN_LABELS.about_them[locale]}
         citations={evidence}
         onClose={() => setEvidenceOpen(false)}
       />

@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+
 import { Sheet } from "@/src/components/ui/Sheet";
+
 import type { AskCitation } from "./ask-thread";
 import styles from "./evidence-sheet.module.css";
 
@@ -12,6 +14,8 @@ export function EvidenceSheet({
   emptyLabel,
   citeHint,
   closeLabel,
+  fromThemLabel,
+  aboutThemLabel,
   citations,
   onClose,
 }: {
@@ -20,6 +24,8 @@ export function EvidenceSheet({
   emptyLabel: string;
   citeHint: string;
   closeLabel: string;
+  fromThemLabel: string;
+  aboutThemLabel: string;
   citations: AskCitation[];
   onClose: () => void;
 }) {
@@ -66,6 +72,19 @@ export function EvidenceSheet({
 
   if (!open) return null;
 
+  const groups = [
+    {
+      key: "from_them",
+      label: fromThemLabel,
+      items: citations.filter((citation) => citation.origin === "from_them"),
+    },
+    {
+      key: "about_them",
+      label: aboutThemLabel,
+      items: citations.filter((citation) => citation.origin !== "from_them"),
+    },
+  ].filter((group) => group.items.length > 0);
+
   return (
     <div className={styles.root} role="presentation">
       <button type="button" className={styles.backdrop} aria-label={closeLabel} onClick={onClose} />
@@ -92,16 +111,25 @@ export function EvidenceSheet({
           {citations.length === 0 ? (
             <p className={styles.empty}>{emptyLabel}</p>
           ) : (
-            <ul className={styles.list}>
-              {citations.map((c) => (
-                <li key={c.itemId} className={styles.item}>
-                  <Link href={`/archive/items/${c.itemId}`} className={styles.itemLink} onClick={onClose}>
-                    <span className={styles.itemTitle}>{c.title}</span>
-                    {c.excerpt ? <p className={styles.excerpt}>{c.excerpt}</p> : null}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            groups.map((group) => (
+              <section key={group.key} className={styles.group}>
+                <h3 className={styles.groupTitle}>{group.label}</h3>
+                <ul className={styles.list}>
+                  {group.items.map((citation) => (
+                    <li key={citation.itemId} className={styles.item}>
+                      <Link
+                        href={`/archive/items/${citation.itemId}`}
+                        className={styles.itemLink}
+                        onClick={onClose}
+                      >
+                        <span className={styles.itemTitle}>{citation.title}</span>
+                        {citation.excerpt ? <p className={styles.excerpt}>{citation.excerpt}</p> : null}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))
           )}
         </Sheet>
       </div>

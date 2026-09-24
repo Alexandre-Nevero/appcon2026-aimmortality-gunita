@@ -86,7 +86,11 @@ export function PublicMemorialRecap({
               </p>
               {entry.textContent ? <p className={styles.cardBody}>{entry.textContent}</p> : null}
               {entry.photoBlobPathname ? (
-                <img className={styles.cardPhoto} src={entry.photoBlobPathname} alt="" />
+                <img
+                  className={styles.cardPhoto}
+                  src={entry.photoBlobPathname}
+                  alt={t(dict, "memorialPublic.photoMemoriesPreview")}
+                />
               ) : null}
               {entry.audioBlobPathname ? (
                 <VoicePlay audioUrl={entry.audioBlobPathname} locale={locale} />

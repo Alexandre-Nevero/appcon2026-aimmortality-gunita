@@ -85,12 +85,14 @@
 .playBtn {
   min-height: 44px;
   margin-top: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  font-size: 0.875rem;
+  padding: 0 var(--space-md);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
   text-transform: lowercase;
+  color: var(--color-ink);
   background: var(--color-mist);
   border: none;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   cursor: pointer;
 }
 
@@ -121,10 +123,12 @@
 }
 
 .primaryLink {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  min-height: 48px;
-  padding: var(--space-sm) var(--space-md);
+  min-height: 44px;
+  padding: 0 var(--space-md);
   text-align: center;
   text-decoration: none;
   text-transform: lowercase;

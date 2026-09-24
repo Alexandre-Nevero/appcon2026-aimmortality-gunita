@@ -34,7 +34,7 @@
 .caption {
   margin: var(--space-sm) 0 0;
   font-family: var(--font-script);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   line-height: 1.5;
   text-transform: lowercase;
   color: var(--color-ink);
@@ -49,9 +49,10 @@
 
 .chip {
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  padding: 2px 6px;
-  background: var(--color-field);
-  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  background: var(--color-line);
+  border-radius: var(--radius-full);
   text-transform: lowercase;
+  color: var(--color-ink-muted);
 }

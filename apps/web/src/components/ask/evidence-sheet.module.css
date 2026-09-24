@@ -78,6 +78,20 @@
   color: var(--color-ink-muted);
 }
 
+.group + .group {
+  margin-top: var(--space-lg);
+}
+
+.groupTitle {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
 .list {
   list-style: none;
   margin: 0;

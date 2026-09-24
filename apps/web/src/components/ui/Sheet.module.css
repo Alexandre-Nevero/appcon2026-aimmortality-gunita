@@ -4,7 +4,6 @@
   background: var(--color-surface);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: var(--space-sheet-gutter);
-  box-shadow: var(--shadow-sheet);
 }
 
 @media (min-width: 48rem) {

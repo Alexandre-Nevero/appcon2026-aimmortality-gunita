@@ -40,12 +40,11 @@
   margin: 0;
   max-width: min(85%, 32rem);
   padding: var(--space-sm) var(--space-md);
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: 0.9375rem;
-  line-height: 1.45;
+  line-height: 1.55;
   background: var(--color-mist-deep);
-  border-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-xs);
+  border-radius: var(--radius-full);
 }
 
 .himmelRow {
@@ -55,11 +54,9 @@
 
 .himmelBubble {
   max-width: min(92%, 36rem);
-  padding: var(--space-lg);
-  background: var(--color-paper-bright);
-  border-radius: var(--radius-xs);
-  border-bottom-left-radius: var(--radius-xs);
-  box-shadow: var(--shadow-sticker);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
 }
 
 .thinking {
@@ -90,7 +87,7 @@
   font-size: 0.8125rem;
   text-decoration: underline;
   text-transform: lowercase;
-  color: var(--color-flower);
+  color: var(--color-ink-muted);
   cursor: pointer;
 }
 
@@ -98,12 +95,13 @@
   display: block;
   min-height: 44px;
   margin: var(--space-md) 0 0;
-  padding: var(--space-xs) var(--space-sm);
-  border: 1px solid color-mix(in srgb, var(--color-flower) 22%, transparent);
-  border-radius: var(--radius-xs);
+  padding: 0 var(--space-md);
+  border: 0;
+  border-radius: var(--radius-md);
   background: var(--color-mist);
   font-family: var(--font-sans);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
+  line-height: 1.3;
   text-align: left;
   text-transform: lowercase;
   color: var(--color-ink);

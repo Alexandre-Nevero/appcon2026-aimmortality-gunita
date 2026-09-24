@@ -63,6 +63,33 @@ export const fixtures = {
       origin: "from_them" as const,
       reviewState: "approved" as const,
     },
+    {
+      id: "item_2",
+      title: "Market mornings",
+      body: "She knew every vendor by name and always came home with flowers.",
+      caption: "market mornings",
+      photoUrl: "/objects/background.png",
+      origin: "about_them" as const,
+      reviewState: "approved" as const,
+    },
+  ],
+  photoMemories: [
+    {
+      id: "11111111-1111-4111-8111-111111111111",
+      photoUrl: "/objects/background.png",
+      displayName: "Tita Mely",
+      relationship: "Pamangkin",
+      textContent: "She always saved the sunniest seat for everyone else first.",
+      submittedAt: "2026-09-23T08:30:00.000Z",
+    },
+    {
+      id: "22222222-2222-4222-8222-222222222222",
+      photoUrl: "/objects/background.png",
+      displayName: "Ana",
+      relationship: "Kapitbahay",
+      textContent: "Even the street felt calmer when she was watering the plants.",
+      submittedAt: "2026-09-23T09:00:00.000Z",
+    },
   ],
   askAbstain: {
     answerKind: "abstain" as const,

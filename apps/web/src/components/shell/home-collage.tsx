@@ -65,7 +65,7 @@ export function HomeCollage() {
           </Link>
         ))}
       </div>
-      <nav className={styles.utilities} aria-label={t("nav.home")}>
+      <nav className={styles.utilities} aria-label={t("app.homeNavigation")}>
         <Link href="/home/family">{t("home.familyInvites").toLowerCase()}</Link>
         {space.role === "steward" ? (
           <Link href="/home/review">{t("home.reviewCta").toLowerCase()}</Link>

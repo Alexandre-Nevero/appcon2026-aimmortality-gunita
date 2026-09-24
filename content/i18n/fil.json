@@ -16,7 +16,8 @@
     "modeDuring": "Buhay pa",
     "modeMemorial": "Memoryal",
     "featuredPersonLabel": "Pinag-uusapan",
-    "offlineBanner": "Walang signal muna. Subukan ulit kapag may koneksyon."
+    "offlineBanner": "Walang signal muna. Subukan ulit kapag may koneksyon.",
+    "homeNavigation": "Nabigasyon sa home"
   },
   "tabs": {
     "home": "Home",
@@ -388,6 +389,7 @@
     "closing": "Salamat sa pag-alala",
     "memoriesFromOthers": "Mga alaala mula sa iba",
     "memoriesFromOthersEmpty": "Wala pang naaprubahang alaala mula sa iba.",
+    "photoMemoriesPreview": "Preview ng mga alaala sa larawan",
     "shareTitle": "Magbahagi ng alaala",
     "shareHint": "Rerepasuhin muna ng pamilya bago ipakita.",
     "yourName": "Pangalan ninyo",

@@ -16,7 +16,8 @@
     "modeDuring": "During",
     "modeMemorial": "Memorial",
     "featuredPersonLabel": "Featured person",
-    "offlineBanner": "You're offline. Try again when you have a signal."
+    "offlineBanner": "You're offline. Try again when you have a signal.",
+    "homeNavigation": "Home navigation"
   },
   "tabs": {
     "home": "Home",
@@ -388,6 +389,7 @@
     "closing": "Thank you for remembering",
     "memoriesFromOthers": "Memories from others",
     "memoriesFromOthersEmpty": "No approved memories from others yet.",
+    "photoMemoriesPreview": "Photo memories preview",
     "shareTitle": "Share a memory",
     "shareHint": "The family will review before anything is shown.",
     "yourName": "Your name",

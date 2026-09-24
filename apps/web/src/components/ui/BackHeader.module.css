@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  min-height: 68px;
-  padding: calc(var(--space-sm) + env(safe-area-inset-top, 0px)) 0 var(--space-sm);
+  min-height: calc(44px + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 0 0;
 }
 
 .back {
@@ -45,7 +45,7 @@
 .title {
   font-family: var(--font-sans);
   font-size: 1.0625rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--color-ink);
   margin: 0;
   text-wrap: balance;
