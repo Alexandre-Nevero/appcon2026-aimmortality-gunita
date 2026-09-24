@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { requireMembership } from "@/src/access/session";
+import { errorResponse } from "@/src/auth/http";
 import { db } from "@/src/db";
 import { getMemorialQrState, MemorialError } from "@/src/memorial/service";
 
@@ -16,19 +17,19 @@ const QR_ERROR_STATUS: Record<MemorialError["code"], number> = {
 };
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const { id: spaceId } = await context.params;
-  const membership = await requireMembership(request, spaceId);
-  if (membership.role !== "steward") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
-
   try {
+    const { id: spaceId } = await context.params;
+    const membership = await requireMembership(request, spaceId);
+    if (membership.role !== "steward") {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
+
     const result = await getMemorialQrState(db, spaceId);
     return NextResponse.json(result);
   } catch (error) {
     if (error instanceof MemorialError) {
       return NextResponse.json({ error: error.code }, { status: QR_ERROR_STATUS[error.code] });
     }
-    throw error;
+    return errorResponse(error);
   }
 }

@@ -2,6 +2,7 @@ import { contributionStatusSchema } from "@gunita/core";
 import { NextRequest, NextResponse } from "next/server";
 
 import { requireMembership } from "@/src/access/session";
+import { errorResponse } from "@/src/auth/http";
 import { db } from "@/src/db";
 import {
   listModerationContributions,
@@ -22,45 +23,49 @@ const CONTRIBUTION_ERROR_STATUS: Record<MemorialError["code"], number> = {
 };
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const { id: spaceId } = await context.params;
-  const membership = await requireMembership(request, spaceId);
-  if (membership.role !== "steward") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  try {
+    const { id: spaceId } = await context.params;
+    const membership = await requireMembership(request, spaceId);
+    if (membership.role !== "steward") {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
 
-  const statusParam = request.nextUrl.searchParams.get("status");
-  const parsedStatus = statusParam ? contributionStatusSchema.safeParse(statusParam) : null;
-  if (statusParam && !parsedStatus?.success) {
-    return NextResponse.json({ error: "invalid_status" }, { status: 400 });
-  }
+    const statusParam = request.nextUrl.searchParams.get("status");
+    const parsedStatus = statusParam ? contributionStatusSchema.safeParse(statusParam) : null;
+    if (statusParam && !parsedStatus?.success) {
+      return NextResponse.json({ error: "invalid_status" }, { status: 400 });
+    }
 
-  const contributions = await listModerationContributions(db, {
-    spaceId,
-    status: parsedStatus?.success ? parsedStatus.data : undefined,
-  });
-  return NextResponse.json({ contributions });
+    const contributions = await listModerationContributions(db, {
+      spaceId,
+      status: parsedStatus?.success ? parsedStatus.data : undefined,
+    });
+    return NextResponse.json({ contributions });
+  } catch (error) {
+    return errorResponse(error);
+  }
 }
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
-  const { id: spaceId } = await context.params;
-  const membership = await requireMembership(request, spaceId);
-  if (membership.role !== "steward") {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
-
-  let body: unknown;
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
-  }
+    const { id: spaceId } = await context.params;
+    const membership = await requireMembership(request, spaceId);
+    if (membership.role !== "steward") {
+      return NextResponse.json({ error: "forbidden" }, { status: 403 });
+    }
 
-  const parsed = contributionModerationRequestSchema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: "invalid_body", issues: parsed.error.issues }, { status: 400 });
-  }
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+    }
 
-  try {
+    const parsed = contributionModerationRequestSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "invalid_body", issues: parsed.error.issues }, { status: 400 });
+    }
+
     const updated = await moderateContribution(db, {
       spaceId,
       membershipId: membership.membershipId,
@@ -72,6 +77,6 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     if (error instanceof MemorialError) {
       return NextResponse.json({ error: error.code }, { status: CONTRIBUTION_ERROR_STATUS[error.code] });
     }
-    throw error;
+    return errorResponse(error);
   }
 }
