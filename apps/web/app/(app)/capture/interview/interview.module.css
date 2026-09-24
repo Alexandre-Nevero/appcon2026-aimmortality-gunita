@@ -1,0 +1,101 @@
+.back {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+  display: inline-block;
+  margin-bottom: var(--space-4);
+}
+
+.progress {
+  height: 5px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-6);
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width var(--duration-normal) var(--ease-standard);
+}
+
+.questionCard {
+  background: var(--color-primary-soft);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-fg-subtle);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.questionText {
+  font-size: var(--font-size-3xl);
+  line-height: var(--line-height-snug);
+  margin: var(--space-3) 0 0;
+}
+
+.center {
+  text-align: center;
+}
+
+.recordButton {
+  width: 6.5rem;
+  height: 6.5rem;
+  border-radius: var(--radius-full);
+  border: 6px solid var(--color-accent-soft);
+  background: var(--color-danger);
+  color: white;
+  font-size: var(--font-size-2xl);
+  margin: var(--space-6) auto;
+  display: block;
+  box-shadow: var(--shadow-lg);
+}
+
+.recordButton[data-recording="true"] {
+  background: var(--color-danger);
+  animation: pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 18px rgba(155, 44, 44, 0.15);
+  }
+}
+
+.hint {
+  color: var(--color-fg-muted);
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-6);
+}
+
+.link {
+  background: none;
+  border: 0;
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.secondary {
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg-elevated);
+}
+
+.error {
+  color: var(--color-danger);
+  text-align: center;
+}

@@ -1,17 +1,11 @@
-:root {
-  --background: #fffaf5;
-  --foreground: #1f2937;
-  --surface: #ffffff;
-  --border: #e5e7eb;
-  --accent: #7c3aed;
+@import "../../../content/design-tokens.css";
+
+* {
+  box-sizing: border-box;
 }
 
 html {
   height: 100%;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 html,
@@ -21,11 +15,33 @@ body {
 }
 
 body {
-  background: linear-gradient(180deg, #fff7ed 0%, var(--background) 100%);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--letter-spacing-tight);
 }
 
 a {
   color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
 }

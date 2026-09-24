@@ -1,0 +1,99 @@
+.title {
+  font-size: var(--font-size-3xl);
+  margin: var(--space-2) 0;
+}
+
+.subtitle {
+  color: var(--color-fg-muted);
+  margin: 0 0 var(--space-4);
+}
+
+.suggestions {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.suggestions p {
+  margin: var(--space-1) 0;
+  color: var(--color-fg-muted);
+  font-style: italic;
+}
+
+.answer {
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.abstain {
+  background: var(--color-badge-hindi-pa-alam-bg);
+  color: var(--color-badge-hindi-pa-alam-fg);
+}
+
+.refused {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.group {
+  margin-top: var(--space-4);
+}
+
+.groupLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-fg-subtle);
+  margin-bottom: var(--space-2);
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.inputRow {
+  position: fixed;
+  bottom: calc(var(--space-tab-bar) + var(--safe-area-bottom) + var(--space-3));
+  left: var(--space-4);
+  right: var(--space-4);
+  max-width: calc(32rem - 2 * var(--space-4));
+  margin: 0 auto;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.input {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg-elevated);
+  box-shadow: var(--shadow-md);
+}
+
+.send {
+  width: var(--space-touch-min);
+  height: var(--space-touch-min);
+  border-radius: var(--radius-full);
+  border: 0;
+  background: var(--color-primary);
+  color: var(--color-primary-on);
+  font-size: var(--font-size-lg);
+}
+
+.addQuestion {
+  margin-top: var(--space-2);
+  color: var(--color-primary);
+  background: none;
+  border: 0;
+  font-weight: var(--font-weight-semibold);
+  padding: 0;
+}

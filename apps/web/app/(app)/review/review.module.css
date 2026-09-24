@@ -1,0 +1,55 @@
+.title {
+  font-size: var(--font-size-3xl);
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.card {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.title2 {
+  font-weight: var(--font-weight-semibold);
+  margin: var(--space-3) 0;
+}
+
+.body {
+  color: var(--color-fg-muted);
+  margin-bottom: var(--space-3);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.actionBtn {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg-alt);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.confirm {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+  border-color: transparent;
+}
+
+.dispute {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-color: transparent;
+}
+
+.empty {
+  text-align: center;
+  padding: var(--space-12) var(--space-4);
+  color: var(--color-fg-muted);
+}

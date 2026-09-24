@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "GUNITA",
-  description: "Consent-based family memory archive scaffold.",
+  title: "Himmel",
+  description: "A consent-based family memory archive.",
 };
 
 export default function RootLayout({

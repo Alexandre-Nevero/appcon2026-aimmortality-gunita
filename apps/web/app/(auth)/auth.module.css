@@ -1,0 +1,102 @@
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-page-x);
+  background: linear-gradient(180deg, var(--color-sky-morning) 0%, var(--color-bg) 55%);
+}
+
+.card {
+  width: 100%;
+  max-width: 26rem;
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-8) var(--space-6);
+}
+
+.brand {
+  font-family: var(--font-serif);
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary);
+  margin: 0 0 var(--space-1);
+  text-align: center;
+}
+
+.title {
+  font-size: var(--font-size-3xl);
+  margin: var(--space-6) 0 var(--space-1);
+}
+
+.subtitle {
+  color: var(--color-fg-muted);
+  margin: 0 0 var(--space-6);
+}
+
+.field {
+  display: block;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  margin: var(--space-4) 0 var(--space-2);
+}
+
+.input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-bg-alt);
+  font-size: var(--font-size-body);
+}
+
+.input:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-fg-subtle);
+  margin: var(--space-1) 0 0;
+}
+
+.error {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin: var(--space-4) 0 0;
+}
+
+.primary {
+  width: 100%;
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  min-height: var(--space-touch-min);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-primary-on);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-lg);
+}
+
+.primary:disabled {
+  opacity: 0.6;
+}
+
+.switch {
+  text-align: center;
+  margin-top: var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-muted);
+}
+
+.switch a {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
