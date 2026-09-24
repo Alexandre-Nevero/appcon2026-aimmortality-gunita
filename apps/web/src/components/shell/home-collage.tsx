@@ -18,16 +18,6 @@ const positionClass: Record<string, string> = {
   memorial: styles.memorial,
 };
 
-/** DESIGN.md Home sticker copy — not i18n (avoids GUNITA in ask/questions keys). */
-const HOME_STICKER_LABELS: Record<string, string> = {
-  capture: "capture",
-  archive: "archive",
-  questions: "today's question",
-  ask: "ask himmel",
-  memory: "postcard",
-  memorial: "memorial",
-};
-
 export function HomeCollage() {
   const { t } = useI18n();
   const space = useMemo(() => readDemoSpace(), []);
@@ -44,10 +34,13 @@ export function HomeCollage() {
           {t("app.offlineBanner")}
         </p>
       ) : null}
-      <h1 className={styles.title}>
-        <span className={styles.titleBrand}>Himmel&apos;s</span>
-        {space.featuredName ? space.featuredName.toLowerCase() : null}
-      </h1>
+      <header className={styles.intro}>
+        <h1 className={styles.title}>
+          <span className={styles.titleBrand}>Himmel</span>
+          {space.featuredName ? space.featuredName.toLowerCase() : null}
+        </h1>
+        <p className={styles.tagline}>{t("app.tagline")}</p>
+      </header>
       <div className={styles.scatter}>
         {stickers.map((sticker) => (
           <Link
@@ -65,13 +58,20 @@ export function HomeCollage() {
             />
             <div className={styles.stickerWrap}>
               <Sticker
-                label={HOME_STICKER_LABELS[sticker.id] ?? sticker.id}
+                label={t(sticker.labelKey).toLowerCase()}
                 rotate={sticker.rotate}
               />
             </div>
           </Link>
         ))}
       </div>
+      <nav className={styles.utilities} aria-label={t("nav.home")}>
+        <Link href="/home/family">{t("home.familyInvites").toLowerCase()}</Link>
+        {space.role === "steward" ? (
+          <Link href="/home/review">{t("home.reviewCta").toLowerCase()}</Link>
+        ) : null}
+        <Link href="/home/settings">{t("home.settings").toLowerCase()}</Link>
+      </nav>
     </div>
   );
 }

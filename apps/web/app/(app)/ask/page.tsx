@@ -176,7 +176,7 @@ export default function AskPage() {
   return (
     <main className={styles.page}>
       <BackHeader
-        title="ask himmel"
+        title={t("ask.title").toLowerCase()}
         backLabel={t("common.back").toLowerCase()}
         onBack={() => router.push("/home")}
       />
@@ -192,13 +192,14 @@ export default function AskPage() {
           onAddQuestion={onAddQuestion}
           addQuestionLabel={t("ask.addAsQuestion").toLowerCase()}
           addedQuestionLabel={t("ask.addedAsQuestion").toLowerCase()}
-          sourcesLabel="sources"
+          sourcesLabel={t("ask.evidence").toLowerCase()}
           abstainedBody={t("ask.abstainedBody")}
         />
         <AskInput
           placeholder={t("ask.placeholder")}
           sendLabel={t("ask.send")}
           suggested={suggested}
+          suggestedLabel={t("ask.suggestions")}
           disabled={thinking}
           onSubmit={askQuestion}
           onPickSuggested={askQuestion}

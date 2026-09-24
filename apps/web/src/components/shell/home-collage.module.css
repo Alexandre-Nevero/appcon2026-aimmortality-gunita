@@ -1,55 +1,76 @@
 .collage {
   position: relative;
   min-height: 100dvh;
-  max-width: 26.25rem;
+  max-width: var(--content-wide);
   margin: 0 auto;
-  padding: var(--space-lg) var(--space-gutter) var(--space-xl);
+  padding: calc(var(--space-lg) + env(safe-area-inset-top, 0px)) var(--space-gutter)
+    calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
+}
+
+.intro {
+  max-width: 28rem;
+  margin: 0 auto var(--space-lg);
+  text-align: center;
 }
 
 .title {
-  margin: 0 0 var(--space-xl);
+  margin: 0;
   font-family: var(--font-script);
-  font-size: 2.25rem;
+  font-size: clamp(1.5rem, 7vw, 2.25rem);
   font-weight: 400;
-  line-height: 1.15;
+  line-height: 1.25;
   text-transform: lowercase;
-  text-align: center;
+  text-wrap: balance;
 }
 
 .titleBrand {
   display: block;
-  font-size: 2.75rem;
+  margin-bottom: var(--space-xs);
+  font-size: clamp(2.5rem, 12vw, 4.25rem);
+  color: var(--color-ink);
+}
+
+.tagline {
+  max-width: 24rem;
+  margin: var(--space-sm) auto 0;
+  color: var(--color-ink-muted);
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .scatter {
-  position: relative;
-  min-height: 28rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm) var(--space-md);
+  max-width: var(--content-phone);
+  margin: 0 auto;
 }
 
 .item {
-  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 4rem;
-  min-height: 4rem;
+  justify-content: center;
+  min-width: 0;
+  min-height: 9rem;
+  padding: var(--space-xs);
   text-decoration: none;
   color: inherit;
+  border-radius: var(--radius-md);
+  transition: transform var(--motion-ui) var(--ease-out);
+  touch-action: manipulation;
+}
+
+.item:active {
+  transform: scale(0.97);
 }
 
 .objectImg {
-  width: 5.5rem;
+  width: clamp(5rem, 24vw, 7rem);
+  max-height: 7rem;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(var(--shadow-object));
-}
-
-.flowerObject {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 4rem;
-  min-height: 4rem;
 }
 
 .stickerWrap {
@@ -57,41 +78,116 @@
 }
 
 .capture {
-  left: 8%;
-  top: 0;
+  transform: translateY(4px) rotate(-1.5deg);
 }
 
 .archive {
-  right: 6%;
-  top: 2.5rem;
+  transform: translateY(20px) rotate(1.5deg);
 }
 
 .questions {
-  left: 4%;
-  top: 9.5rem;
+  transform: translateY(-2px) rotate(1deg);
 }
 
 .ask {
-  right: 12%;
-  top: 11rem;
+  transform: translateY(14px) rotate(-1deg);
 }
 
 .memory {
-  left: 18%;
-  top: 17rem;
+  transform: translateY(-8px) rotate(-1deg);
 }
 
 .memorial {
-  right: 4%;
-  top: 20rem;
+  transform: translateY(12px) rotate(1.5deg);
 }
 
 .banner {
-  margin-bottom: var(--space-md);
+  max-width: var(--content-phone);
+  margin: 0 auto var(--space-md);
   padding: var(--space-sm) var(--space-md);
   background: var(--color-mist);
   border-radius: var(--radius-md);
   font-family: var(--font-sans);
   font-size: 0.875rem;
   line-height: 1.4;
+}
+
+.utilities {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xs) var(--space-lg);
+  max-width: var(--content-phone);
+  margin: var(--space-xl) auto 0;
+  padding-top: var(--space-lg);
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.utilities a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: color var(--motion-ui) ease, text-decoration-color var(--motion-ui) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .item:hover {
+    transform: translateY(-4px) rotate(0deg);
+  }
+
+  .utilities a:hover {
+    color: var(--color-ink);
+    text-decoration-color: currentColor;
+  }
+}
+
+@media (min-width: 48rem) {
+  .collage {
+    display: grid;
+    grid-template-columns: minmax(15rem, 0.7fr) minmax(30rem, 1.3fr);
+    align-items: center;
+    column-gap: clamp(3rem, 8vw, 8rem);
+    padding-top: var(--space-xxl);
+    padding-bottom: var(--space-xxl);
+  }
+
+  .intro {
+    margin: 0;
+    text-align: left;
+  }
+
+  .titleBrand {
+    font-size: clamp(4rem, 7vw, 6rem);
+  }
+
+  .tagline {
+    margin-left: 0;
+  }
+
+  .scatter {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 48rem;
+    margin: 0;
+  }
+
+  .item {
+    min-height: 12rem;
+  }
+
+  .objectImg {
+    width: clamp(6.5rem, 10vw, 8.5rem);
+    max-height: 8.5rem;
+  }
+
+  .utilities {
+    grid-column: 1 / -1;
+    max-width: none;
+    width: 100%;
+  }
 }

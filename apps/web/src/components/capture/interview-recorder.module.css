@@ -1,12 +1,14 @@
 .page {
-  max-width: 26.25rem;
+  max-width: var(--content-reading);
   margin: 0 auto;
-  padding: 0 var(--space-gutter) var(--space-xl);
+  padding: 0 var(--space-gutter) calc(var(--space-xxl) + env(safe-area-inset-bottom, 0px));
 }
 
 .hint {
-  margin: 0 0 var(--space-md);
-  font-size: 0.8125rem;
+  max-width: 34rem;
+  margin: 0 0 var(--space-lg);
+  font-size: 1rem;
+  line-height: 1.55;
   color: var(--color-ink-muted);
 }
 
@@ -18,8 +20,8 @@
 }
 
 .dot {
-  width: 14px;
-  height: 14px;
+  width: 9px;
+  height: 9px;
   border-radius: var(--radius-full);
   background: var(--color-line);
 }
@@ -30,21 +32,37 @@
 
 .questionCard {
   margin: 0 0 var(--space-lg);
-  padding: var(--space-lg);
+  position: relative;
+  padding: clamp(var(--space-lg), 7vw, var(--space-xxl));
   background: var(--color-paper-bright);
-  box-shadow: 0 2px 0 var(--color-line);
+  box-shadow: var(--shadow-sticker);
   font-family: var(--font-serif);
   font-size: 1.25rem;
   line-height: 1.45;
 }
 
+.questionCard::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 64px;
+  height: 15px;
+  background: color-mix(in srgb, var(--color-tape) 72%, transparent);
+  transform: translateX(-50%) rotate(-1deg);
+}
+
+.questionCard > p:last-child {
+  margin: 0;
+  text-wrap: balance;
+}
+
 .questionMeta {
   margin: 0 0 var(--space-sm);
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
   color: var(--color-ink-muted);
 }
 
@@ -59,14 +77,16 @@
 
 .bar {
   width: 4px;
-  height: 12px;
+  height: 36px;
   border-radius: 2px;
   background: var(--color-line);
+  transform: scaleY(0.34);
+  transform-origin: bottom;
 }
 
 .barLive {
   background: var(--color-record);
-  animation: pulse 0.6s ease-in-out infinite alternate;
+  animation: pulse 0.6s var(--ease-in-out) infinite alternate;
 }
 
 .barLive:nth-child(2n) {
@@ -79,10 +99,10 @@
 
 @keyframes pulse {
   from {
-    height: 12px;
+    transform: scaleY(0.34);
   }
   to {
-    height: 36px;
+    transform: scaleY(1);
   }
 }
 
@@ -103,10 +123,13 @@
   color: var(--color-ink);
   cursor: pointer;
   text-transform: lowercase;
+  box-shadow: 0 7px 18px rgba(221, 64, 55, 0.2);
+  transition: transform var(--motion-press) var(--ease-out),
+    background-color var(--motion-ui) ease;
 }
 
 .recordBtn:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
 }
 
 .recordBtnRecording {
@@ -127,9 +150,23 @@
   color: var(--color-ink-muted);
   background: none;
   border: 0;
-  padding: var(--space-xs);
+  min-height: 44px;
+  padding: var(--space-xs) var(--space-md);
   cursor: pointer;
   text-transform: lowercase;
+}
+
+@media (min-width: 48rem) {
+  .questionCard {
+    font-size: 1.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barLive {
+    animation: none;
+    transform: scaleY(0.7);
+  }
 }
 
 .status {

@@ -5,7 +5,18 @@
   padding: var(--space-sm) var(--space-sm) var(--space-md);
   box-shadow: var(--shadow-polaroid);
   border-radius: var(--radius-xs);
-  max-width: 200px;
+  width: 100%;
+  max-width: 24rem;
+  margin: 0 auto;
+  transition: transform var(--motion-ui) var(--ease-out),
+    box-shadow var(--motion-ui) ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .polaroid:hover {
+    transform: translateY(-3px) rotate(-0.4deg);
+    box-shadow: var(--shadow-lifted);
+  }
 }
 
 .selected {
@@ -23,7 +34,8 @@
 .caption {
   margin: var(--space-sm) 0 0;
   font-family: var(--font-script);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   text-transform: lowercase;
   color: var(--color-ink);
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BackHeader } from "@/src/components/ui/BackHeader";
+import { FlowerMark } from "@/src/components/ui/FlowerMark";
 import { useI18n } from "@/src/i18n/provider";
 import { fixtures } from "@/src/mocks/fixtures";
 import { PolaroidGrid } from "./polaroid-grid";
@@ -25,6 +26,7 @@ export function ArchiveScreen() {
       </Link>
       {items.length === 0 ? (
         <div className={styles.empty}>
+          <FlowerMark size={52} />
           <h2 className={styles.emptyTitle}>{t("archive.emptyTitle").toLowerCase()}</h2>
           <p className={styles.emptyBody}>{t("archive.emptyBody")}</p>
         </div>

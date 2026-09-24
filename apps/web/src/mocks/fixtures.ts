@@ -59,7 +59,7 @@ export const fixtures = {
       title: "Adobo Sundays",
       body: "She never wrote the recipe down.",
       caption: "adobo sundays",
-      photoUrl: "/objects/polaroid-sample-1.jpg",
+      photoUrl: "/objects/background.png",
       origin: "from_them" as const,
       reviewState: "approved" as const,
     },

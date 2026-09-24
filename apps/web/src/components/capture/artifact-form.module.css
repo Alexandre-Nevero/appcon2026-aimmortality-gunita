@@ -1,19 +1,24 @@
 .page {
-  max-width: 26.25rem;
+  max-width: var(--content-reading);
   margin: 0 auto;
-  padding: 0 var(--space-gutter) var(--space-xl);
+  padding: 0 var(--space-gutter) calc(var(--space-xxl) + env(safe-area-inset-bottom, 0px));
 }
 
 .hint {
-  margin: 0 0 var(--space-lg);
-  font-size: 0.8125rem;
+  max-width: 34rem;
+  margin: 0 0 var(--space-xl);
+  font-size: 1rem;
+  line-height: 1.55;
   color: var(--color-ink-muted);
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
+  padding: clamp(var(--space-md), 5vw, var(--space-xl));
+  background: var(--color-paper-bright);
+  box-shadow: var(--shadow-sticker);
 }
 
 .fileLabel {
@@ -28,6 +33,18 @@
 .fileInput {
   font-family: var(--font-sans);
   font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.fileInput::file-selector-button {
+  min-height: 44px;
+  margin-right: var(--space-sm);
+  padding: 0 var(--space-md);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-mist);
+  color: var(--color-ink);
+  cursor: pointer;
 }
 
 .contextLabel {
@@ -41,21 +58,29 @@
 
 .contextInput {
   width: 100%;
-  min-height: 5rem;
+  min-height: 8rem;
   padding: var(--space-sm) var(--space-md);
-  border: 0;
+  border: 1px solid transparent;
   border-radius: var(--radius-xs);
-  background: var(--color-field);
-  font-family: var(--font-sans);
-  font-size: 0.9375rem;
+  background: var(--color-surface);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.55;
   color: var(--color-ink);
   resize: vertical;
 }
 
+.contextInput:focus-visible {
+  border-color: var(--color-flower);
+}
+
 .status {
-  margin: 0;
-  font-size: 0.9375rem;
+  margin: var(--space-xl) 0 0;
+  padding: var(--space-lg);
+  font-size: 1rem;
   color: var(--color-ink-muted);
+  background: var(--color-paper-bright);
+  box-shadow: var(--shadow-sticker);
 }
 
 .error {

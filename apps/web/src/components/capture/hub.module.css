@@ -1,15 +1,15 @@
 .page {
-  max-width: 26.25rem;
+  max-width: var(--content-reading);
   margin: 0 auto;
-  padding: 0 var(--space-gutter) var(--space-xl);
+  padding: 0 var(--space-gutter) calc(var(--space-xxl) + env(safe-area-inset-bottom, 0px));
 }
 
 .subtitle {
-  margin: 0 0 var(--space-lg);
-  font-size: 0.8125rem;
-  line-height: 1.5;
+  max-width: 34rem;
+  margin: 0 0 var(--space-xl);
+  font-size: 1.0625rem;
+  line-height: 1.6;
   color: var(--color-ink-muted);
-  text-transform: lowercase;
 }
 
 .blocked {
@@ -22,29 +22,88 @@
 }
 
 .stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xl);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
 }
 
 .link {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  min-width: 4rem;
-  min-height: 4rem;
+  justify-content: space-between;
+  min-width: 0;
+  min-height: 8rem;
+  padding: var(--space-md) clamp(var(--space-md), 5vw, var(--space-xl));
   text-decoration: none;
   color: inherit;
+  background: color-mix(in srgb, var(--color-paper-bright) 82%, transparent);
+  box-shadow: var(--shadow-sticker);
+  border-radius: var(--radius-xs);
+  transition: transform var(--motion-ui) var(--ease-out),
+    box-shadow var(--motion-ui) ease;
+  touch-action: manipulation;
+}
+
+.link:nth-child(even) {
+  flex-direction: row-reverse;
+}
+
+.link[aria-disabled] {
+  opacity: 0.55;
+}
+
+.link:active:not([aria-disabled]) {
+  transform: scale(0.985);
 }
 
 .objectImg {
-  width: 6.5rem;
+  width: clamp(6rem, 24vw, 8rem);
+  max-height: 7.5rem;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(var(--shadow-object));
 }
 
 .stickerWrap {
-  margin-top: calc(-1 * var(--space-sm));
+  margin: 0 var(--space-sm);
+  text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover:not([aria-disabled]) {
+    transform: translateY(-3px) rotate(-0.35deg);
+    box-shadow: var(--shadow-lifted);
+  }
+}
+
+@media (min-width: 48rem) {
+  .page {
+    max-width: var(--content-wide);
+  }
+
+  .stack {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .link,
+  .link:nth-child(even) {
+    flex-direction: column;
+    justify-content: center;
+    min-height: 18rem;
+    padding: var(--space-lg);
+  }
+
+  .link:nth-child(2) {
+    transform: translateY(18px) rotate(0.7deg);
+  }
+
+  .link:nth-child(3) {
+    transform: rotate(-0.7deg);
+  }
+
+  .stickerWrap {
+    margin-top: calc(-1 * var(--space-sm));
+  }
 }

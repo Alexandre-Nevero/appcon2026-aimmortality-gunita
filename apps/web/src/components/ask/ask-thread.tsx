@@ -1,5 +1,6 @@
 "use client";
 
+import { FlowerMark } from "@/src/components/ui/FlowerMark";
 import styles from "./ask-thread.module.css";
 
 export type AskCitation = {
@@ -53,7 +54,12 @@ export function AskThread({
 }) {
   return (
     <div className={styles.thread}>
-      <p className={styles.intro}>{intro}</p>
+      {messages.length === 0 ? (
+        <div className={styles.introBlock}>
+          <FlowerMark size={72} />
+          <p className={styles.intro}>{intro}</p>
+        </div>
+      ) : null}
       <ul className={styles.list} aria-live="polite">
         {messages.map((msg) =>
           msg.role === "user" ? (

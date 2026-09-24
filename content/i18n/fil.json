@@ -2,7 +2,7 @@
   "_meta": {
     "locale": "fil",
     "note": "Stable keys for Josh (TASK-007+). Do not rename keys mid-build; add new keys instead. Badge copy must stay aligned with packages/core/src/labels.ts (F-015 / §0.1).",
-    "product": "GUNITA",
+    "product": "Himmel",
     "adr": "ADR-005",
     "tabLabelPolicy": "Primary tab labels stay English product names (Home/Capture/Archive/Ask) in both locales; sentences and actions use Filipino Taglish with po/opo where respectful.",
     "fixedTerms": {
@@ -11,7 +11,7 @@
     }
   },
   "app": {
-    "name": "GUNITA",
+    "name": "Himmel",
     "tagline": "Ingatan ang mga kuwento ng pamilya",
     "modeDuring": "Buhay pa",
     "modeMemorial": "Memoryal",
@@ -169,7 +169,7 @@
     "greetingNamed": "Kumusta, {name}",
     "reviewCount_one": "{count} nakaabang sa review",
     "reviewCount_other": "{count} nakaabang sa review",
-    "nextQuestions": "Susunod na GUNITA Questions",
+    "nextQuestions": "Tanong ngayong araw",
     "memorialEntry": "Memoryal",
     "familyInvites": "Pamilya at invites",
     "settings": "Settings",
@@ -226,7 +226,7 @@
     "recordingTooLarge": "Masyadong mahaba ang recording (limit ~4 MB). Mag-record po ulit ng mas maikli, o hatiin sa dalawang sagot."
   },
   "questions": {
-    "title": "GUNITA Questions",
+    "title": "Himmel questions",
     "whyAsked": "Bakit tinanong",
     "queue": "Ilagay sa pila",
     "queued": "Nasa pila na",
@@ -285,10 +285,11 @@
     "deleteItem": "Burahin ang item"
   },
   "ask": {
-    "title": "Ask GUNITA",
+    "title": "Ask Himmel",
     "placeholder": "Magtanong tungkol sa minamahal…",
     "send": "Magtanong",
     "thinking": "Tinitingnan ang archive…",
+    "suggestions": "Mga mungkahing tanong",
     "answered": "Sagot",
     "abstained": "Hindi pa alam",
     "abstainedBody": "Wala pang naka-review na source na sumusuporta. Hindi kami mag-iimbento.",
@@ -297,7 +298,7 @@
     "refusedBody": "Hindi kami magsasalita bilang siya, o maghuhula ng opinyon na hindi niya sinabi. Ibabahagi lang namin ang naitala ng pamilya.",
     "evidence": "Ebidensya",
     "evidenceEmpty": "Walang ebidensya para sa sagot na ito.",
-    "addAsQuestion": "Idagdag bilang GUNITA Question",
+    "addAsQuestion": "Idagdag bilang Himmel question",
     "addedAsQuestion": "Nailagay na bilang tanong.",
     "emptyIdle": "Magtanong. Sasagot kami mula sa naka-review na archive — o Hindi pa alam.",
     "citeHint": "Buksan ang source para marinig o mabasa.",
