@@ -327,7 +327,8 @@
     "withdrawConsent": "Withdraw consent",
     "withdrawWarn": "New capture will stop. What was already recorded stays under the prior permission.",
     "withdrawConfirm": "Withdraw consent?",
-    "withdrawDone": "Consent withdrawn."
+    "withdrawDone": "Consent withdrawn.",
+    "signOut": "Sign out"
   },
   "memorialSteward": {
     "title": "Memorial Mode",

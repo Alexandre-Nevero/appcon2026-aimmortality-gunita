@@ -19,6 +19,15 @@ export function isDemoAuthenticated(): boolean {
   return window.localStorage.getItem(AUTH_KEY) === "1";
 }
 
+export function clearDemoAuth() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(AUTH_KEY);
+  window.localStorage.removeItem(SPACE_ID_KEY);
+  window.localStorage.removeItem(FEATURED_KEY);
+  window.localStorage.removeItem(CONSENT_KEY);
+  window.localStorage.removeItem(ROLE_KEY);
+}
+
 export function saveDemoSpace(featuredPersonName: string, spaceId?: string) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(SPACE_ID_KEY, spaceId ?? fixtures.space.id);

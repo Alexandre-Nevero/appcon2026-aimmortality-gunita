@@ -6,7 +6,6 @@ import { useMemo } from "react";
 import { fixtures } from "@/src/mocks/fixtures";
 import { readDemoSpace, shouldShowDemoOfflineBanner } from "@/src/mocks/demo-path";
 import { useI18n } from "@/src/i18n/provider";
-import { Sticker } from "@/src/components/ui/Sticker";
 import styles from "./home-collage.module.css";
 
 const positionClass: Record<string, string> = {
@@ -16,16 +15,6 @@ const positionClass: Record<string, string> = {
   ask: styles.ask,
   memory: styles.memory,
   memorial: styles.memorial,
-};
-
-/** DESIGN.md Home sticker copy — not i18n (avoids GUNITA in ask/questions keys). */
-const HOME_STICKER_LABELS: Record<string, string> = {
-  capture: "capture",
-  archive: "archive",
-  questions: "today's question",
-  ask: "ask himmel",
-  memory: "postcard",
-  memorial: "memorial",
 };
 
 export function HomeCollage() {
@@ -58,17 +47,11 @@ export function HomeCollage() {
             <Image
               className={styles.objectImg}
               src={sticker.object}
-              alt=""
-              width={88}
-              height={88}
+              alt={t(sticker.labelKey)}
+              width={128}
+              height={128}
               priority={sticker.id === "capture"}
             />
-            <div className={styles.stickerWrap}>
-              <Sticker
-                label={HOME_STICKER_LABELS[sticker.id] ?? sticker.id}
-                rotate={sticker.rotate}
-              />
-            </div>
           </Link>
         ))}
       </div>

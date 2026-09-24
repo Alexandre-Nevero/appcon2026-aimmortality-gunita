@@ -38,22 +38,10 @@
 }
 
 .objectImg {
-  width: 5.5rem;
+  width: 7.5rem;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(var(--shadow-object));
-}
-
-.flowerObject {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 4rem;
-  min-height: 4rem;
-}
-
-.stickerWrap {
-  margin-top: calc(-1 * var(--space-sm));
 }
 
 .capture {

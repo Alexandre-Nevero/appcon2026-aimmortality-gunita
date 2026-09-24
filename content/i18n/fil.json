@@ -327,7 +327,8 @@
     "withdrawConsent": "I-withdraw ang consent",
     "withdrawWarn": "Mahihinto ang bagong capture. Ang naitala na ay nananatili ayon sa dating pahintulot.",
     "withdrawConfirm": "I-withdraw ang consent?",
-    "withdrawDone": "Na-withdraw na ang consent."
+    "withdrawDone": "Na-withdraw na ang consent.",
+    "signOut": "Mag-sign out"
   },
   "memorialSteward": {
     "title": "Memoryal Mode",

@@ -39,12 +39,8 @@
 }
 
 .objectImg {
-  width: 6.5rem;
+  width: 8.5rem;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(var(--shadow-object));
-}
-
-.stickerWrap {
-  margin-top: calc(-1 * var(--space-sm));
 }

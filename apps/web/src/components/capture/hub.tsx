@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { BackHeader } from "@/src/components/ui/BackHeader";
-import { Sticker } from "@/src/components/ui/Sticker";
 import { useI18n } from "@/src/i18n/provider";
 import { readDemoSpace } from "@/src/mocks/demo-path";
 import styles from "./hub.module.css";
@@ -13,27 +12,21 @@ import styles from "./hub.module.css";
 const HUB_ITEMS = [
   {
     id: "cassette",
-    src: "/objects/tv.png",
+    src: "/objects/startinterviewtab.png",
     labelKey: "capture.startInterview",
     href: "/capture/interview",
-    highlight: true,
-    rotate: -3,
   },
   {
     id: "postcard",
-    src: "/objects/postcard.png",
+    src: "/objects/typeamemorytab.png",
     labelKey: "capture.addMyMemory",
     href: "/capture/memory",
-    highlight: false,
-    rotate: 4,
   },
   {
     id: "polaroid",
-    src: "/objects/polaroids.png",
+    src: "/objects/addaphototab.png",
     labelKey: "capture.addArtifact",
     href: "/capture/artifact",
-    highlight: false,
-    rotate: -2,
   },
 ] as const;
 
@@ -63,17 +56,10 @@ export function CaptureHub() {
               <Image
                 className={styles.objectImg}
                 src={item.src}
-                alt=""
-                width={104}
-                height={104}
+                alt={t(item.labelKey)}
+                width={140}
+                height={140}
               />
-              <div className={styles.stickerWrap}>
-                <Sticker
-                  label={t(item.labelKey).toLowerCase()}
-                  highlight={item.highlight}
-                  rotate={item.rotate}
-                />
-              </div>
             </>
           );
           if (blocked) {
