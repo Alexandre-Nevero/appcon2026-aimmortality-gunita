@@ -2,7 +2,13 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import "dotenv/config";
+import { config } from "dotenv";
+
+// docs/ops.md § Configuration & secrets: local secrets live in `.env.local`. Plain "dotenv/config"
+// only loads a literal `.env`, so it silently misses `.env.local` — load that first, then fall back
+// to `.env` for anything not already set.
+config({ path: ".env.local" });
+config();
 import {
   HINDI_PA_ALAM,
   containsFirstPersonAsSubject,

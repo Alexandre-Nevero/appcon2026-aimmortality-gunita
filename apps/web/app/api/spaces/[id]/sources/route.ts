@@ -37,10 +37,13 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     // file) so it stays retrievable in its original form (F-003) and `processSource` can fetch every
     // source type the same way, uniformly.
     if (typeof typedText === "string" && typedText.trim()) {
-      const originInput = form.get("origin");
-      const origin = originSchema.parse(
-        originInput ?? (membership.role === "steward" ? "from_them" : "about_them"),
-      );
+      // BR-015/BR-062: origin must never be guessed from the uploader's role — a steward typing a
+      // memory is still "about_them", not "from_them". The caller must say which one this is.
+      const originResult = originSchema.safeParse(form.get("origin"));
+      if (!originResult.success) {
+        return NextResponse.json({ error: "origin_required" }, { status: 400 });
+      }
+      const origin = originResult.data;
       const { url } = await uploadSourceFile(spaceId, "memory.txt", typedText, "text/plain");
       const [created] = await db
         .insert(source)
@@ -85,10 +88,12 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       return NextResponse.json({ error: "content_mismatch" }, { status: 400 });
     }
 
-    const originInput = form.get("origin");
-    const origin = originSchema.parse(
-      originInput ?? (membership.role === "steward" ? "from_them" : "about_them"),
-    );
+    // BR-015/BR-062: same rule as the typed-memory branch above — never guess origin from role.
+    const originResult = originSchema.safeParse(form.get("origin"));
+    if (!originResult.success) {
+      return NextResponse.json({ error: "origin_required" }, { status: 400 });
+    }
+    const origin = originResult.data;
     const artifactContextRaw = form.get("artifactContext");
     let artifactContext: unknown = null;
     if (typeof artifactContextRaw === "string" && artifactContextRaw) {
