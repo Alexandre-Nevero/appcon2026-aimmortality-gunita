@@ -1,7 +1,9 @@
-# PRD — GUNITA (Hackathon MVP)
+# PRD — Himmel (Hackathon MVP)
 
 > **Purpose:** the WHAT, for the team. Primary build reference for AppCon 2026.
 > **Status:** Approved v0.4 · **Date:** 2026-09-23 · **Owner:** Alex
+> **Amended:** 2026-09-24 — product name **Himmel** (was GUNITA in earlier drafts;
+> ADR-009 owns the rename — older ADRs stay as archived record).
 > **Amended:** 2026-09-23 — single mobile-first web app ([ADR-004](adr/ADR-004-single-web-app.md);
 > supersedes ADR-001) and UI language Filipino (Taglish-friendly) or English
 > ([ADR-005](adr/ADR-005-ui-language.md)). No feature IDs cut.
@@ -56,7 +58,7 @@ no EARS syntax.
 
 ### 0.2 Submission requirements (pass/fail, from the mechanics)
 
-| Requirement | What GUNITA must ship |
+| Requirement | What Himmel must ship |
 |---|---|
 | Public Git repository (e.g., GitHub) | Public repo containing all code and docs |
 | README | Project overview plus setup instructions |
@@ -66,7 +68,7 @@ no EARS syntax.
 | Proprietary APIs or services documented | Name each AI/storage provider, explain how to substitute it or get access, and keep core functionality reachable |
 | Fully functional working prototype or product demo | The golden path in §13 works live |
 | Presentation (5–10 slides recommended) | Must cover problem, solution, AI implementation, technical architecture, potential impact |
-| No existing product already in use and taking transactions | GUNITA is new |
+| No existing product already in use and taking transactions | Himmel is new |
 
 ### 0.3 Judging criteria (official mechanics)
 
@@ -99,7 +101,7 @@ flawlessly, and the build order protects it first.
 
 ### Product decision
 
-**GUNITA is one family archive with two lifecycle modes.**
+**Himmel is one family archive with two lifecycle modes.**
 
 - **During:** the family captures and uses a living relative's knowledge.
 - **After (Memorial Mode):** the same approved archive becomes that person's memorial, and people at
@@ -118,13 +120,13 @@ Taglish.
 
 ### Context
 
-GUNITA is a consent-based family memory and legacy platform for Filipino families.
+Himmel is a consent-based family memory and legacy platform for Filipino families.
 
 Family knowledge lives across people, old photos, conversations, recipes, messages, documents,
 recordings, and personal memories. Some of it disappears when the person who carries it can no
 longer explain it.
 
-While a loved one is alive, GUNITA helps the family capture their stories, original voice, recipes,
+While a loved one is alive, Himmel helps the family capture their stories, original voice, recipes,
 traditions, lessons, and the context behind family artifacts. AI transcribes, organizes, connects,
 searches, and identifies what is still missing. The person and family review what becomes part of
 the archive.
@@ -132,11 +134,11 @@ the archive.
 The family can use that knowledge right away: search memories, rediscover stories, follow recipes,
 inspect sources, and ask questions answered only from what the family has actually preserved.
 
-After the person dies, approved parts of the same archive become a **GUNITA Memorial**. At the lamay
+After the person dies, approved parts of the same archive become a **Himmel Memorial**. At the lamay
 or funeral, visitors scan a QR code, experience a recap of the person through real photos, stories,
 and recordings, then contribute their own memories.
 
-GUNITA never impersonates the person, invents memories, or generates a synthetic voice.
+Himmel never impersonates the person, invents memories, or generates a synthetic voice.
 
 ### UNITE job statement
 
@@ -166,7 +168,7 @@ that knowledge together, and remember them truthfully when they are gone.
    - **About them:** memories contributed by relatives, friends, and funeral visitors.
 4. **The original is authoritative.** Transcripts, extracted items, summaries, and answers never
    replace the original audio, photo, document, or contributor.
-5. **Unknown is a valid answer.** When the archive does not support an answer, GUNITA says
+5. **Unknown is a valid answer.** When the archive does not support an answer, Himmel says
    **Hindi pa alam**.
 
 ### Goals
@@ -174,7 +176,7 @@ that knowledge together, and remember them truthfully when they are gone.
 | # | Goal | Evidence it is met |
 |---|---|---|
 | G1 | A family can capture authentic knowledge from a living person, with consent | Consent recorded; voice/text/photo/document captured; items linked to sources (F-002–F-007) |
-| G2 | The family can actually use the archive while the person is alive | Browse, search, and Ask GUNITA return sourced results; unsupported questions abstain (F-010–F-013) |
+| G2 | The family can actually use the archive while the person is alive | Browse, search, and Ask Himmel return sourced results; unsupported questions abstain (F-010–F-013) |
 | G3 | The same verified material carries into a meaningful memorial | Memorial recap built only from approved, memorial-visible items and original media (F-016–F-018) |
 | G4 | Lamay visitors add memories with almost no friction, without contaminating the person's own words | Guest contributes without an account; contributions are moderated and labeled About them (F-019–F-020) |
 | G5 | No simulation, ever | No persona mode, no first-person answers as the person, no synthetic voice, no invented memories (F-022) |
@@ -204,16 +206,16 @@ about illnesses in the family is excluded), and no health-specific answers. See 
 
 ## Personas & use cases
 
-| Persona | Who | What they do in GUNITA | Account |
+| Persona | Who | What they do in Himmel | Account |
 |---|---|---|---|
 | **Featured loved one** | The living person whose knowledge is preserved (e.g., a Lola) | Gives consent, names the steward, answers interview questions, reviews items when able, chooses visibility | Not required; takes part through the steward's phone browser **[interpretation]** |
 | **Family steward** | The family member the featured person designates | Sets up the space, runs interview sessions, uploads artifacts, reviews AI output, manages visibility, activates Memorial Mode, curates and publishes the memorial, moderates visitor contributions | Required |
-| **Family member** | Relatives invited into the family space | Browse the archive, search, Ask GUNITA, add photos, documents, and their own memories (About them) | Required (invite link) **[interpretation]** |
+| **Family member** | Relatives invited into the family space | Browse the archive, search, Ask Himmel, add photos, documents, and their own memories (About them) | Required (invite link) **[interpretation]** |
 | **Memorial visitor** | Anyone at the lamay or funeral, or with the memorial link | Scan QR, view the recap, share a memory | None |
 
 Use cases:
 - A grandchild asks how Lola knows the adobo is done and hears Lola's own recorded answer.
-- The steward uploads an old photo. GUNITA asks who is beside Lola. Lola answers by voice, and the
+- The steward uploads an old photo. Himmel asks who is beside Lola. Lola answers by voice, and the
   name and relationship attach to the photo.
 - After Lola dies, the steward activates Memorial Mode, publishes a recap, and places the QR at the
   lamay. Visitors scan it and leave memories that the family approves.
@@ -231,7 +233,7 @@ Use cases:
   what I actually said.
 
 **Family steward**
-- As the steward, I want GUNITA to suggest the next useful question from what we already have, so
+- As the steward, I want Himmel to suggest the next useful question from what we already have, so
   our sessions capture what is missing instead of repeating what we know.
 - As the steward, I want every AI-extracted item to wait for review, so nothing becomes "fact"
   without a person confirming it.
@@ -247,7 +249,7 @@ Use cases:
 **Family member**
 - As a family member, I want to ask a question in plain language and see the exact recording,
   text, or photo the answer came from, so I can trust it.
-- As a family member, I want GUNITA to say "Hindi pa alam" when it has no source, so I never mistake
+- As a family member, I want Himmel to say "Hindi pa alam" when it has no source, so I never mistake
   a guess for Lola's words.
 - As a family member, I want to browse stories, recipes, traditions, lessons, and people, so I can
   rediscover what the family preserved.
@@ -266,16 +268,16 @@ Use cases:
 
 - **UJ-001 — Set up with consent:** the steward creates the family space → the featured person
   gives consent and designates the steward → the space is ready for capture.
-- **UJ-002 — Guided interview:** the steward opens a session → GUNITA shows one question at a time
+- **UJ-002 — Guided interview:** the steward opens a session → Himmel shows one question at a time
   → the person answers by voice or text → the recording is saved → AI transcribes and extracts
   items.
 - **UJ-003 — Artifact context:** the steward uploads a photo or document with any known context →
-  AI lists what is missing → GUNITA questions go to the interview queue → the person answers →
+  AI lists what is missing → Himmel questions go to the interview queue → the person answers →
   answers link back to the artifact.
 - **UJ-004 — Review:** the steward (with the person when possible) confirms, corrects, rejects,
   disputes, or marks each AI-suggested item uncertain, and sets its visibility.
-- **UJ-005 — Use the archive:** a family member browses, searches, or asks GUNITA → gets sourced
-  results or "Hindi pa alam" → unanswered questions can become new GUNITA questions.
+- **UJ-005 — Use the archive:** a family member browses, searches, or asks Himmel → gets sourced
+  results or "Hindi pa alam" → unanswered questions can become new Himmel questions.
 - **UJ-006 — Memorial:** the steward activates Memorial Mode → selects memorial content → reviews
   and publishes the recap → generates the QR.
 - **UJ-007 — Lamay visitor:** a visitor scans the QR → views the recap → shares a memory → sees a
@@ -305,7 +307,7 @@ order is set by the golden path in §13.
 | F-009 | **Permissions:** private, family-visible, or memorial-visible per item | P0 | Everything-or-nothing sharing | Default Family **[interpretation]** |
 | F-010 | **Family archive:** browse approved stories, recipes, knowledge, people, and memories | P0 | No place to rediscover preserved knowledge | Organized by type |
 | F-011 | **Search:** natural-language semantic search across approved material | P0 | Files organized by folder, not meaning | Returns items, not generated text |
-| F-012 | **Ask GUNITA:** source-grounded answers with original audio, text, or photo evidence | P0 | Needing answers, not just files | Family only **[interpretation]** |
+| F-012 | **Ask Himmel:** source-grounded answers with original audio, text, or photo evidence | P0 | Needing answers, not just files | Family only **[interpretation]** |
 | F-013 | **Abstention:** unsupported questions return "Hindi pa alam" | P0 | AI filling gaps with invention | Also partial answers |
 | F-014 | **Hints:** existing memories generate the next useful question or missing connection | P0 | Capture stalls after the obvious stories | Feeds the interview queue |
 | F-015 | **Provenance:** distinguish AI suggestion, verified memory, From them, About them | P0 | Readers can't tell source or certainty | Same badges on every surface |
@@ -335,9 +337,9 @@ These are product concepts, not a database schema. The data-model doc owns field
 | **Source** | An original: an audio recording, typed text entry, photo, or document. Always kept, never overwritten. |
 | **Memory item** | A reviewable unit extracted from a source: a Story, Recipe, Tradition, Lesson, or Fact (a person, relationship, date, place, or event). Links to its source and, where possible, the exact span (audio timestamps or text excerpt). |
 | **Person** | Someone named in the archive, with aliases and nicknames (e.g., "Lola Nena") and relationship to the featured person. |
-| **GUNITA Question (Hint)** | A suggested question or missing connection, with the source that triggered it. A question, never a claim. |
+| **Himmel Question (Hint)** | A suggested question or missing connection, with the source that triggered it. A question, never a claim. |
 | **Visitor contribution** | A memory submitted from the memorial. Always About them. |
-| **Answer** | Ask GUNITA output: AI-written text plus evidence cards. |
+| **Answer** | Ask Himmel output: AI-written text plus evidence cards. |
 
 **Labels every item carries:**
 
@@ -366,7 +368,7 @@ These are product concepts, not a database schema. The data-model doc owns field
   written, electronic or recorded means."
 - **BR-004** — While alive, the featured person can withdraw consent. Withdrawal stops new capture,
   and the steward deletes material on the person's request. **[interpretation]**
-- **BR-005** — GUNITA does not assess cognitive capacity. The steward attests that the person
+- **BR-005** — Himmel does not assess cognitive capacity. The steward attests that the person
   understood what they agreed to. Consent given on the person's behalf by someone else is not
   supported in the MVP. **[interpretation]**
 - **BR-006** — A family space has exactly one featured person and one steward.
@@ -403,7 +405,7 @@ These are product concepts, not a database schema. The data-model doc owns field
   a note; shown with a Disputed label), and Mark uncertain (shown with an Uncertain label).
 - **BR-021** — Each review records who reviewed: the featured person (with the steward) or the
   steward alone. "Verified by [person]" and "Verified by steward" are displayed differently.
-- **BR-022** — Only reviewed, non-rejected items appear in the family archive, search, Ask GUNITA,
+- **BR-022** — Only reviewed, non-rejected items appear in the family archive, search, Ask Himmel,
   and the memorial. Uncertain and Disputed items keep their labels on every surface.
 - **BR-023** — Every AI-written sentence shown to users (answers, recap captions) carries an
   "AI-written" marker and cites at least one reviewed source.
@@ -418,23 +420,23 @@ These are product concepts, not a database schema. The data-model doc owns field
   memorial use (BR-002).
 - **BR-032** — If the featured person set an item to Private, the steward cannot make it more
   visible later, including after death. **[interpretation: consent ceiling]**
-- **BR-033** — Search, Ask GUNITA, and every list check visibility before an item is retrieved,
+- **BR-033** — Search, Ask Himmel, and every list check visibility before an item is retrieved,
   not after. A viewer never receives an item above their access level.
 
-### Ask GUNITA
+### Ask Himmel
 
-- **BR-034** — Ask GUNITA is available only to signed-in family members, in both modes. The
+- **BR-034** — Ask Himmel is available only to signed-in family members, in both modes. The
   public memorial has no Ask feature. **[interpretation]**
 - **BR-035** — Answers are written in third person about the featured person, from reviewed
   sources only. Evidence is grouped as "In their own words" (From them) and "Others remember"
   (About them).
-- **BR-036** — GUNITA abstains with **Hindi pa alam** when no reviewed source supports the answer.
+- **BR-036** — Himmel abstains with **Hindi pa alam** when no reviewed source supports the answer.
   When only part is supported, it answers that part and marks the rest Hindi pa alam.
-- **BR-037** — GUNITA refuses role-play ("pretend to be Lola"), requests to speak as the person, and
+- **BR-037** — Himmel refuses role-play ("pretend to be Lola"), requests to speak as the person, and
   requests to predict the person's opinion on things they never addressed. It explains that it can
   only share what the person or family actually recorded.
 - **BR-038** — In During mode, an abstained question can be added to the interview queue as a
-  GUNITA Question. **[interpretation of flow step 8, "Continue capturing"]**
+  Himmel Question. **[interpretation of flow step 8, "Continue capturing"]**
 
 ### Demo data
 
@@ -446,7 +448,7 @@ These are product concepts, not a database schema. The data-model doc owns field
 ### Memorial Mode and memorial
 
 - **BR-050** — Only the steward can activate Memorial Mode, through an explicit confirmation step.
-  GUNITA never infers death from inactivity, dates, or any other signal.
+  Himmel never infers death from inactivity, dates, or any other signal.
 - **BR-051** — Activation records who activated it and when. The steward can reverse a mistaken
   activation, and the reversal is recorded too. **[interpretation]**
 - **BR-052** — The memorial is built only from items that are reviewed, memorial-visible, and
@@ -466,7 +468,7 @@ These are product concepts, not a database schema. The data-model doc owns field
   show it on the memorial. **[interpretation]**
 - **BR-062** — Every visitor contribution is About them, stays pending until the steward approves
   it, and never appears as something the deceased said. Approved contributions never appear under
-  "In their own words" and never count as From them evidence in Ask GUNITA.
+  "In their own words" and never count as From them evidence in Ask Himmel.
 - **BR-063** — The steward can approve or reject a contribution but cannot edit its words, so
   nothing is misattributed. **[interpretation]**
 - **BR-064** — Guest submissions are rate-limited to stop spam. **[interpretation]**
@@ -474,7 +476,7 @@ These are product concepts, not a database schema. The data-model doc owns field
 ### Correction and deletion
 
 - **BR-070** — Deleting a source deletes every item extracted from it and removes it from the
-  archive, search, Ask GUNITA answers, and the memorial.
+  archive, search, Ask Himmel answers, and the memorial.
 - **BR-071** — Corrections update every surface that shows the item. The previous value stays in
   the item's history, visible to the steward.
 
@@ -513,7 +515,7 @@ These are product concepts, not a database schema. The data-model doc owns field
           └──────────────────────┬─────────────────────┘              │
                                  ▼                                    │
           ┌────────────────────────────────────────────┐   Hints /    │
-          │ GAPS: GUNITA Questions + follow-ups        │──────────────┤
+          │ GAPS: Himmel Questions + follow-ups        │──────────────┤
           └──────────────────────┬─────────────────────┘ next session │
                                  ▼                                    │
           ┌────────────────────────────────────────────┐              │
@@ -522,12 +524,12 @@ These are product concepts, not a database schema. The data-model doc owns field
           └──────────────────────┬─────────────────────┘              │
                                  ▼                                    │
           ┌────────────────────────────────────────────┐  Hindi pa    │
-          │ USE: archive · search · Ask GUNITA         │──alam → add──┘
+          │ USE: archive · search · Ask Himmel         │──alam → add──┘
           └────────────────────────────────────────────┘  as question
 ```
 
 **Guided interview session (F-004):**
-1. The steward opens a session. The queue shows GUNITA Questions: new ones generated from gaps, plus
+1. The steward opens a session. The queue shows Himmel Questions: new ones generated from gaps, plus
    questions carried over.
 2. One question shows at a time in large text. The steward may edit, skip, or reorder it.
 3. The person answers. The steward taps record and stop, or types.
@@ -541,7 +543,7 @@ These are product concepts, not a database schema. The data-model doc owns field
    place).
 2. AI describes what is visible and lists what is missing: who, where, when, why it mattered, and
    any unreadable text.
-3. GUNITA proposes questions (e.g., "Who is beside you in this photo?") and adds them to the queue.
+3. Himmel proposes questions (e.g., "Who is beside you in this photo?") and adds them to the queue.
 4. The person's answers are extracted into items linked to both the answer recording and the
    artifact.
 
@@ -562,7 +564,7 @@ These are product concepts, not a database schema. The data-model doc owns field
  Any reviewed item can be re-reviewed into another state. Every change is kept in history.
 ```
 
-### Ask GUNITA answer logic (F-012, F-013)
+### Ask Himmel answer logic (F-012, F-013)
 
 ```
  question ─▶ retrieve ONLY reviewed items the asker may see
@@ -597,7 +599,7 @@ These are product concepts, not a database schema. The data-model doc owns field
 ### Memorial setup (F-016, F-017, F-018)
 1. The steward activates Memorial Mode and confirms.
 2. The steward sees all reviewed items marked Memorial and selects which appear.
-3. GUNITA drafts the recap from the selection. Card types: cover (name, photo, years), life moment
+3. Himmel drafts the recap from the selection. Card types: cover (name, photo, years), life moment
    (photo plus caption), in their own words (original voice clip plus transcript excerpt), recipe
    (with By-judgement clip), lesson, and closing ("Share a memory").
 4. The steward reviews every card: reorder, remove, edit AI-written captions, then publish.
@@ -635,14 +637,14 @@ These are product concepts, not a database schema. The data-model doc owns field
 - **F-002:** until consent is recorded, capture and upload controls are disabled; consent evidence
   (audio or written) is stored as a Private source; consent answers about memorial use and voice
   clips are saved and enforced (see F-009, F-017).
-- **F-003:** the steward can record audio in the GUNITA web app on mobile Safari and Chrome
+- **F-003:** the steward can record audio in the Himmel web app on mobile Safari and Chrome
   (HTTPS), upload an audio file, type text, and upload photos and documents (images and PDF);
   family members can upload photos and documents and type their own memories (labeled About them);
   each upload becomes a source that stays retrievable in its original form.
 - **F-004:** the session shows one question at a time; questions reference existing material or
   gaps; the steward can edit, skip, and reorder; no question asks about health (BR-012); interview
   prompts follow the space UI language (`fil` / `en`) and Filipino uses respectful forms (BR-014).
-- **F-005:** after an artifact upload, GUNITA lists at least one missing-context item and one
+- **F-005:** after an artifact upload, Himmel lists at least one missing-context item and one
   question tied to that artifact; it never outputs a person's name that no human supplied (BR-011).
 - **F-006:** a transcript or text source produces typed items (Story, Recipe, Tradition, Lesson,
   Fact) and entities, all in the AI suggestion state; recipe steps are labeled Measured or By
@@ -667,7 +669,7 @@ These are product concepts, not a database schema. The data-model doc owns field
 - **F-013:** a question with no supporting reviewed item returns "Hindi pa alam" and no invented
   content; a partly supported question answers only the supported part; in During mode the user
   can add the question to the interview queue.
-- **F-014:** after new items are reviewed, at least one new GUNITA Question can appear; each shows
+- **F-014:** after new items are reviewed, at least one new Himmel Question can appear; each shows
   the source that triggered it and why; the steward can queue or dismiss it; Hints never state
   facts.
 - **F-015:** From them, About them, AI suggestion, Verified, Corrected, Uncertain, Disputed, and
@@ -729,13 +731,13 @@ many were confirmed, corrected, or rejected, and report it honestly in the pitch
 **Hackathon (judged Sep 24):**
 - The golden path in §13 runs end to end, live, without a manual workaround.
 - The AI quality bar passes.
-- A person who has never seen GUNITA scans the QR and submits a memory in under 90 seconds (TALA's
+- A person who has never seen Himmel scans the QR and submits a memory in under 90 seconds (TALA's
   Wake Friction Test threshold).
 - Every submission requirement in §0.2 is met before the deadline.
 
 **Product (after the hackathon, for the sustainability story) [interpretation]:**
 - Verified memories preserved per family (reviewed items linked to sources).
-- Share of Ask GUNITA questions answered with sources versus "Hindi pa alam", and how many
+- Share of Ask Himmel questions answered with sources versus "Hindi pa alam", and how many
   abstentions become captured answers.
 - Visitor contributions per memorial.
 - Anti-metric: time spent in the app is not a goal (BR-080).
@@ -744,9 +746,9 @@ many were confirmed, corrected, or rejected, and report it honestly in the pitch
 
 ## Rubric alignment
 
-| Criterion (points) | How GUNITA earns it |
+| Criterion (points) | How Himmel earns it |
 |---|---|
-| Relevance (5) | Answers the sub-theme's "interactive digital representation that persists after death" with a non-simulated representation: the person's real words and voice, answerable through Ask GUNITA, and a memorial built from the same archive |
+| Relevance (5) | Answers the sub-theme's "interactive digital representation that persists after death" with a non-simulated representation: the person's real words and voice, answerable through Ask Himmel, and a memorial built from the same archive |
 | Impact & Value (10) | Filipino families preserve knowledge while the person is alive and use it immediately; the lamay becomes a way to gather memories from people outside the family |
 | UI/UX Design (10) | Elder-friendly one-question interview; mobile recap; 3-step visitor flow; consistent provenance badges |
 | Maintainability & Sustainability (10) | Public MIT repo, README, documented provider substitution, clean data model. Business model is not in the finalized decision (see Open questions) |
@@ -763,12 +765,12 @@ many were confirmed, corrected, or rejected, and report it honestly in the pitch
 
 **Golden path (must work flawlessly live):**
 1. The fictional family space exists, with consent recorded (show the consent clip).
-2. Upload an old photo → GUNITA asks "Who is beside you in this photo?"
+2. Upload an old photo → Himmel asks "Who is beside you in this photo?"
 3. Record Lola's voice answer → transcript and extracted person and relationship appear as AI
    suggestions → the steward confirms → the photo now shows the name, linked to the recording.
 4. Open the adobo recipe → a By-judgement step plays Lola's own clip ("how do you know it's
    ready").
-5. Ask GUNITA "How did Lola make adobo?" → cited answer with her clip. Ask something not recorded →
+5. Ask Himmel "How did Lola make adobo?" → cited answer with her clip. Ask something not recorded →
    "Hindi pa alam" → add it as a question.
 6. Activate Memorial Mode → select content → publish recap → show the QR.
 7. Scan the QR on a phone → recap → share a memory with a photo → the steward approves → it appears
@@ -788,7 +790,7 @@ recordings, and text must be ones the team is allowed to publish.
 
 | Risk | Why it matters | Mitigation |
 |---|---|---|
-| Judges read the sub-theme as requiring a simulated person | Relevance and Innovation in Design scores | Pitch the stance explicitly: representation, not replica; show Ask GUNITA returning her real voice. The team's own research (the invented "Mark" road-trip story from a family chatbot) shows why simulation fails |
+| Judges read the sub-theme as requiring a simulated person | Relevance and Innovation in Design scores | Pitch the stance explicitly: representation, not replica; show Ask Himmel returning her real voice. The team's own research (the invented "Mark" road-trip story from a family chatbot) shows why simulation fails |
 | Taglish transcription errors on elderly speech | Wrong transcripts become wrong items | Original audio stays authoritative; transcripts editable; nothing is verified without review; test transcription on the demo recordings in the first hours |
 | AI invents a fact in an answer | Destroys trust in the whole archive | Reviewed-only retrieval, mandatory citations, abstention, evaluation set |
 | 23 P0 areas in about 25 hours | Functionality (15 points) | Golden path first; simplest working form for the rest |
@@ -816,7 +818,7 @@ recordings, and text must be ones the team is allowed to publish.
   tribute heart on approved visitor photos inside the memorial (F-023, BR-081, ADR-007).
 - Multiple featured people, multiple family spaces per steward, or multiple stewards.
 - Grief counseling or therapy claims.
-- Deciding which family account is objectively true. GUNITA labels disputes; it does not settle
+- Deciding which family account is objectively true. Himmel labels disputes; it does not settle
   them.
 - Native iOS/Android apps, Expo, Expo Go, and app-store publishing (ADR-004). Everyone uses the
   mobile-first web app in a phone browser; memorial visitors never install anything.
@@ -869,7 +871,7 @@ the mechanics.
 - Visitors who are minors: any extra handling? `[open]`
 - Sustainability story for the 10-point criterion: resolved for pitch framing by ADR-003 (B2B2C
   Memorial package); not built in MVP.
-- Brand line for GUNITA (none is defined yet). `[open]`
+- Brand line for Himmel (name locked; tagline still open). `[open]`
 - Platform: resolved — single Next.js web app (ADR-004).
 - Legal note: RA 10173 references here guide product rules. They are not legal advice; real users
   would need a compliance review. `[open]`
@@ -880,16 +882,17 @@ the mechanics.
 
 | Term | Meaning |
 |---|---|
-| Gunita | Remembrance, recollection (Filipino) |
+| Himmel | Product name (family memory archive; formerly working name GUNITA) |
+| Gunita | Remembrance, recollection (Filipino); earlier working name |
 | Lamay / burol | Wake; the gathering before burial |
 | Lola / Lolo | Grandmother / grandfather |
 | Pamana | Inheritance, heritage |
 | Kalusugan | Health (the cut health-history category) |
-| Hindi pa alam | "Not yet known"; GUNITA's abstention |
+| Hindi pa alam | "Not yet known"; Himmel's abstention |
 | Po / opo | Respectful particles used with elders |
 | Steward | The family member the featured person designates to manage the space |
 | From them / About them | Captured from the featured person / contributed by anyone else |
-| GUNITA Question (Hint) | A suggested next question or missing connection |
+| Himmel Question (Hint) | A suggested next question or missing connection |
 
 ---
 
@@ -908,7 +911,7 @@ the mechanics.
 | Permissions | F-009 | 5, 10 |
 | Family archive | F-010 | 6 |
 | Search | F-011 | 7 |
-| Ask GUNITA | F-012 | 7 |
+| Ask Himmel | F-012 | 7 |
 | Abstention | F-013 | 7 |
 | Hints | F-014 | 4, 8 |
 | Provenance | F-015 | all |
