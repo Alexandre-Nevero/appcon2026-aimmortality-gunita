@@ -1,7 +1,6 @@
 {
-  "_placeholder": "TASK-020 replaces this whole file with the real fictional family (PRD BR-040, docs/demo-script.md). This fixture only exercises seed/load.ts end to end.",
   "space": {
-    "name": "Placeholder Family (TASK-020 pending)",
+    "name": "Pamilya Santos",
     "locale": "fil"
   },
   "consent": {
@@ -14,15 +13,15 @@
   "people": [
     {
       "key": "featured",
-      "displayName": "Placeholder Lola",
-      "aliases": ["Lola"],
+      "displayName": "Cornelia \"Nena\" Santos",
+      "aliases": ["Lola Nena", "Nena"],
       "relationshipToFeatured": null,
       "isFeatured": true
     }
   ],
   "memberships": [
     {
-      "userId": "seed-steward-placeholder",
+      "userId": "seed-steward-demo",
       "role": "steward"
     }
   ],
@@ -34,10 +33,13 @@
       "status": "ready",
       "visibility": "private",
       "mimeType": "text/plain",
-      "byteSize": 64,
-      "blobPathname": "seed/placeholder/consent.txt",
+      "byteSize": 210,
+      "blobPathname": "seed/media/consent.txt",
       "segments": [
-        { "index": 0, "text": "Placeholder consent evidence text — TASK-020 replaces with the real clip." }
+        {
+          "index": 0,
+          "text": "Oo, pumapayag ako na kunan ng recording at isulat ang mga kuwento ko para sa aking mga apo. Alam ko at nauunawaan ko ang lahat ng ito, at pumapayag din ako na magamit ito sa memoryal balang araw."
+        }
       ]
     },
     {
@@ -47,9 +49,18 @@
       "status": "ready",
       "visibility": "family",
       "mimeType": "text/plain",
-      "byteSize": 80,
-      "blobPathname": "seed/placeholder/story.txt",
-      "segments": [{ "index": 0, "text": "Placeholder story text. TASK-020 replaces with a real transcript." }]
+      "byteSize": 320,
+      "blobPathname": "seed/media/story.txt",
+      "segments": [
+        {
+          "index": 0,
+          "text": "Noong bata pa ako, tuwing Disyembre, sumasama ako kay Tatay sa palengke bago pa man magbukang-liwayway para pumili ng pinakasariwang isda para sa Media Noche."
+        },
+        {
+          "index": 1,
+          "text": "Sinasabi niya sa akin noon, kailangan daw unahan ang araw kung gusto mong makakuha ng pinakamaganda — turong hindi ko nakalimutan hanggang ngayon."
+        }
+      ]
     },
     {
       "key": "recipe-source",
@@ -58,11 +69,33 @@
       "status": "ready",
       "visibility": "family",
       "mimeType": "text/plain",
-      "byteSize": 90,
-      "blobPathname": "seed/placeholder/recipe.txt",
+      "byteSize": 300,
+      "blobPathname": "seed/media/recipe.txt",
       "segments": [
-        { "index": 0, "text": "Placeholder measured-step narration: 1 cup of vinegar." },
-        { "index": 1, "text": "Placeholder by-judgement narration — how you know it's done." }
+        {
+          "index": 0,
+          "text": "Sa adobo ko, kailangan mo ng kalahating tasa ng suka at kalahating tasa ng toyo, saka lakasan ang apoy hanggang kumulo."
+        },
+        {
+          "index": 1,
+          "text": "Alam mong tapos na kapag umitim na ang sabaw at bumango sa buong bahay — iyon ang senyales, hindi ito minuto o oras."
+        }
+      ]
+    },
+    {
+      "key": "tradition-source",
+      "type": "text",
+      "origin": "from_them",
+      "status": "ready",
+      "visibility": "family",
+      "mimeType": "text/plain",
+      "byteSize": 260,
+      "blobPathname": "seed/media/tradition.txt",
+      "segments": [
+        {
+          "index": 0,
+          "text": "Tuwing Undas, dinadalhan namin ng bulaklak at kandila ang puntod ni Tatay, at doon din niya ikinukuwento sa amin ang mga alaala niya sa kanya, taon-taon, para hindi malimutan."
+        }
       ]
     }
   ],
@@ -70,19 +103,20 @@
     {
       "sourceKey": "story-source",
       "type": "story",
-      "title": "Placeholder story",
-      "body": "Placeholder body citing segment 0.",
+      "title": "Ang Palengke Bago ng Media Noche",
+      "body": "Tuwing Disyembre, sumasama si Lola Nena sa kanyang tatay sa palengke bago pa man magbukang-liwayway para pumili ng pinakasariwang isda para sa Media Noche — turong hindi niya nakalimutan hanggang ngayon.",
       "origin": "from_them",
       "reviewState": "verified",
       "visibility": "family",
-      "segmentIndexes": [0],
-      "peopleKeys": ["featured"]
+      "segmentIndexes": [0, 1],
+      "peopleKeys": ["featured"],
+      "recipeSteps": []
     },
     {
       "sourceKey": "recipe-source",
       "type": "recipe",
-      "title": "Placeholder recipe",
-      "body": "Placeholder recipe body.",
+      "title": "Adobo ni Lola Nena",
+      "body": "Ang paboritong adobo ni Lola Nena — kalahating tasa ng suka at kalahating tasa ng toyo, at alam mo nang tapos na kapag umitim na ang sabaw at bumango sa buong bahay.",
       "origin": "from_them",
       "reviewState": "verified",
       "visibility": "family",
@@ -92,18 +126,60 @@
         {
           "index": 0,
           "kind": "measured",
-          "text": "Placeholder measured step",
-          "quantityVerbatim": "1 cup",
+          "text": "Ilagay ang kalahating tasa ng suka at kalahating tasa ng toyo sa kaldero, pakuluan.",
+          "quantityVerbatim": "kalahating tasa ng suka",
           "segmentIndexes": [0]
         },
         {
           "index": 1,
           "kind": "judgement",
-          "text": "Placeholder by-judgement step",
+          "text": "Lutuin hanggang umitim ang sabaw at bumango sa buong bahay — hindi ito minuto o oras, pandama lang.",
           "quantityVerbatim": null,
           "segmentIndexes": [1]
         }
       ]
+    },
+    {
+      "sourceKey": "tradition-source",
+      "type": "tradition",
+      "title": "Pagdalaw sa Puntod Tuwing Undas",
+      "body": "Tuwing Undas, dinadalhan ng pamilya ng bulaklak at kandila ang puntod ni Tatay, at doon din ikinukuwento ni Lola Nena ang kanyang mga alaala sa kanya, taon-taon, para hindi malimutan.",
+      "origin": "from_them",
+      "reviewState": "verified",
+      "visibility": "family",
+      "segmentIndexes": [0],
+      "peopleKeys": ["featured"],
+      "recipeSteps": []
+    }
+  ],
+  "publishMemorial": true,
+  "contributions": [
+    {
+      "displayName": "Marites",
+      "relationship": "Apo",
+      "textContent": "Miss na miss namin si Lola sa Pasko na ito. Wala pang nakapantay sa adobo niya.",
+      "photoBlobPathname": "https://picsum.photos/seed/nena-1/800/600",
+      "status": "approved"
+    },
+    {
+      "displayName": "Boyet",
+      "relationship": "Kapitbahay",
+      "textContent": "Salamat sa mga tinapay niya tuwing umaga, Lola. Laging may lugar sa puso namin.",
+      "photoBlobPathname": "https://picsum.photos/seed/nena-2/800/600",
+      "status": "approved"
+    },
+    {
+      "displayName": "Julia",
+      "relationship": "Kaibigan ng anak",
+      "textContent": "Ang saya ng bahay niyo tuwing Media Noche. Idol namin si Lola Nena.",
+      "photoBlobPathname": "https://picsum.photos/seed/nena-3/800/600",
+      "status": "approved"
+    },
+    {
+      "displayName": "Ronald",
+      "relationship": "Kaibigan ng anak",
+      "textContent": "Sana nakasama ko pa siya nang mas matagal.",
+      "status": "pending"
     }
   ]
 }
