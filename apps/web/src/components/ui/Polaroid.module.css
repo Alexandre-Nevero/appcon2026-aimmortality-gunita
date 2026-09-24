@@ -1,11 +1,13 @@
 .polaroid {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 200px;
+  margin: 0;
   background: var(--color-surface);
-  padding: var(--space-sm) var(--space-sm) var(--space-md);
+  padding: var(--space-xs) var(--space-xs) var(--space-sm);
   box-shadow: var(--shadow-polaroid);
   border-radius: var(--radius-xs);
-  max-width: 200px;
 }
 
 .selected {
@@ -14,16 +16,19 @@
 }
 
 .image {
+  display: block;
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
-  background: var(--color-field);
+  background: var(--color-line);
 }
 
 .caption {
   margin: var(--space-sm) 0 0;
   font-family: var(--font-script);
   font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
   text-transform: lowercase;
   color: var(--color-ink);
 }
@@ -38,8 +43,10 @@
 .chip {
   font-family: var(--font-sans);
   font-size: 0.6875rem;
-  padding: 2px 6px;
-  background: var(--color-field);
-  border-radius: var(--radius-xs);
+  line-height: 1.4;
+  padding: 2px var(--space-xs);
+  color: var(--color-ink-muted);
+  background: var(--color-line);
+  border-radius: var(--radius-full);
   text-transform: lowercase;
 }

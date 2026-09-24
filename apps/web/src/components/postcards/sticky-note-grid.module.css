@@ -1,0 +1,76 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-xl) var(--space-sm);
+  align-items: start;
+  /* Bleed a little into the page gutter so each pad gets more room on a 375px screen. */
+  margin: 0 calc(var(--space-xs) * -1);
+  padding: var(--space-lg) 0 0;
+  list-style: none;
+}
+
+/* Left column sits lower than the right, like notes stuck on by hand. */
+.cell:nth-child(odd) {
+  padding-top: var(--space-xl);
+}
+
+/* The box is the paper itself (~112×106 of the 164×160 asset); ::before draws the full
+   image, tape and torn edges included, spilling past the box by the asset's margins. */
+.note {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  aspect-ratio: 112 / 106;
+  padding: 28px var(--space-md) var(--space-md);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.note::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -30% -21% -21% -25%;
+  background: url("/objects/sticky-note.png") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 2px 4px rgba(45, 44, 40, 0.1));
+}
+
+.caption {
+  font-family: var(--font-script);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-transform: lowercase;
+  overflow-wrap: anywhere;
+}
+
+.excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: var(--space-xxs);
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-ink-muted);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xxs);
+  margin-top: var(--space-xs);
+}
+
+.chip {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  padding: 2px var(--space-xs);
+  color: var(--color-ink-muted);
+  background: var(--color-line);
+  border-radius: var(--radius-full);
+  text-transform: lowercase;
+}

@@ -15,6 +15,9 @@ import styles from "./interview-recorder.module.css";
 
 type Phase = "idle" | "recording" | "uploading" | "saved";
 
+// Fixed bar heights (px) so the waveform reads as a voice line even before recording starts.
+const WAVE = [14, 22, 30, 18, 44, 26, 58, 34, 20, 40, 28, 16, 36, 70, 88, 48, 64, 30, 76, 90, 60, 84, 40, 72, 54, 26];
+
 export function InterviewRecorder() {
   const { t } = useI18n();
   const router = useRouter();
@@ -23,6 +26,10 @@ export function InterviewRecorder() {
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   const [savedBlob, setSavedBlob] = useState<Blob | null>(null);
+  // S-007 "edit question": local edits for this session only.
+  const [edits, setEdits] = useState<Record<number, string>>({});
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
   const recorderRef = useRef<BrowserRecorder | null>(null);
   const stubRecordingRef = useRef(false);
 
@@ -103,7 +110,25 @@ export function InterviewRecorder() {
     setError(null);
   }
 
+  function goBack() {
+    // Reached from Home ("today's question") or the Capture hub; return to wherever that was.
+    if (window.history.length > 1) router.back();
+    else router.push("/capture");
+  }
+
+  function startEdit() {
+    setDraft(edits[index] ?? questions[index]);
+    setEditing(true);
+  }
+
+  function saveEdit() {
+    const next = draft.trim();
+    if (next) setEdits((prev) => ({ ...prev, [index]: next }));
+    setEditing(false);
+  }
+
   function onSkip() {
+    setEditing(false);
     onReRecord();
     if (index < total - 1) {
       setIndex((i) => i + 1);
@@ -113,6 +138,7 @@ export function InterviewRecorder() {
   }
 
   function onContinueAfterSave() {
+    setEditing(false);
     onReRecord();
     if (index < total - 1) {
       setIndex((i) => i + 1);
@@ -122,7 +148,17 @@ export function InterviewRecorder() {
   }
 
   const recording = phase === "recording";
-  const recordLabel = recording ? t("common.stop").toLowerCase() : t("common.record").toLowerCase();
+  const saved = phase === "saved";
+  const question = edits[index] ?? questions[index];
+  const canRedo = (recording || savedBlob !== null) && phase !== "uploading";
+  const recordLabel =
+    phase === "uploading"
+      ? t("capture.uploading").toLowerCase()
+      : saved
+        ? t("common.next").toLowerCase()
+        : recording
+          ? t("common.stop").toLowerCase()
+          : t("common.record").toLowerCase();
 
   if (!space.consentSaved) {
     return (
@@ -130,7 +166,7 @@ export function InterviewRecorder() {
         <BackHeader
           title={t("capture.interviewTitle").toLowerCase()}
           backLabel={t("common.back").toLowerCase()}
-          onBack={() => router.push("/capture")}
+          onBack={goBack}
         />
         <p className={styles.hint} role="status">
           {t("capture.consentBlocked")}
@@ -143,12 +179,13 @@ export function InterviewRecorder() {
     <main className={styles.page}>
       <BackHeader
         title={t("capture.interviewTitle").toLowerCase()}
+        hideTitle
         backLabel={t("common.back").toLowerCase()}
-        onBack={() => router.push("/capture")}
+        onBack={goBack}
       />
-      <p className={styles.hint}>{t("capture.interviewHint")}</p>
 
-      <div className={styles.progress} aria-hidden={total <= 1}>
+      <h2 className={styles.counter}>{t("capture.questionOf", { current, total }).toLowerCase()}</h2>
+      <div className={styles.progress} aria-hidden="true">
         {questions.map((_, i) => (
           <span
             key={i}
@@ -157,41 +194,86 @@ export function InterviewRecorder() {
         ))}
       </div>
 
-      <article className={styles.questionCard}>
-        <p className={styles.questionMeta}>
-          {t("capture.questionOf", { current, total }).toLowerCase()}
-        </p>
-        <p>{questions[index]}</p>
-      </article>
+      <div className={styles.note}>
+        {editing ? (
+          <form
+            className={styles.editForm}
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveEdit();
+            }}
+          >
+            <textarea
+              className={styles.editInput}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              aria-label={t("capture.editQuestion")}
+              rows={4}
+              autoFocus
+            />
+            <button type="submit" className={styles.editDone}>
+              {t("common.done").toLowerCase()}
+            </button>
+          </form>
+        ) : (
+          <p className={styles.question}>{question}</p>
+        )}
+      </div>
 
-      <div className={styles.waveform} aria-hidden>
-        {Array.from({ length: 12 }, (_, i) => (
+      <div className={styles.waveform} aria-hidden="true">
+        {WAVE.map((h, i) => (
           <span
             key={i}
             className={[styles.bar, recording ? styles.barLive : ""].filter(Boolean).join(" ")}
+            style={{ height: `${h}px`, animationDelay: `${(i % 5) * 0.12}s` }}
           />
         ))}
       </div>
 
-      {phase === "saved" ? (
+      {saved ? (
         <p className={styles.status} role="status">
           {t("capture.memorySaved")}
         </p>
-      ) : (
-        <div className={styles.recordWrap}>
-          <button
-            type="button"
-            className={[styles.recordBtn, recording ? styles.recordBtnRecording : ""]
-              .filter(Boolean)
-              .join(" ")}
-            onClick={() => void onRecordTap()}
-            disabled={phase === "uploading"}
-            aria-pressed={recording}
-          >
-            {phase === "uploading" ? t("capture.uploading").toLowerCase() : recordLabel}
-          </button>
-        </div>
-      )}
+      ) : null}
+
+      <div className={styles.controls}>
+        <button type="button" className={styles.sideBtn} onClick={onSkip} disabled={phase === "uploading"}>
+          <svg viewBox="0 0 24 24" width="36" height="36" aria-hidden="true">
+            <path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          <span>{t("capture.skipQuestion").toLowerCase()}</span>
+        </button>
+
+        <button
+          type="button"
+          className={[styles.recordBtn, recording ? styles.recordBtnRecording : ""]
+            .filter(Boolean)
+            .join(" ")}
+          onClick={() => (saved ? onContinueAfterSave() : void onRecordTap())}
+          disabled={phase === "uploading"}
+          aria-pressed={saved ? undefined : recording}
+        >
+          {recordLabel}
+        </button>
+
+        <button type="button" className={styles.sideBtn} onClick={onReRecord} disabled={!canRedo}>
+          <svg viewBox="0 0 24 24" width="36" height="36" aria-hidden="true">
+            <path
+              d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span>{t("common.reRecord").toLowerCase()}</span>
+        </button>
+      </div>
+
+      <p className={styles.tapHint}>
+        {recording ? t("capture.recordingHint") : t("capture.recordTapHint")}
+      </p>
 
       {error ? (
         <p className={styles.error} role="alert">
@@ -199,24 +281,14 @@ export function InterviewRecorder() {
         </p>
       ) : null}
 
-      <div className={styles.actions}>
-        {phase === "saved" ? (
-          <button type="button" className={styles.linkBtn} onClick={onContinueAfterSave}>
-            {t("common.continue").toLowerCase()}
-          </button>
-        ) : (
-          <>
-            <button type="button" className={styles.linkBtn} onClick={onSkip}>
-              {t("capture.skipQuestion").toLowerCase()}
-            </button>
-            {(recording || savedBlob) && phase !== "uploading" ? (
-              <button type="button" className={styles.linkBtn} onClick={onReRecord}>
-                {t("common.reRecord").toLowerCase()}
-              </button>
-            ) : null}
-          </>
-        )}
-      </div>
+      {!editing && !saved ? (
+        <button type="button" className={styles.editLink} onClick={startEdit}>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M6 18L18 6M9 6h9v9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          {t("capture.editQuestion").toLowerCase()}
+        </button>
+      ) : null}
     </main>
   );
 }

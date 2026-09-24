@@ -17,7 +17,11 @@ export function Polaroid({
         .filter(Boolean)
         .join(" ")}
     >
-      <img className={styles.image} src={src} alt="" />
+      {src ? (
+        <img className={styles.image} src={src} alt="" />
+      ) : (
+        <div className={styles.image} aria-hidden="true" />
+      )}
       <figcaption className={styles.caption}>{caption}</figcaption>
       {chips?.length ? (
         <div className={styles.chips}>

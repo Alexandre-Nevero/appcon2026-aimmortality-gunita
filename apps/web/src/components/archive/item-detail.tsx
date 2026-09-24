@@ -19,7 +19,7 @@ export function ArchiveItemDetail({ itemId }: { itemId: string }) {
       <BackHeader
         title={t("archive.itemDetail").toLowerCase()}
         backLabel={t("common.back").toLowerCase()}
-        onBack={() => router.push("/archive")}
+        onBack={() => router.push(item?.kind === "text" ? "/postcards" : "/archive")}
       />
       {!item ? (
         <p className={styles.notFound} role="status">
@@ -27,7 +27,11 @@ export function ArchiveItemDetail({ itemId }: { itemId: string }) {
         </p>
       ) : (
         <>
-          <Polaroid src={item.photoUrl} caption={item.caption} />
+          {item.kind === "photo" ? (
+            <Polaroid src={item.photoUrl} caption={item.caption} />
+          ) : (
+            <h2 className={styles.noteTitle}>{item.caption}</h2>
+          )}
           <div className={styles.chips}>
             <ProvenanceChip origin={item.origin} locale={locale} />
           </div>

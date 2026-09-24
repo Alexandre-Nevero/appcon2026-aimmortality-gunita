@@ -192,6 +192,7 @@
     "questionOf": "Tanong {current} sa {total}",
     "recording": "Nagre-record…",
     "recordingHint": "Magsalita po nang natural. Pwede mag-Taglish.",
+    "recordTapHint": "I-tap para magsimula. I-tap ulit para huminto at i-save.",
     "uploading": "Nag-a-upload…",
     "uploadFailed": "Hindi na-upload. Subukan ulit.",
     "uploadRetry": "I-upload ulit",
@@ -264,6 +265,8 @@
   },
   "archive": {
     "title": "Archive",
+    "subtitle": "Lahat ng alaalang na-review ng pamilya, nasa iisang lugar.",
+    "filtersLabel": "I-filter",
     "searchPlaceholder": "Halimbawa: paglipat sa Manila",
     "searchCta": "Maghanap",
     "emptyTitle": "Wala pang na-review na item",
@@ -283,6 +286,13 @@
     "noMedia": "Walang media para i-play.",
     "changeVisibility": "Baguhin ang visibility",
     "deleteItem": "Burahin ang item"
+  },
+  "postcards": {
+    "title": "Mga postcard",
+    "subtitle": "Mga alaalang isinulat ng mga nagmamahal sa kanya.",
+    "add": "Idagdag ang alaala ko",
+    "emptyTitle": "Wala pang nakasulat na alaala",
+    "emptyBody": "Magdagdag ng isa, o kumpirmahin muna ang mga mungkahi sa Review."
   },
   "ask": {
     "title": "Ask GUNITA",
