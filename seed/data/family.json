@@ -33,7 +33,7 @@
       "status": "ready",
       "visibility": "private",
       "mimeType": "text/plain",
-      "byteSize": 210,
+      "byteSize": 195,
       "blobPathname": "seed/media/consent.txt",
       "segments": [
         {
@@ -49,7 +49,7 @@
       "status": "ready",
       "visibility": "family",
       "mimeType": "text/plain",
-      "byteSize": 320,
+      "byteSize": 306,
       "blobPathname": "seed/media/story.txt",
       "segments": [
         {
@@ -67,9 +67,9 @@
       "type": "text",
       "origin": "from_them",
       "status": "ready",
-      "visibility": "family",
+      "visibility": "memorial",
       "mimeType": "text/plain",
-      "byteSize": 300,
+      "byteSize": 237,
       "blobPathname": "seed/media/recipe.txt",
       "segments": [
         {
@@ -87,14 +87,14 @@
       "type": "text",
       "origin": "from_them",
       "status": "ready",
-      "visibility": "family",
+      "visibility": "memorial",
       "mimeType": "text/plain",
-      "byteSize": 260,
+      "byteSize": 187,
       "blobPathname": "seed/media/tradition.txt",
       "segments": [
         {
           "index": 0,
-          "text": "Tuwing Undas, dinadalhan namin ng bulaklak at kandila ang puntod ni Tatay, at doon din niya ikinukuwento sa amin ang mga alaala niya sa kanya, taon-taon, para hindi malimutan."
+          "text": "Tuwing Undas, dinadalhan namin ng bulaklak at kandila ang puntod ni Tatay, at doon din ikinukuwento ni Lola Nena sa amin ang kanyang mga alaala kay Tatay, taon-taon, para hindi malimutan."
         }
       ]
     }
@@ -109,6 +109,8 @@
       "reviewState": "verified",
       "visibility": "family",
       "segmentIndexes": [0, 1],
+      "places": ["Palengke"],
+      "dates": [{ "text": "Disyembre", "precision": "approximate" }],
       "peopleKeys": ["featured"],
       "recipeSteps": []
     },
@@ -119,7 +121,7 @@
       "body": "Ang paboritong adobo ni Lola Nena — kalahating tasa ng suka at kalahating tasa ng toyo, at alam mo nang tapos na kapag umitim na ang sabaw at bumango sa buong bahay.",
       "origin": "from_them",
       "reviewState": "verified",
-      "visibility": "family",
+      "visibility": "memorial",
       "segmentIndexes": [0, 1],
       "peopleKeys": ["featured"],
       "recipeSteps": [
@@ -143,11 +145,13 @@
       "sourceKey": "tradition-source",
       "type": "tradition",
       "title": "Pagdalaw sa Puntod Tuwing Undas",
-      "body": "Tuwing Undas, dinadalhan ng pamilya ng bulaklak at kandila ang puntod ni Tatay, at doon din ikinukuwento ni Lola Nena ang kanyang mga alaala sa kanya, taon-taon, para hindi malimutan.",
+      "body": "Tuwing Undas, dinadalhan ng pamilya ng bulaklak at kandila ang puntod ni Tatay, at doon din ikinukuwento ni Lola Nena sa kanila ang kanyang mga alaala kay Tatay, taon-taon, para hindi malimutan.",
       "origin": "from_them",
       "reviewState": "verified",
-      "visibility": "family",
+      "visibility": "memorial",
       "segmentIndexes": [0],
+      "places": ["Puntod ni Tatay"],
+      "dates": [{ "text": "Undas", "precision": "approximate" }],
       "peopleKeys": ["featured"],
       "recipeSteps": []
     }
