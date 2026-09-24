@@ -1,0 +1,73 @@
+export const fixtures = {
+  demoPasswordHint: "use seeded steward account from seed/README",
+  space: {
+    id: "space_demo",
+    featuredName: "Lola Nena",
+    locale: "en" as const,
+    role: "steward" as const,
+    lifecycleMode: "during" as const,
+    consentSaved: true,
+  },
+  homeStickers: [
+    {
+      id: "capture",
+      labelKey: "capture.hubTitle",
+      href: "/capture",
+      object: "/objects/camera.png",
+      rotate: -4,
+    },
+    {
+      id: "archive",
+      labelKey: "archive.title",
+      href: "/archive",
+      object: "/objects/polaroids.png",
+      rotate: 3,
+    },
+    {
+      id: "questions",
+      labelKey: "home.nextQuestions",
+      href: "/home/questions",
+      object: "/objects/map.png",
+      rotate: -2,
+    },
+    {
+      id: "ask",
+      labelKey: "ask.title",
+      href: "/ask",
+      object: "flower",
+      rotate: 0,
+    },
+    {
+      id: "memory",
+      labelKey: "capture.addMyMemory",
+      href: "/capture/memory",
+      object: "/objects/postcard.png",
+      rotate: 5,
+    },
+    {
+      id: "memorial",
+      labelKey: "home.memorialEntry",
+      href: "/memorial",
+      object: "/objects/candle.png",
+      rotate: -3,
+      stewardOnly: true,
+    },
+  ],
+  items: [
+    {
+      id: "item_1",
+      title: "Adobo Sundays",
+      body: "She never wrote the recipe down.",
+      caption: "adobo sundays",
+      photoUrl: "/objects/polaroid-sample-1.jpg",
+      origin: "from_them" as const,
+      reviewState: "approved" as const,
+    },
+  ],
+  askAbstain: {
+    answerKind: "abstain" as const,
+    textKey: "ask.abstained",
+    citations: [] as { itemId: string; excerpt: string }[],
+  },
+  memorialToken: "demo_memorial_token",
+};
