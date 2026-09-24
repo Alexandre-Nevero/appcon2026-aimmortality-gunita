@@ -192,6 +192,7 @@
     "questionOf": "Question {current} of {total}",
     "recording": "Recording…",
     "recordingHint": "Speak naturally. Taglish is fine.",
+    "recordTapHint": "Tap once to start. Tap again to stop and save.",
     "uploading": "Uploading…",
     "uploadFailed": "Upload failed. Please try again.",
     "uploadRetry": "Upload again",
@@ -285,6 +286,13 @@
     "noMedia": "No media to play.",
     "changeVisibility": "Change visibility",
     "deleteItem": "Delete item"
+  },
+  "postcards": {
+    "title": "Postcards",
+    "subtitle": "Memories written down by the people who love her.",
+    "add": "Add my memory",
+    "emptyTitle": "No written memories yet",
+    "emptyBody": "Add one, or confirm suggestions in Review first."
   },
   "ask": {
     "title": "Ask GUNITA",
