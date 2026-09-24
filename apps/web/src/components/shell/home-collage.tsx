@@ -19,6 +19,16 @@ const positionClass: Record<string, string> = {
   memorial: styles.memorial,
 };
 
+/** DESIGN.md Home sticker copy — not i18n (avoids GUNITA in ask/questions keys). */
+const HOME_STICKER_LABELS: Record<string, string> = {
+  capture: "capture",
+  archive: "archive",
+  questions: "today's question",
+  ask: "ask himmel",
+  memory: "postcard",
+  memorial: "memorial",
+};
+
 export function HomeCollage() {
   const { t } = useI18n();
   const space = useMemo(() => readDemoSpace(), []);
@@ -61,7 +71,10 @@ export function HomeCollage() {
               />
             )}
             <div className={styles.stickerWrap}>
-              <Sticker label={t(sticker.labelKey).toLowerCase()} rotate={sticker.rotate} />
+              <Sticker
+                label={HOME_STICKER_LABELS[sticker.id] ?? sticker.id}
+                rotate={sticker.rotate}
+              />
             </div>
           </Link>
         ))}
