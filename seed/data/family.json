@@ -97,6 +97,54 @@
           "text": "Tuwing Undas, dinadalhan namin ng bulaklak at kandila ang puntod ni Tatay, at doon din ikinukuwento ni Lola Nena sa amin ang kanyang mga alaala kay Tatay, taon-taon, para hindi malimutan."
         }
       ]
+    },
+    {
+      "key": "uncertain-source",
+      "type": "text",
+      "origin": "from_them",
+      "status": "ready",
+      "visibility": "family",
+      "mimeType": "text/plain",
+      "byteSize": 154,
+      "blobPathname": "seed/media/first-house.txt",
+      "segments": [
+        {
+          "index": 0,
+          "text": "Hindi na sigurado si Lola Nena kung Maynila o Bulacan talaga ang unang bahay nila, pero lagi niyang naaalala ang malaking punong mangga sa harap ng bahay."
+        }
+      ]
+    },
+    {
+      "key": "disputed-source",
+      "type": "text",
+      "origin": "from_them",
+      "status": "ready",
+      "visibility": "family",
+      "mimeType": "text/plain",
+      "byteSize": 156,
+      "blobPathname": "seed/media/adobo-origin.txt",
+      "segments": [
+        {
+          "index": 0,
+          "text": "May nagsasabing sa kanyang ina niya natutunan ang adobo, pero ang ibang kapatid naman ay nagsasabing sa kapitbahay pa raw talaga unang natutunan ang resipe."
+        }
+      ]
+    },
+    {
+      "key": "private-source",
+      "type": "text",
+      "origin": "from_them",
+      "status": "ready",
+      "visibility": "private",
+      "mimeType": "text/plain",
+      "byteSize": 166,
+      "blobPathname": "seed/media/private-memory.txt",
+      "segments": [
+        {
+          "index": 0,
+          "text": "May minsan siyang ikinuwento lamang sa steward, hindi para ibahagi sa lahat — isang personal na alaala mula sa kanyang kabataan na nais niyang panatilihing pribado."
+        }
+      ]
     }
   ],
   "items": [
@@ -152,6 +200,43 @@
       "segmentIndexes": [0],
       "places": ["Puntod ni Tatay"],
       "dates": [{ "text": "Undas", "precision": "approximate" }],
+      "peopleKeys": ["featured"],
+      "recipeSteps": []
+    },
+    {
+      "sourceKey": "uncertain-source",
+      "type": "fact",
+      "title": "Ang Unang Bahay ng Pamilya",
+      "body": "Hindi na sigurado si Lola Nena kung Maynila o Bulacan talaga ang unang bahay nila, pero lagi niyang naaalala ang malaking punong mangga sa harap.",
+      "origin": "from_them",
+      "reviewState": "uncertain",
+      "visibility": "family",
+      "segmentIndexes": [0],
+      "peopleKeys": ["featured"],
+      "recipeSteps": []
+    },
+    {
+      "sourceKey": "disputed-source",
+      "type": "fact",
+      "title": "Sino ang Nagturo ng Adobo kay Lola Nena",
+      "body": "May nagsasabing sa kanyang ina niya natutunan ang adobo, pero ang ibang kapatid naman ay nagsasabing sa kapitbahay pa raw talaga unang natutunan ang resipe.",
+      "origin": "from_them",
+      "reviewState": "disputed",
+      "visibility": "family",
+      "disputeNote": "Magkaibang tala ang mga kapatid kung sino talaga ang nagturo ng resipe — hindi pa nalilinaw.",
+      "segmentIndexes": [0],
+      "peopleKeys": ["featured"],
+      "recipeSteps": []
+    },
+    {
+      "sourceKey": "private-source",
+      "type": "story",
+      "title": "Isang Pribadong Alaala",
+      "body": "May minsan siyang ikinuwento lamang sa steward, hindi para ibahagi sa lahat — isang personal na alaala mula sa kanyang kabataan na nais niyang panatilihing pribado.",
+      "origin": "from_them",
+      "reviewState": "verified",
+      "visibility": "private",
+      "segmentIndexes": [0],
       "peopleKeys": ["featured"],
       "recipeSteps": []
     }

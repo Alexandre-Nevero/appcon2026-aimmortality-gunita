@@ -42,6 +42,7 @@ disagree, the canonical owner wins until the other is reconciled.
 | Ops | [ops.md](ops.md) | Draft v0.2 | 2026-09-23 |
 | SAD | [sad.md](sad.md) | Draft v0.2 | 2026-09-23 |
 | Implementation Plan | [implementation-plan.md](implementation-plan.md) | Living | 2026-09-23 |
+| Demo Script | [demo-script.md](demo-script.md) | Draft | 2026-09-24 |
 | ADR-001 Mobile app + web memorial | [adr/ADR-001-mobile-app-plus-web-memorial.md](adr/ADR-001-mobile-app-plus-web-memorial.md) | **Superseded** by ADR-004 | 2026-09-23 |
 | ADR-002 Free-tier stack | [adr/ADR-002-free-tier-stack.md](adr/ADR-002-free-tier-stack.md) | Accepted | 2026-09-23 |
 | ADR-003 B2B2C Memorial package | [adr/ADR-003-b2b2c-memorial-package.md](adr/ADR-003-b2b2c-memorial-package.md) | Accepted | 2026-09-23 |
