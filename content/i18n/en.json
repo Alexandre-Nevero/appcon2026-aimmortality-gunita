@@ -264,6 +264,8 @@
   },
   "archive": {
     "title": "Archive",
+    "subtitle": "Every memory your family has reviewed, kept in one place.",
+    "filtersLabel": "Filter",
     "searchPlaceholder": "For example: moving to Manila",
     "searchCta": "Search",
     "emptyTitle": "No reviewed items yet",

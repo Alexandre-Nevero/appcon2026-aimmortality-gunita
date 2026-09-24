@@ -264,6 +264,8 @@
   },
   "archive": {
     "title": "Archive",
+    "subtitle": "Lahat ng alaalang na-review ng pamilya, nasa iisang lugar.",
+    "filtersLabel": "I-filter",
     "searchPlaceholder": "Halimbawa: paglipat sa Manila",
     "searchCta": "Maghanap",
     "emptyTitle": "Wala pang na-review na item",
