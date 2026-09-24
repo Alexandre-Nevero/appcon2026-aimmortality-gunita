@@ -11,7 +11,7 @@ export default async function HomePage() {
   const context = await getCurrentContext();
   if (!context) return null;
 
-  const { locale, spaceId, role, lifecycleMode, memorialToken, featuredName } = context;
+  const { locale, spaceId, role, lifecycleMode, featuredName } = context;
 
   const [reviewItems, nextQuestion] = await Promise.all([
     role === "steward"
@@ -77,7 +77,7 @@ export default async function HomePage() {
               <p className={styles.eyebrow}>{t("home.familyInvites", locale)}</p>
               <p>{t("home.memorialEntry", locale)}</p>
             </div>
-            <Link href={memorialToken ? "/memorial/qr" : "/memorial"} className={styles.cta}>
+            <Link href="/memorial" className={styles.cta}>
               {t("home.memorialEntry", locale)} →
             </Link>
           </div>
