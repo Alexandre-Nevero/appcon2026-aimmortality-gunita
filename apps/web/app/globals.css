@@ -41,9 +41,9 @@ a {
   flex-direction: column;
   justify-content: flex-end;
   min-height: 100dvh;
-  background-color: var(--color-ink-muted);
-  background-size: cover;
-  background-position: center;
+  background-color: var(--color-paper);
+  background-image: var(--dot-grid);
+  background-size: var(--dot-grid-size);
 }
 
 .onboardingScene {

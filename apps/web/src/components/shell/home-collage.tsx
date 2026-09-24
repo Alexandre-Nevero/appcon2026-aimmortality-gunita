@@ -7,7 +7,6 @@ import { fixtures } from "@/src/mocks/fixtures";
 import { readDemoSpace, shouldShowDemoOfflineBanner } from "@/src/mocks/demo-path";
 import { useI18n } from "@/src/i18n/provider";
 import { Sticker } from "@/src/components/ui/Sticker";
-import { FlowerMark } from "@/src/components/ui/FlowerMark";
 import styles from "./home-collage.module.css";
 
 const positionClass: Record<string, string> = {
@@ -56,20 +55,14 @@ export function HomeCollage() {
             href={sticker.href}
             className={[styles.item, positionClass[sticker.id]].filter(Boolean).join(" ")}
           >
-            {sticker.object === "flower" ? (
-              <span className={styles.flowerObject}>
-                <FlowerMark size={56} />
-              </span>
-            ) : (
-              <Image
-                className={styles.objectImg}
-                src={sticker.object}
-                alt=""
-                width={88}
-                height={88}
-                priority={sticker.id === "capture"}
-              />
-            )}
+            <Image
+              className={styles.objectImg}
+              src={sticker.object}
+              alt=""
+              width={88}
+              height={88}
+              priority={sticker.id === "capture"}
+            />
             <div className={styles.stickerWrap}>
               <Sticker
                 label={HOME_STICKER_LABELS[sticker.id] ?? sticker.id}

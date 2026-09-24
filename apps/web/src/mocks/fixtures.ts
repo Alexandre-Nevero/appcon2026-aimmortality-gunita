@@ -34,7 +34,7 @@ export const fixtures = {
       id: "ask",
       labelKey: "ask.title",
       href: "/ask",
-      object: "flower",
+      object: "/objects/askhimmeltab.png",
       rotate: 0,
     },
     {
