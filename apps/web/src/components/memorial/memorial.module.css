@@ -1,0 +1,239 @@
+.page {
+  max-width: 26.25rem;
+  margin: 0 auto;
+  padding: 0 var(--space-gutter) var(--space-xl);
+}
+
+.subtitle {
+  margin: 0 0 var(--space-lg);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+  text-transform: lowercase;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  margin: var(--space-lg) 0;
+}
+
+.heroImg {
+  width: min(12rem, 70vw);
+  height: auto;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 16rem;
+  margin: var(--space-lg) auto 0;
+}
+
+.actionsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.error {
+  margin: var(--space-md) 0;
+  font-size: 0.875rem;
+  color: var(--color-error, #8b3a3a);
+  text-transform: lowercase;
+}
+
+.status {
+  margin: var(--space-md) 0;
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  text-transform: lowercase;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--space-gutter);
+  background: rgb(26 26 26 / 0.35);
+}
+
+.sheet {
+  width: 100%;
+  max-width: 26.25rem;
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-polaroid);
+}
+
+.sheetTitle {
+  margin: 0 0 var(--space-sm);
+  font-size: 1rem;
+  text-transform: lowercase;
+}
+
+.sheetHint {
+  margin: 0 0 var(--space-md);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.input {
+  width: 100%;
+  height: 44px;
+  margin-bottom: var(--space-md);
+  padding: 0 var(--space-md);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-field);
+}
+
+.sheetActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.selectGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin: var(--space-md) 0 var(--space-xl);
+}
+
+.selectBtn {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.selectBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.footerBar {
+  position: sticky;
+  bottom: 0;
+  padding: var(--space-md) 0 var(--space-lg);
+  background: linear-gradient(transparent, var(--color-bg) 24%);
+}
+
+.count {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+  text-transform: lowercase;
+}
+
+.recapStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin: var(--space-md) 0 var(--space-xl);
+}
+
+.recapCard {
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-polaroid);
+}
+
+.recapCardTitle {
+  margin: 0 0 var(--space-xs);
+  font-size: 1rem;
+  text-transform: lowercase;
+}
+
+.recapCardBody {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink-muted);
+}
+
+.recapCaption {
+  margin: var(--space-sm) 0 0;
+  font-family: var(--font-script);
+  font-size: 0.875rem;
+  text-transform: lowercase;
+}
+
+.recapPhoto {
+  width: 100%;
+  max-width: 200px;
+  margin-top: var(--space-sm);
+  border-radius: var(--radius-xs);
+}
+
+.qrWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+}
+
+.qrImg {
+  width: min(12rem, 70vw);
+  height: auto;
+  background: #fff;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+}
+
+.urlBox {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.75rem;
+  word-break: break-all;
+  background: var(--color-field);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.navLinks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-lg);
+  font-size: 0.875rem;
+}
+
+.navLinks a {
+  color: var(--color-ink);
+  text-transform: lowercase;
+}
+
+.empty {
+  margin: var(--space-xl) 0;
+  text-align: center;
+}
+
+.emptyTitle {
+  margin: 0 0 var(--space-sm);
+  font-size: 1rem;
+  text-transform: lowercase;
+}
+
+.emptyBody {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
