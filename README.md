@@ -53,4 +53,4 @@ photo memories (ADR-007) are in progress. See [docs/implementation-plan.md](docs
 
 ## License
 
-MIT (to be added at submission).
+[MIT](./LICENSE)
