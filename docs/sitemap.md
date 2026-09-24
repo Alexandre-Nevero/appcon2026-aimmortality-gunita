@@ -20,11 +20,10 @@ UI copy ships in `fil` or `en` (ADR-005).
 
 ## 1. Navigation model
 
-**Family UI, primary pattern:** bottom tab bar with four tabs once signed in and consent is
-recorded. Steward-only destinations open from Home cards and the Family tab, not from extra tabs.
-
-**Why:** the steward's daily loop is capture → review → use; four tabs keep every core action one tap
-away on a phone held by someone sitting with an elder.
+**Family UI, primary pattern:** Home scrapbook collage (ADR-010). Capture, Archive, Ask,
+questions, memorial, and add-memory open from Home stickers / objects — not from a bottom
+tab bar. Steward-only destinations (memorial candle, family invites, settings) open from
+Home; hide steward-only objects for `family` role.
 
 **Web memorial, primary pattern:** no navigation chrome. One vertical recap with a fixed
 "Share a memory" button (Scan → Remember → Share a memory).
@@ -120,7 +119,7 @@ NEXT.JS APP ROUTER (one app)
 /onboarding
 ├── space                           S-003
 └── consent                         S-004
-/(app)                (tabs)
+/(app)                (home hub)
 ├── home                            S-005
 │   ├── review                      S-011
 │   ├── questions                   S-008
@@ -153,11 +152,11 @@ PUBLIC MEMORIAL
 ```mermaid
 flowchart TD
   Auth["(auth) S-001/S-002"] --> Onb["onboarding S-003 → S-004"]
-  Onb --> Tabs["(app) tabs"]
-  Tabs --> Home["Home S-005"]
-  Tabs --> Cap["Capture S-006"]
-  Tabs --> Arc["Archive S-012"]
-  Tabs --> Ask["Ask S-016"]
+  Onb --> Hub["(app) home hub"]
+  Hub --> Home["Home S-005"]
+  Hub --> Cap["Capture S-006"]
+  Hub --> Arc["Archive S-012"]
+  Hub --> Ask["Ask S-016"]
   Home --> Mem["Memorial S-020 → S-021 → S-022 → S-023, S-024"]
   QR["/m/token S-030"] --> Share["S-031"] --> Thanks["S-032"]
   QR --> Photos["S-033 Photo memories"]

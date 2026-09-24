@@ -1,7 +1,13 @@
 import { randomBytes } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
-import "dotenv/config";
+import { config } from "dotenv";
+
+// docs/ops.md § Configuration & secrets: local secrets live in `.env.local`. Plain "dotenv/config"
+// only loads a literal `.env`, so it silently misses `.env.local` — load that first, then fall back
+// to `.env` for anything not already set.
+config({ path: ".env.local" });
+config();
 import { eq, inArray } from "drizzle-orm";
 
 import { db } from "./index";

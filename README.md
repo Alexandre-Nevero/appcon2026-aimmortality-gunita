@@ -164,4 +164,4 @@ Start at [`docs/index.md`](docs/index.md) (source-of-truth map).
 
 ## 📄 License
 
-MIT. The `LICENSE` file is added at submission (required by AppCon pass/fail rules).
+[MIT](./LICENSE)

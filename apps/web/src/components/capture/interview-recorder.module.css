@@ -1,0 +1,147 @@
+.page {
+  max-width: 26.25rem;
+  margin: 0 auto;
+  padding: 0 var(--space-gutter) var(--space-xl);
+}
+
+.hint {
+  margin: 0 0 var(--space-md);
+  font-size: 0.8125rem;
+  color: var(--color-ink-muted);
+}
+
+.progress {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-line);
+}
+
+.dotActive {
+  background: var(--color-mist-deep);
+}
+
+.questionCard {
+  margin: 0 0 var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--color-paper-bright);
+  box-shadow: 0 2px 0 var(--color-line);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  line-height: 1.45;
+}
+
+.questionMeta {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.waveform {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: 48px;
+  margin-bottom: var(--space-lg);
+}
+
+.bar {
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--color-line);
+}
+
+.barLive {
+  background: var(--color-record);
+  animation: pulse 0.6s ease-in-out infinite alternate;
+}
+
+.barLive:nth-child(2n) {
+  animation-delay: 0.15s;
+}
+
+.barLive:nth-child(3n) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pulse {
+  from {
+    height: 12px;
+  }
+  to {
+    height: 36px;
+  }
+}
+
+.recordWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+}
+
+.recordBtn {
+  width: 104px;
+  height: 104px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-record-soft);
+  font-family: var(--font-script);
+  font-size: 1.25rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  text-transform: lowercase;
+}
+
+.recordBtn:active {
+  transform: scale(0.98);
+}
+
+.recordBtnRecording {
+  background: var(--color-record);
+  color: var(--color-on-ink);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+.linkBtn {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+  background: none;
+  border: 0;
+  padding: var(--space-xs);
+  cursor: pointer;
+  text-transform: lowercase;
+}
+
+.status {
+  margin: var(--space-md) 0 0;
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--color-ink-muted);
+}
+
+.error {
+  margin: var(--space-sm) 0 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-record);
+}
