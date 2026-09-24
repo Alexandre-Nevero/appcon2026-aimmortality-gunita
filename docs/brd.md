@@ -1,8 +1,9 @@
-# BRD — Business Requirements Document — GUNITA
+# BRD — Business Requirements Document — Himmel
 
 > **Purpose:** the WHY, for stakeholders and judges. Owns business objectives, the business model
 > hypothesis, and business risks.
-> **Status:** Draft v0.2 · **Date:** 2026-09-23 · **Owner:** Alex
+> **Status:** Draft v0.3 · **Date:** 2026-09-24 · **Owner:** Alex
+> **Amended:** 2026-09-24 — product name **Himmel** (was GUNITA); ADR-009 owns the rename.
 > **Traces back to:** [PRD](prd.md) (product scope), [ADR-003](adr/ADR-003-b2b2c-memorial-package.md)
 > (business model), [ADR-004](adr/ADR-004-single-web-app.md) (delivery),
 > [ADR-005](adr/ADR-005-ui-language.md) (language). `idea.md` not yet written.
@@ -10,7 +11,7 @@
 ## Executive summary
 
 Filipino families lose knowledge when the relative who carries it (recipes, stories, who is in the
-old photos) can no longer explain it. GUNITA is one family archive with two modes: while the person
+old photos) can no longer explain it. Himmel is one family archive with two modes: while the person
 is alive, the family captures and uses their knowledge; after they die, the same approved archive
 becomes a memorial that lamay visitors can open by QR and add to.
 
@@ -56,13 +57,13 @@ credible.
 | Lamay visitors | Remember and share quickly | Submit memories; family decides display |
 | Funeral homes / memorial parks (future channel) | A differentiated service for families | Whether to offer the Memorial package |
 | AppCon judges / OTis | Product, technology, creativity, presentation (criteria in PRD §0.3) | Scoring |
-| GUNITA team (5 members) | Win AppCon; ship a truthful product | Scope, build, pitch |
+| Himmel team (5 members) | Win AppCon; ship a truthful product | Scope, build, pitch |
 
 ## Business model hypothesis (ADR-003)
 
 | Element | Hypothesis |
 |---|---|
-| Free | During archive: capture, review, archive, search, Ask GUNITA for one family |
+| Free | During archive: capture, review, archive, search, Ask Himmel for one family |
 | Paid | Memorial package: Memorial Mode, published recap, QR, visitor wall, moderation |
 | Buyer | The family (steward), at the time of the wake |
 | Channel | Direct, plus funeral homes and memorial parks that bundle or refer the package |
@@ -136,7 +137,7 @@ distribution. Neither is evidenced yet.
 
 | Risk | Likelihood | Impact | Mitigation |
 |---|---|---|---|
-| Judges expect a simulated "digital person" from the sub-theme | Medium | Relevance and Innovation in Design scores | Pitch "representation, not replica"; show real-voice answers through Ask GUNITA |
+| Judges expect a simulated "digital person" from the sub-theme | Medium | Relevance and Innovation in Design scores | Pitch "representation, not replica"; show real-voice answers through Ask Himmel |
 | Families care after a death, not before (UGAT risk 1), so the During archive stays empty | High | Memorial has little From them content | Memorial still works with family and visitor memories; test capture triggers in pilots |
 | Funeral partners don't adopt | Medium | No channel | Direct sales first; partner interviews with a real offer |
 | Willingness to pay unknown | High | No revenue | Real-price test; no pricing claims in the pitch beyond "hypothesis" |
@@ -156,7 +157,7 @@ Adapted from the UGAT tab's validation phases:
    family photo whose full context you don't know." Signal: at least 5 of 10 show a concrete
    instance (UGAT's internal rule, not a market benchmark).
 2. **Concierge pilot:** 3 families run capture → review → Ask with the team's help. Measure verified
-   memories recovered and whether a GUNITA Question led to a new contribution.
+   memories recovered and whether a Himmel Question led to a new contribution.
 3. **Partner interviews:** 3–5 funeral homes or memorial parks shown the Memorial package with a
    real price. Signal: a paid pilot commitment, not compliments.
 4. **Commercial test:** a real offer to families at a real price, with a real payment method.
