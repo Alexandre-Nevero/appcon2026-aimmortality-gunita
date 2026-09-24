@@ -10,13 +10,42 @@ pnpm --filter web db:seed              # skip if already seeded
 pnpm --filter web db:seed -- --reset   # wipe and reseed
 ```
 
-**Data** (`data/family.json`, TASK-020, Shi): **placeholder only.** The committed file is a
-structurally-valid but content-free fixture used to exercise the loader end to end. TASK-020
-replaces it with the real fictional family from the demo script (`docs/demo-script.md`) — consent
-clip, the adobo recipe with a By-judgement step, the artifact-context photo, etc. (PRD §13 golden
-path, BR-040). `media/` (referenced by `blobPathname` in the fixture) does not exist yet; TASK-020
-adds the actual files and either uploads them to Blob at seed time or points `blobPathname` at
-committed sample media.
+**Data** (`data/family.json`, TASK-020, Shi): the real fictional family (PRD BR-040 — no real
+deceased person, public figure, or public family; fully invented). **Pamilya Santos**, featured
+person **Cornelia "Nena" Santos (Lola Nena)** — reuses the example alias already in
+`docs/data-model.md`, so it ties to existing docs rather than inventing an unrelated name.
 
-Fixture shape is defined by the Zod schemas at the top of `apps/web/src/db/seed.ts` — extend those
-first if TASK-020 needs a field this loader doesn't support yet (e.g. multiple sources per item).
+Six reviewed items, spanning every review-state and visibility the golden path and `eval/cases.json`
+need to exercise:
+
+| Item | Type | Review state | Visibility | Why it exists |
+|---|---|---|---|---|
+| Ang Palengke Bago ng Media Noche | story | verified | family | ordinary answerable content |
+| Adobo ni Lola Nena | recipe | verified | memorial | measured + judgement steps (BR-013, EQ-004) |
+| Pagdalaw sa Puntod Tuwing Undas | tradition | verified | memorial | ordinary answerable content, Memorial-visible |
+| Ang Unang Bahay ng Pamilya | fact | **uncertain** | family | disputed_or_uncertain eval cases need a real uncertain item |
+| Sino ang Nagturo ng Adobo kay Lola Nena | fact | **disputed** | family | same, needs a real disputed item + `disputeNote` (BR-020) |
+| Isang Pribadong Alaala | story | verified | **private** | visibility_leak eval cases need a real item a family-role viewer must never see (BR-033) |
+
+Plus: consent evidence (private text source), `publishMemorial: true`, 3 approved visitor photo
+contributions (S-033) and 1 pending text contribution (moderation queue non-empty state).
+
+**Known limitations** (not fixed here — see TASK-020 PR #15 for detail):
+- Photo contributions use placeholder image URLs (`picsum.photos`); the seed loader has no upload
+  step, it stores `photoBlobPathname` exactly as given rather than reading `media/` and uploading to
+  Blob. Swap in real photos before the demo if any exist.
+- The published recap (`recap.snapshot`) is **empty** right after seeding — `seed.ts`'s
+  `publishMemorial` branch doesn't pre-populate curated cards. TASK-024 rehearsal needs to go
+  through the real steward UI (Memorial Mode → select → recap editor → publish) using this data as
+  raw material before the memorial page shows real cards.
+
+Fixture shape is defined by the Zod schemas in `apps/web/src/db/seed-fixture.ts` — extend those
+first if a future change needs a field this loader doesn't support yet (e.g. multiple sources per
+item).
+
+**Eval dataset** (`../eval/cases.json`, TASK-005/TASK-021): 27 questions against this same family —
+10 answerable, 6 unanswerable, 3 partial, 2 disputed/uncertain, 4 adversarial, 2 visibility-leak,
+matching the PRD's exact table and `run-eval.ts`'s `DATASET_COUNTS` contract. Every
+`permittedItemTitles`/`forbiddenItemTitles` reference above is one of the six item titles in this
+file — if an item's title changes here, update `eval/cases.json` too, or `pnpm eval` will fail
+`malformed_cases_file` validation on the next run.
