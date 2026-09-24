@@ -9,6 +9,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "eval": "tsx ../../eval/run.ts",
+    "check:guardrails": "tsx ./scripts/check-guardrails.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx ../../seed/load.ts"

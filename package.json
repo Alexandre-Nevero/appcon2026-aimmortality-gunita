@@ -14,6 +14,7 @@
     "test": "pnpm --filter web test && pnpm --filter core test",
     "test:e2e": "pnpm --filter web test:e2e",
     "eval": "pnpm --filter web eval",
+    "check:guardrails": "pnpm --filter web check:guardrails",
     "db:generate": "pnpm --filter web db:generate",
     "db:migrate": "pnpm --filter web db:migrate",
     "db:seed": "pnpm --filter web db:seed"
