@@ -34,6 +34,8 @@ that are git-ignored. Never commit values; the repo is public.
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Vercel, local, CI (eval only) | embeddings, vision, fallback |
 | `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` | Vercel, local | sessions |
 | `IP_HASH_SECRET` | Vercel | salt for visitor rate limiting (Methods EQ-010) and HMAC key for anonymous tribute cookies (ADR-007) |
+| `HEALTH_CHECK_SECRET` | Vercel, local | bearer token required for privileged `GET /api/health?deep=1` checks |
+| `HEALTH_CHECK_SPACE_ID` | Vercel, local | optional space id for protected memorial/demo-state reporting in `GET /api/health?deep=1` |
 | `PUBLIC_WEB_URL` / `NEXT_PUBLIC_APP_URL` | Vercel | base URL for QR codes and client links |
 | `MODEL_TRANSCRIBE`, `MODEL_TEXT`, `MODEL_TEXT_FALLBACK`, `MODEL_VISION`, `MODEL_EMBED` | Vercel, local | provider model IDs (swap without code changes) |
 | `ASK_TAU`, `ASK_TOP_K` | Vercel, local | abstention threshold and candidate count (Methods EQ-002) |
@@ -50,8 +52,14 @@ Vercel Hobby keeps runtime logs for only 1 hour, so GUNITA records what matters 
   latency, tokens, ok/error code. No prompt or transcript content.
 - **`event`**: the product events in [User Flow §6](user-flow.md).
 - **Source status**: `uploaded → processing step → ready | failed(step, reason)`.
-- **`GET /api/health`**: DB reachable, Blob token present, provider keys present, current mode of
-  the demo space. `?deep=1` also makes one cheap call per provider.
+- **`GET /api/health`**: public, non-sensitive readiness check. It verifies DB reachability plus
+  required runtime config presence (`BLOB_READ_WRITE_TOKEN`, `GROQ_API_KEY`,
+  `GOOGLE_GENERATIVE_AI_API_KEY`) without calling billed providers or returning family/demo-space
+  data.
+- **`GET /api/health?deep=1`**: privileged check only. Requires `Authorization: Bearer
+  $HEALTH_CHECK_SECRET`, then performs one cheap verification call each for Blob, Groq, and Google.
+  If `HEALTH_CHECK_SPACE_ID` is configured, the response also includes the monitored space's
+  lifecycle/QR/recap state, but never person names or memorial tokens.
 
 **Signals that matter (demo SLIs):**
 
@@ -70,12 +78,13 @@ judging):
 
 | Check | Threshold to act |
 |---|---|
-| `GET /api/health?deep=1` | anything not ok |
+| `curl -sf "$PUBLIC_WEB_URL/api/health"` | any 503 |
+| `curl -sf -H "Authorization: Bearer $HEALTH_CHECK_SECRET" "$PUBLIC_WEB_URL/api/health?deep=1"` | anything not ok |
 | Neon usage (CU-hours this month; storage) | > 80 CU-h or > 400 MB |
 | Blob usage | > 800 MB storage or > 8 GB transfer |
 | Groq usage today | near 1,000 requests on gpt-oss-120b |
 | Gemini usage today | near 1,000 requests on Flash-Lite |
-| Demo space state | Memorial Mode matches the script step; recap published; QR enabled |
+| Monitored space state (`HEALTH_CHECK_SPACE_ID`) | Memorial Mode matches the script step; recap published; QR enabled |
 | Production URL on iOS Safari + Android Chrome | sign-in, Home, record on S-007, `/m/:token` loads |
 
 ## Runbook — common incidents
