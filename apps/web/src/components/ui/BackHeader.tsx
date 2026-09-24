@@ -3,11 +3,14 @@ import styles from "./BackHeader.module.css";
 export function BackHeader({
   title,
   subtitle,
+  hideTitle,
   onBack,
   backLabel = "Back",
 }: {
   title: string;
   subtitle?: string;
+  /** Keep the h1 for screen readers when the screen shows its own visual title. */
+  hideTitle?: boolean;
   onBack?: () => void;
   backLabel?: string;
 }) {
@@ -28,7 +31,7 @@ export function BackHeader({
             </svg>
           </button>
         ) : null}
-        <h1 className={styles.title}>{title}</h1>
+        <h1 className={hideTitle ? styles.srOnly : styles.title}>{title}</h1>
       </div>
       {subtitle ? (
         <p className={[styles.subtitle, onBack ? styles.indented : ""].filter(Boolean).join(" ")}>

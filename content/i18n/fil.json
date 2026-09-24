@@ -192,6 +192,7 @@
     "questionOf": "Tanong {current} sa {total}",
     "recording": "Nagre-record…",
     "recordingHint": "Magsalita po nang natural. Pwede mag-Taglish.",
+    "recordTapHint": "I-tap para magsimula. I-tap ulit para huminto at i-save.",
     "uploading": "Nag-a-upload…",
     "uploadFailed": "Hindi na-upload. Subukan ulit.",
     "uploadRetry": "I-upload ulit",

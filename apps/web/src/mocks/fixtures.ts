@@ -26,7 +26,7 @@ export const fixtures = {
     {
       id: "questions",
       labelKey: "home.nextQuestions",
-      href: "/home/questions",
+      href: "/capture/interview",
       object: "/objects/map.png",
       rotate: -2,
     },
