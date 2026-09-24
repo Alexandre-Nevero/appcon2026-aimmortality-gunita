@@ -25,7 +25,7 @@ export function PostcardsScreen() {
         backLabel={t("common.back").toLowerCase()}
         onBack={() => router.push("/home")}
       />
-      <ArchiveToolbar active={active} onToggle={toggle} showFilters={TEXT_ITEMS.length > 0} />
+      <ArchiveToolbar searchHref="/postcards/search" active={active} onToggle={toggle} showFilters={TEXT_ITEMS.length > 0} />
       {TEXT_ITEMS.length === 0 ? (
         <div className={styles.empty}>
           <h2 className={styles.emptyTitle}>{t("postcards.emptyTitle").toLowerCase()}</h2>

@@ -24,7 +24,7 @@ export function ArchiveScreen() {
         backLabel={t("common.back").toLowerCase()}
         onBack={() => router.push("/home")}
       />
-      <ArchiveToolbar active={active} onToggle={toggle} showFilters={PHOTO_ITEMS.length > 0} />
+      <ArchiveToolbar searchHref="/archive/search" active={active} onToggle={toggle} showFilters={PHOTO_ITEMS.length > 0} />
       {PHOTO_ITEMS.length === 0 ? (
         <div className={styles.empty}>
           <h2 className={styles.emptyTitle}>{t("archive.emptyTitle").toLowerCase()}</h2>
