@@ -2,7 +2,7 @@
   "_meta": {
     "locale": "en",
     "note": "Stable keys for Josh (TASK-007+). Do not rename keys mid-build; add new keys instead. Badge copy must stay aligned with packages/core/src/labels.ts (F-015 / §0.1).",
-    "product": "GUNITA",
+    "product": "Himmel",
     "adr": "ADR-005",
     "tabLabelPolicy": "Primary tab labels stay English product names (Home/Capture/Archive/Ask) in both locales; sentences and actions localize fully.",
     "fixedTerms": {
@@ -11,12 +11,13 @@
     }
   },
   "app": {
-    "name": "GUNITA",
+    "name": "Himmel",
     "tagline": "Keep the family's stories",
     "modeDuring": "During",
     "modeMemorial": "Memorial",
     "featuredPersonLabel": "Featured person",
-    "offlineBanner": "You're offline. Try again when you have a signal."
+    "offlineBanner": "You're offline. Try again when you have a signal.",
+    "homeNavigation": "Home navigation"
   },
   "tabs": {
     "home": "Home",
@@ -169,7 +170,7 @@
     "greetingNamed": "Hello, {name}",
     "reviewCount_one": "{count} waiting for review",
     "reviewCount_other": "{count} waiting for review",
-    "nextQuestions": "Next GUNITA Questions",
+    "nextQuestions": "Today's question",
     "memorialEntry": "Memorial",
     "familyInvites": "Family & invites",
     "settings": "Settings",
@@ -226,7 +227,7 @@
     "recordingTooLarge": "That recording is over the ~4 MB limit. Record a shorter answer, or split it into two."
   },
   "questions": {
-    "title": "GUNITA Questions",
+    "title": "Himmel questions",
     "whyAsked": "Why asked",
     "queue": "Add to queue",
     "queued": "In queue",
@@ -285,10 +286,11 @@
     "deleteItem": "Delete item"
   },
   "ask": {
-    "title": "Ask GUNITA",
+    "title": "Ask Himmel",
     "placeholder": "Ask about your loved one…",
     "send": "Ask",
     "thinking": "Checking the archive…",
+    "suggestions": "Suggested questions",
     "answered": "Answer",
     "abstained": "Hindi pa alam",
     "abstainedBody": "No reviewed source supports an answer yet. We will not invent one.",
@@ -297,7 +299,7 @@
     "refusedBody": "We won't speak as them or guess opinions they never shared. We only share what the family recorded.",
     "evidence": "Evidence",
     "evidenceEmpty": "No evidence for this answer.",
-    "addAsQuestion": "Add as a GUNITA Question",
+    "addAsQuestion": "Add as a Himmel question",
     "addedAsQuestion": "Added as a question.",
     "emptyIdle": "Ask a question. We'll answer from the reviewed archive — or Hindi pa alam.",
     "citeHint": "Open the source to listen or read.",
@@ -387,6 +389,7 @@
     "closing": "Thank you for remembering",
     "memoriesFromOthers": "Memories from others",
     "memoriesFromOthersEmpty": "No approved memories from others yet.",
+    "photoMemoriesPreview": "Photo memories preview",
     "shareTitle": "Share a memory",
     "shareHint": "The family will review before anything is shown.",
     "yourName": "Your name",

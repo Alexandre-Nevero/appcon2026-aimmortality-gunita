@@ -7,6 +7,7 @@ export function AskInput({
   placeholder,
   sendLabel,
   suggested,
+  suggestedLabel,
   disabled,
   onSubmit,
   onPickSuggested,
@@ -14,6 +15,7 @@ export function AskInput({
   placeholder: string;
   sendLabel: string;
   suggested: string[];
+  suggestedLabel: string;
   disabled?: boolean;
   onSubmit: (question: string) => void;
   onPickSuggested: (question: string) => void;
@@ -31,7 +33,7 @@ export function AskInput({
   return (
     <div className={styles.footer}>
       {suggested.length > 0 ? (
-        <ul className={styles.suggested} aria-label="Suggested questions">
+        <ul className={styles.suggested} aria-label={suggestedLabel}>
           {suggested.map((q) => (
             <li key={q}>
               <button
@@ -73,7 +75,7 @@ export function AskInput({
           disabled={disabled || !value.trim()}
           onClick={submit}
         >
-          ↑
+          <span className={styles.sendIcon} aria-hidden />
         </button>
       </div>
     </div>

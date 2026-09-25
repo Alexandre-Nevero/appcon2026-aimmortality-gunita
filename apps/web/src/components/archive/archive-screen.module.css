@@ -1,30 +1,61 @@
 .page {
-  max-width: 26.25rem;
+  max-width: var(--content-wide);
   margin: 0 auto;
-  padding: 0 var(--space-gutter) var(--space-xl);
+  padding: 0 var(--space-gutter) calc(var(--space-xxl) + env(safe-area-inset-bottom, 0px));
 }
 
 .searchLink {
-  display: block;
-  margin: 0 0 var(--space-lg);
-  padding: var(--space-md);
-  min-height: 2.75rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0 0 var(--space-xl);
+  padding: 0 var(--space-md) 0 3.25rem;
+  min-height: 40px;
   font-family: var(--font-sans);
   font-size: 0.9375rem;
   line-height: 1.4;
   text-transform: lowercase;
   color: var(--color-ink-muted);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 0;
   border-radius: var(--radius-md);
+  transition: border-color var(--motion-ui) ease, transform var(--motion-press) var(--ease-out);
+}
+
+.searchLink::before {
+  content: "";
+  position: absolute;
+  left: 1.1rem;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid currentColor;
+  border-radius: var(--radius-full);
+  transform: translateY(-58%);
+}
+
+.searchLink::after {
+  content: "";
+  position: absolute;
+  left: 1.82rem;
+  top: 58%;
+  width: 7px;
+  border-top: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.searchLink:active {
+  transform: scale(0.99);
 }
 
 .empty {
-  margin: var(--space-lg) 0 0;
-  padding: var(--space-lg);
+  max-width: 28rem;
+  margin: var(--space-xxl) auto 0;
+  padding: var(--space-xl);
   text-align: center;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
+  background: var(--color-paper-bright);
+  box-shadow: var(--shadow-sticker);
 }
 
 .emptyTitle {
@@ -40,4 +71,10 @@
   font-size: 0.9375rem;
   line-height: 1.5;
   color: var(--color-ink-muted);
+}
+
+@media (min-width: 48rem) {
+  .searchLink {
+    max-width: 28rem;
+  }
 }

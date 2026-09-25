@@ -12,8 +12,8 @@ export function BackHeader({
   return (
     <header className={styles.header}>
       {onBack ? (
-        <button type="button" className={styles.back} onClick={onBack}>
-          {backLabel}
+        <button type="button" className={styles.back} onClick={onBack} aria-label={backLabel}>
+          <span className={styles.backIcon} aria-hidden />
         </button>
       ) : null}
       <h1 className={styles.title}>{title}</h1>

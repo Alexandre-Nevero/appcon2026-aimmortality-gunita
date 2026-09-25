@@ -45,15 +45,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <main
-      className="authScene"
-      style={{
-        backgroundImage: "url(/objects/background.png), var(--dot-grid)",
-        backgroundSize: "cover, var(--dot-grid-size)",
-        backgroundPosition: "center bottom, center",
-        backgroundRepeat: "no-repeat, repeat",
-      }}
-    >
+    <main className="authScene">
       <Sheet>
         <h1 className="scriptTitle">
           {t("auth.signUpTitle").toLowerCase()} <FlowerMark size={28} />

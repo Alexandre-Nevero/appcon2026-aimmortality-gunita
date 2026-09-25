@@ -49,7 +49,7 @@ export function ArchiveSearch() {
                 id: row.id,
                 title: row.title,
                 caption: row.caption ?? row.title,
-                photoUrl: row.photoUrl ?? "/objects/polaroid-sample-1.jpg",
+                photoUrl: row.photoUrl ?? "/objects/background.png",
                 origin: row.origin,
               })),
             );

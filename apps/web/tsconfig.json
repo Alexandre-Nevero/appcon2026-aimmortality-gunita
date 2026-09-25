@@ -31,5 +31,5 @@
     "**/*.mts",
     "../../seed/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", ".next/types/validator.ts", ".next/dev/types/validator.ts"]
 }

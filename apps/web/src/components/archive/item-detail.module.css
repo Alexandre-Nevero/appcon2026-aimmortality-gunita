@@ -1,13 +1,14 @@
 .page {
-  max-width: 26.25rem;
+  max-width: var(--content-reading);
   margin: 0 auto;
-  padding: 0 var(--space-gutter) var(--space-xl);
+  padding: 0 var(--space-gutter) calc(var(--space-xxl) + env(safe-area-inset-bottom, 0px));
 }
 
 .body {
-  margin: 0 0 var(--space-md);
-  font-size: 1rem;
-  line-height: 1.55;
+  max-width: 65ch;
+  margin: var(--space-xl) 0 var(--space-md);
+  font-size: 1.125rem;
+  line-height: 1.65;
 }
 
 .chips {
@@ -23,6 +24,6 @@
   font-size: 0.9375rem;
   color: var(--color-ink-muted);
   text-align: center;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
+  background: var(--color-paper-bright);
+  box-shadow: var(--shadow-sticker);
 }

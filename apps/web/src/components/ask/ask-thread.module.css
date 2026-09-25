@@ -2,14 +2,23 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 0 0 var(--space-md);
+  padding: 0 2px var(--space-md);
+  overscroll-behavior: contain;
+}
+
+.introBlock {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-md);
+  max-width: 30rem;
+  margin: var(--space-lg) 0 var(--space-xl);
 }
 
 .intro {
-  margin: 0 0 var(--space-lg);
+  margin: 0;
   font-family: var(--font-serif);
-  font-size: 1rem;
-  line-height: 1.55;
+  font-size: 1.125rem;
+  line-height: 1.6;
   color: var(--color-ink-muted);
 }
 
@@ -29,14 +38,13 @@
 
 .userBubble {
   margin: 0;
-  max-width: 85%;
+  max-width: min(85%, 32rem);
   padding: var(--space-sm) var(--space-md);
-  font-family: var(--font-sans);
+  font-family: var(--font-serif);
   font-size: 0.9375rem;
-  line-height: 1.45;
+  line-height: 1.55;
   background: var(--color-mist-deep);
-  border-radius: var(--radius-lg);
-  border-bottom-right-radius: var(--radius-xs);
+  border-radius: var(--radius-full);
 }
 
 .himmelRow {
@@ -45,12 +53,10 @@
 }
 
 .himmelBubble {
-  max-width: 92%;
-  padding: var(--space-md);
+  max-width: min(92%, 36rem);
+  padding: var(--space-md) var(--space-lg);
   background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  border-bottom-left-radius: var(--radius-xs);
-  box-shadow: var(--shadow-sticker);
+  border-radius: var(--radius-md);
 }
 
 .thinking {
@@ -60,8 +66,8 @@
 .answerText {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: 0.9375rem;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .abstainNote {
@@ -72,26 +78,30 @@
 }
 
 .sourcesLink {
-  margin: var(--space-sm) 0 0;
-  padding: 0;
+  min-height: 44px;
+  margin: var(--space-sm) 0 calc(-1 * var(--space-sm));
+  padding: var(--space-xs) var(--space-sm) var(--space-xs) 0;
   border: 0;
   background: none;
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   text-decoration: underline;
   text-transform: lowercase;
-  color: var(--color-flower);
+  color: var(--color-ink-muted);
   cursor: pointer;
 }
 
 .addQuestion {
   display: block;
-  margin: var(--space-sm) 0 0;
-  padding: 0;
+  min-height: 44px;
+  margin: var(--space-md) 0 0;
+  padding: 0 var(--space-md);
   border: 0;
-  background: none;
+  border-radius: var(--radius-md);
+  background: var(--color-mist);
   font-family: var(--font-sans);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
+  line-height: 1.3;
   text-align: left;
   text-transform: lowercase;
   color: var(--color-ink);
@@ -101,4 +111,10 @@
 .addQuestion:disabled {
   color: var(--color-ink-muted);
   cursor: default;
+}
+
+@media (min-width: 48rem) {
+  .introBlock {
+    margin-top: var(--space-xxl);
+  }
 }

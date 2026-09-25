@@ -9,6 +9,7 @@ describe("public memorial fixture", () => {
     expect(memorial).not.toBeNull();
     expect(memorial!.featuredName).toBe(fixtures.space.featuredName);
     expect(memorial!.cards.some((card) => card.type === "cover")).toBe(true);
+    expect(memorial!.contributions).toHaveLength(fixtures.photoMemories.length);
   });
 
   it("ignores unknown tokens", () => {

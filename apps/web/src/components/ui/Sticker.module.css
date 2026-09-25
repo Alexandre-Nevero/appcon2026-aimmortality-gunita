@@ -1,16 +1,29 @@
 .sticker {
+  position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-sm);
+  padding: 7px 12px 8px;
   background: var(--color-paper-bright);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xs);
   box-shadow: var(--shadow-sticker);
   font-family: var(--font-script);
   font-size: 1rem;
   color: var(--color-ink);
   text-transform: lowercase;
+}
+
+.sticker::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 28px;
+  height: 9px;
+  background: color-mix(in srgb, var(--color-tape) 78%, transparent);
+  transform: translateX(-50%) rotate(-1deg);
+  pointer-events: none;
 }
 
 .highlight {

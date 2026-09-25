@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "@/src/db";
+import {
+  DEMO_TRIBUTES_COOKIE,
+  isDemoMemorialToken,
+  parseDemoTributes,
+  serializeDemoTributes,
+  toggleDemoTribute,
+} from "@/src/memories/demo";
 import { findPublicMemorial, setTribute } from "@/src/memories/queries";
 import { tributeRequestSchema } from "@/src/memories/tribute-request";
 import {
@@ -14,9 +21,6 @@ import {
 // F-023, ADR-008: POST /api/m/:token/tributes { contributionId, hearted } → { hearted }. No count.
 export async function POST(request: NextRequest, context: { params: Promise<{ token: string }> }) {
   const { token } = await context.params;
-  const memorial = await findPublicMemorial(db, token);
-  if (!memorial) return NextResponse.json({ error: "not_found" }, { status: 404 });
-
   let body: unknown;
   try {
     body = await request.json();
@@ -25,6 +29,29 @@ export async function POST(request: NextRequest, context: { params: Promise<{ to
   }
   const parsed = tributeRequestSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "invalid_body" }, { status: 400 });
+
+  if (isDemoMemorialToken(token)) {
+    const next = toggleDemoTribute(
+      token,
+      parsed.data.contributionId,
+      parsed.data.hearted,
+      parseDemoTributes(request.cookies.get(DEMO_TRIBUTES_COOKIE)?.value),
+    );
+    if (!next) return NextResponse.json({ error: "not_found" }, { status: 404 });
+
+    const response = NextResponse.json({ hearted: parsed.data.hearted });
+    response.cookies.set(DEMO_TRIBUTES_COOKIE, serializeDemoTributes(next), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: VISITOR_COOKIE_MAX_AGE_SECONDS,
+    });
+    return response;
+  }
+
+  const memorial = await findPublicMemorial(db, token);
+  if (!memorial) return NextResponse.json({ error: "not_found" }, { status: 404 });
 
   const existing = request.cookies.get(VISITOR_COOKIE)?.value;
   const visitorId = isVisitorId(existing) ? existing : newVisitorId();

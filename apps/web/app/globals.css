@@ -10,15 +10,48 @@ html,
 body {
   margin: 0;
   min-height: 100%;
+  min-width: 320px;
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-serif);
   font-size: 15px;
   line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
 }
 
 * {
   box-sizing: border-box;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: rgba(43, 86, 194, 0.12);
+}
+
+::selection {
+  background: var(--color-mist-deep);
+  color: var(--color-ink);
+}
+
+* {
+  scrollbar-color: var(--color-mist-deep) transparent;
+  scrollbar-width: thin;
 }
 
 a {
@@ -34,6 +67,7 @@ a {
 
 .appShell {
   min-height: 100dvh;
+  isolation: isolate;
 }
 
 .authScene {
@@ -42,15 +76,18 @@ a {
   justify-content: flex-end;
   min-height: 100dvh;
   background-color: var(--color-paper);
-  background-image: var(--dot-grid);
-  background-size: var(--dot-grid-size);
+  background-image: linear-gradient(rgba(45, 44, 40, 0.08), rgba(45, 44, 40, 0.08)),
+    url("/objects/background.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.authScene > * {
+  width: min(100%, 30rem);
 }
 
 .onboardingScene {
-  background-color: var(--color-paper);
-  background-image: none;
-  justify-content: center;
-  padding: var(--space-lg) 0;
+  padding-top: var(--space-lg);
 }
 
 .scriptTitle {
@@ -149,10 +186,10 @@ a {
   width: 100%;
   min-height: 6rem;
   padding: var(--space-sm);
-  border: 1px solid var(--color-line);
-  border-radius: var(--radius-md);
+  border: 0;
+  border-radius: var(--radius-xs);
   background: var(--color-field);
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.5;
   resize: vertical;
@@ -180,6 +217,7 @@ a {
   width: 1.125rem;
   height: 1.125rem;
   flex-shrink: 0;
+  accent-color: var(--color-ink);
 }
 
 .splashScene {
@@ -201,6 +239,13 @@ a {
   cursor: pointer;
   font: inherit;
   color: inherit;
+  min-width: 11rem;
+  min-height: 11rem;
+  transition: transform var(--motion-press) var(--ease-out);
+}
+
+.splashTap:active {
+  transform: scale(0.98);
 }
 
 .splashBrand {
@@ -215,4 +260,12 @@ a {
   color: var(--color-ink-muted);
   max-width: 16rem;
   text-align: center;
+}
+
+@media (min-width: 48rem) {
+  .authScene {
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xxl);
+  }
 }

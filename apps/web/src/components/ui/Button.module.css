@@ -4,11 +4,28 @@
   justify-content: center;
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  height: 44px;
+  min-height: 44px;
   border: 0;
   border-radius: var(--radius-md);
   padding: 0 32px;
   cursor: pointer;
+  transition: transform var(--motion-press) var(--ease-out),
+    background-color var(--motion-ui) ease, color var(--motion-ui) ease;
+  touch-action: manipulation;
+}
+
+.base:active:not(:disabled) {
+  transform: scale(0.975);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover {
+    background: var(--color-mist-deep);
+  }
+
+  .dark:hover {
+    background: #45443f;
+  }
 }
 
 .primary {

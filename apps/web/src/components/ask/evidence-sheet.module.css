@@ -21,6 +21,14 @@
   max-width: 26.25rem;
   max-height: 70vh;
   overflow: hidden;
+  transform: translateY(0);
+  transition: transform var(--motion-sheet) var(--ease-out);
+}
+
+@starting-style {
+  .panel {
+    transform: translateY(100%);
+  }
 }
 
 .sheet {
@@ -47,6 +55,7 @@
 
 .close {
   flex-shrink: 0;
+  min-height: 44px;
   padding: var(--space-xs) var(--space-sm);
   border: 0;
   background: none;
@@ -69,6 +78,20 @@
   color: var(--color-ink-muted);
 }
 
+.group + .group {
+  margin-top: var(--space-lg);
+}
+
+.groupTitle {
+  margin: 0 0 var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
 .list {
   list-style: none;
   margin: 0;
@@ -85,6 +108,7 @@
 
 .itemLink {
   display: block;
+  min-height: 44px;
 }
 
 .itemTitle {
@@ -100,4 +124,25 @@
   font-size: 0.8125rem;
   line-height: 1.45;
   color: var(--color-ink-muted);
+}
+
+@media (min-width: 48rem) {
+  .root {
+    align-items: center;
+  }
+
+  .panel {
+    max-width: 34rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .sheet {
+    border-radius: var(--radius-lg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transform: none;
+  }
 }

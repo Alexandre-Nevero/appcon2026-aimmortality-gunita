@@ -39,7 +39,17 @@ export function fixturePublicMemorial(token: string): PublicMemorialView | null 
     locale: fixtures.space.locale,
     featuredName: fixtures.space.featuredName,
     cards,
-    contributions: [],
+    contributions: fixtures.photoMemories.map((memory) => ({
+      id: memory.id,
+      displayName: memory.displayName,
+      relationship: memory.relationship,
+      textContent: memory.textContent,
+      photoBlobPathname: memory.photoUrl,
+      audioBlobPathname: null,
+      origin: "about_them" as const,
+      status: "approved",
+      submittedAt: new Date(memory.submittedAt),
+    })),
   };
 }
 

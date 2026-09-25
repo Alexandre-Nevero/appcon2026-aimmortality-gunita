@@ -1,7 +1,7 @@
 .page {
-  max-width: 26.25rem;
+  max-width: var(--content-reading);
   margin: 0 auto;
-  padding: 0 var(--space-gutter) var(--space-xl);
+  padding: 0 var(--space-gutter) calc(var(--space-xxl) + env(safe-area-inset-bottom, 0px));
 }
 
 .list {
@@ -12,19 +12,19 @@
 
 .item {
   margin: 0 0 var(--space-md);
-  padding: var(--space-md);
-  font-size: 0.9375rem;
-  line-height: 1.5;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  font-size: 1rem;
+  line-height: 1.55;
+  background: var(--color-paper-bright);
+  border-bottom: 1px solid var(--color-line);
 }
 
 .empty {
   margin: var(--space-lg) 0 0;
   padding: var(--space-lg);
   text-align: center;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
+  background: var(--color-paper-bright);
+  box-shadow: var(--shadow-sticker);
 }
 
 .emptyTitle {
@@ -62,16 +62,22 @@
 
 .toggle {
   flex: 1;
-  min-height: 2.75rem;
+  min-height: 48px;
   padding: var(--space-md);
   font-family: var(--font-sans);
   font-size: 0.875rem;
   text-transform: lowercase;
   color: var(--color-ink);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   cursor: pointer;
+  transition: transform var(--motion-press) var(--ease-out),
+    background-color var(--motion-ui) ease, color var(--motion-ui) ease;
+}
+
+.toggle:active {
+  transform: scale(0.98);
 }
 
 .toggleActive {

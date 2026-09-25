@@ -1,15 +1,15 @@
 .page {
-  max-width: 26.25rem;
+  max-width: var(--content-reading);
   margin: 0 auto;
-  padding: 0 var(--space-gutter) var(--space-xl);
+  padding: 0 var(--space-gutter) calc(var(--space-xxl) + env(safe-area-inset-bottom, 0px));
 }
 
 .subtitle {
-  margin: 0 0 var(--space-lg);
-  font-size: 0.8125rem;
-  line-height: 1.5;
+  max-width: 38rem;
+  margin: 0 0 var(--space-xl);
+  font-size: 1rem;
+  line-height: 1.6;
   color: var(--color-ink-muted);
-  text-transform: lowercase;
 }
 
 .hero {
@@ -23,6 +23,7 @@
 .heroImg {
   width: min(12rem, 70vw);
   height: auto;
+  filter: drop-shadow(var(--shadow-object));
 }
 
 .actions {
@@ -51,8 +52,9 @@
 .status {
   margin: var(--space-md) 0;
   padding: var(--space-md);
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
+  background: var(--color-paper-bright);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-sticker);
   font-size: 0.875rem;
   text-transform: lowercase;
 }
@@ -70,11 +72,13 @@
 
 .sheet {
   width: 100%;
-  max-width: 26.25rem;
+  max-width: 30rem;
   padding: var(--space-lg);
-  background: var(--color-surface);
+  background: var(--color-paper-bright);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  box-shadow: var(--shadow-polaroid);
+  box-shadow: var(--shadow-sheet);
+  transform: translateY(0);
+  transition: transform var(--motion-sheet) var(--ease-out);
 }
 
 .sheetTitle {
@@ -91,7 +95,7 @@
 
 .input {
   width: 100%;
-  height: 44px;
+  min-height: 48px;
   margin-bottom: var(--space-md);
   padding: 0 var(--space-md);
   font-family: var(--font-sans);
@@ -131,7 +135,8 @@
   position: sticky;
   bottom: 0;
   padding: var(--space-md) 0 var(--space-lg);
-  background: linear-gradient(transparent, var(--color-bg) 24%);
+  background: var(--color-paper);
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
 }
 
 .count {
@@ -150,9 +155,9 @@
 
 .recapCard {
   padding: var(--space-md);
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-polaroid);
+  background: var(--color-paper-bright);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-sticker);
 }
 
 .recapCardTitle {
@@ -217,8 +222,32 @@
 }
 
 .navLinks a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   color: var(--color-ink);
   text-transform: lowercase;
+}
+
+@media (min-width: 48rem) {
+  .page {
+    max-width: var(--content-wide);
+  }
+
+  .selectGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .recapStack {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    transform: none;
+  }
 }
 
 .empty {
